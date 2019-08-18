@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Evect.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -59,6 +60,9 @@ namespace Evect
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+
+            Bot.GetBotClientAsync().Wait();
         }
     }
 }
