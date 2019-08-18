@@ -8,6 +8,7 @@
         <e p="bin" t="ExcludeRecursive" />
         <e p="Controllers" t="Include">
           <e p="HomeController.cs" t="Include" />
+          <e p="MessageController.cs" t="Include" />
         </e>
         <e p="Evect.csproj" t="IncludeRecursive" />
         <e p="Models" t="Include">
@@ -111,9 +112,9 @@
       <e p="Evect.sln" t="IncludeFlat" />
       <e p="packages" t="ExcludeRecursive" />
     </e>
-    <e p="C:\Users\Xiaomi\.Rider2019.2\config\consoles\db" t="IncludeRecursive" />
-    <e p="C:\Users\Xiaomi\.Rider2019.2\config\extensions" t="IncludeRecursive" />
-    <e p="C:\Users\Xiaomi\.Rider2019.2\system\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\Xiaomi\.Rider2019.2\system\resharper-host\local\Transient\ReSharperHost\v192\SolutionCaches\_Evect.787436745.00" t="ExcludeRecursive" />
+    <e p="C:\Users\smari\.Rider2019.1\config\consoles\db" t="IncludeRecursive" />
+    <e p="C:\Users\smari\.Rider2019.1\config\extensions" t="IncludeRecursive" />
+    <e p="C:\Users\smari\.Rider2019.1\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\smari\.Rider2019.1\system\resharper-host\local\Transient\ReSharperHost\v191\SolutionCaches\_Evect.787436745.00" t="ExcludeRecursive" />
   </component>
 </project>
