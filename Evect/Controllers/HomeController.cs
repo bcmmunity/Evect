@@ -20,11 +20,12 @@ namespace Evect.Controllers
     {
 
         private ApplicationContext _db;
-        
-//        public HomeController(ApplicationContext db)
-//        {
-//            _db = db;
-//        }
+        private UserDB _userDb;
+        public HomeController(ApplicationContext db)
+        {
+            _db = db;
+            _userDb = new UserDB();
+        }
 
         public IActionResult Index()
         {
@@ -37,28 +38,13 @@ namespace Evect.Controllers
             if (update == null)
                 return Ok();
 
-            UserDB userDb = new UserDB();
+            
             var commands = Bot.Commands;
             var message = update.Message;
             var client = new TelegramBotClient(AppSettings.Key);
             var chatId = message.Chat.Id;
-            User user = await userDb.GetUserByChatId(chatId);
-
-            if (user.CurrentAction != null && user.CurrentAction == Actions.WaitingForEventCode)
-            {
-                EventDB eventDb = new EventDB();
-                if (await eventDb.IsEventCodeValid(message.Text))
-                {
-                    await client.SendTextMessageAsync(chatId, "все чотко", ParseMode.Html);
-
-                }
-                else
-                {
-                    await client.SendTextMessageAsync(chatId, "неверно амиго", ParseMode.Html);
-
-                }
-            }
-            else
+            User user = await _userDb.GetUserByChatId(chatId);
+            if (user == null || user.CurrentAction == Actions.None)
             {
                 foreach (var command in commands)
                 {
@@ -67,8 +53,25 @@ namespace Evect.Controllers
                         await command.Execute(message, client);
                         return Ok();
                     }
-                }
+                } 
             }
+            
+            if (user.CurrentAction == Actions.WaitingForEventCode)
+            {
+                EventDB eventDb = new EventDB();
+                if (await eventDb.IsEventCodeValid(message.Text))
+                {
+                    await client.SendTextMessageAsync(chatId, "все чотко", ParseMode.Html);
+                    _userDb.ResetUserAction(chatId);
+                }
+                else
+                {
+                    await client.SendTextMessageAsync(chatId, "неверно амиго", ParseMode.Html);
+                    
+                }
+                return Ok();
+            }
+            
             
             
             

@@ -8,13 +8,13 @@ namespace Evect.Models.DB
             : base(options)
         {
             // ВЫКЛЮЧИТЬ ПРИ ДЕПЛОЕ НА СЕРВАК
-            Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=evect3;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(AppSettings.DatabaseConnectionString);
         }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)

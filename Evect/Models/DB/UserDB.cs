@@ -32,6 +32,14 @@ namespace Evect.Models.DB
         {
             return await Context.Users.FirstOrDefaultAsync(u => u.TelegramId == tgId);
         }
+
+        public async void ResetUserAction(long tgId)
+        {
+            User user = await GetUserByChatId(tgId);
+            user.CurrentAction = Actions.None;
+            Context.Users.Update(user);
+            await Context.SaveChangesAsync();
+        }
         
 //        public async void ChangeUserParams()
         

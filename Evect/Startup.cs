@@ -34,7 +34,7 @@ namespace Evect
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             
-            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=evect3;Trusted_Connection=True;"));
+            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(AppSettings.DatabaseConnectionString));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
