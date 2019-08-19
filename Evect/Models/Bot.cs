@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Evect.Models.Commands;
 using Telegram.Bot;
 
 namespace Evect.Models
@@ -7,9 +9,9 @@ namespace Evect.Models
     public static class Bot
     {
         private static TelegramBotClient _client;
-        private static List<Command> _commandsList;
+        private static List<BaseCommand> _commandsList;
 
-        public static IReadOnlyList<Command> Commands => _commandsList;
+        public static IReadOnlyList<BaseCommand> Commands => _commandsList.AsReadOnly();
         
         
         public static async Task<TelegramBotClient> GetBotClientAsync()
@@ -19,11 +21,12 @@ namespace Evect.Models
                 return _client;
             }
 
-            _commandsList = new List<Command>();
-
+            _commandsList = Utils.GetEnumerableOfType<BaseCommand>().ToList();
+            
+            
             _client = new TelegramBotClient(AppSettings.Key);
-//            var hook = string.Format(AppSettings.Url, "api/message/update");
-            var hook = AppSettings.Url;
+            var hook = string.Format(AppSettings.Url, "api/message/update");
+//            var hook = AppSettings.Url;
             await _client.SetWebhookAsync(hook);
 
             return _client;

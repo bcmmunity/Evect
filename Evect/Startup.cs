@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Evect.Models;
+using Evect.Models.DB;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,8 +33,8 @@ namespace Evect
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
-
+            
+            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=evect3;Trusted_Connection=True;"));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -61,7 +63,7 @@ namespace Evect
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-
+            ApplicationContext c = new ApplicationContext(new DbContextOptions<ApplicationContext>());
             Bot.GetBotClientAsync().Wait();
         }
     }
