@@ -1,8 +1,8 @@
 namespace Evect.Models
 {
-    public class TelegramKeyboard
+    public static class TelegramKeyboard
     {
-        public Telegram.Bot.Types.ReplyMarkups.ReplyKeyboardMarkup GetKeyboard(string[][] buttons)
+        public static Telegram.Bot.Types.ReplyMarkups.ReplyKeyboardMarkup GetKeyboard(string[][] buttons)
         {
             int rows = buttons.Length;
 
@@ -29,7 +29,7 @@ namespace Evect.Models
             return keyboard;
         }
 
-        public Telegram.Bot.Types.ReplyMarkups.InlineKeyboardMarkup GetInlineKeyboard(string[][] buttons,
+        public static Telegram.Bot.Types.ReplyMarkups.InlineKeyboardMarkup GetInlineKeyboard(string[][] buttons,
             string[][] callback_data)
         {
             int rows = buttons.Length;

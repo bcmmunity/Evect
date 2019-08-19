@@ -13,20 +13,66 @@ namespace Evect.Models.DB
         {
             Context = Connect();
         }
+
+        
+        #region Add/Remove/Edit/Login/Logoff users
+        
+        public void AddUser(long tgId)
+        {
+            Context.Users.Add(new User {TelegramId = tgId, IsAuthed = true});
+            Context.SaveChanges();
+        }
         
 
-
-        public async void AddUser(long tgId)
+        public async void AddUserAsync(long tgId)
         {
 
-            await Context.Users.AddAsync(new User() { TelegramId = tgId});
+            await Context.Users.AddAsync(new User { TelegramId = tgId, IsAuthed = true});
+            await Context.SaveChangesAsync();
+        }
+        
+        
+    
+        public async void UserLogin(long tgId)
+        {
+            User user = await GetUserByChatId(tgId);
+            user.IsAuthed = true;
+            Context.Users.Update(user);
+            await Context.SaveChangesAsync();
+        }
+        
+        public async void UserLogoff(long tgId)
+        {
+            User user = await GetUserByChatId(tgId);
+            user.IsAuthed = false;
+            Context.Users.Update(user);
             await Context.SaveChangesAsync();
         }
 
+        public async void ResetAction(long tgId)
+        {
+            User user = await GetUserByChatId(tgId);
+            user.CurrentAction = Actions.None;
+            Context.Users.Update(user);
+            await Context.SaveChangesAsync();
+        }
+        
+        
+        #endregion
+        
         public async Task<bool> IsUserExists(long tgId)
         {
             return await Context.Users.FirstOrDefaultAsync(u => u.TelegramId == tgId) != null;
         }
+        
+        
+        public async Task<bool> IsUserExistsAndAuthed(long tgId)
+        {
+            User user = await GetUserByChatId(tgId);
+            return user != null && user.IsAuthed;
+        }
+
+
 
         public async Task<User> GetUserByChatId(long tgId)
         {

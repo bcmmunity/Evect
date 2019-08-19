@@ -34,7 +34,8 @@ namespace Evect
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             
-            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(AppSettings.DatabaseConnectionString));
+            services.AddDbContext<ApplicationContext>(options => 
+                options.UseSqlServer(AppSettings.DatabaseConnectionString));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -60,7 +61,7 @@ namespace Evect
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Index}");
             });
 
             ApplicationContext c = new ApplicationContext(new DbContextOptions<ApplicationContext>());

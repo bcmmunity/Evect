@@ -3,6 +3,9 @@ namespace Evect.Models
     public enum Actions
     {
         None,
-        WaitingForEventCode
+        
+        WaitingForEventCode,
+        
+        DeleteOrNot
     }
 }
