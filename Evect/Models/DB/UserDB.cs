@@ -76,7 +76,9 @@ namespace Evect.Models.DB
 
         public async Task<User> GetUserByChatId(long tgId)
         {
-            return await Context.Users.FirstOrDefaultAsync(u => u.TelegramId == tgId);
+            return await Context.Users
+                .Include(u => u.UserEvents)
+                .FirstOrDefaultAsync(u => u.TelegramId == tgId);
         }
 
         public async void ResetUserAction(long tgId)
@@ -86,6 +88,7 @@ namespace Evect.Models.DB
             Context.Users.Update(user);
             await Context.SaveChangesAsync();
         }
+
         
 //        public async void ChangeUserParams()
         

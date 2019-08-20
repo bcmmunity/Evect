@@ -19,11 +19,13 @@ namespace Evect.Controllers
     {
         private ApplicationContext _db;
         private UserDB _userDb;
+        private EventDB _eventDb;
 
         public HomeController(ApplicationContext db)
         {
             _db = db;
             _userDb = new UserDB();
+            _eventDb = new EventDB();
         }
 
         public IActionResult Index()
@@ -55,7 +57,7 @@ namespace Evect.Controllers
 
             if (!user.IsAuthed)
             {
-                commands.FirstOrDefault(c => c.Name == "/start")?.Execute(message, client);
+                commands.FirstOrDefault(c => c.Name == "/start" || c.Name == "Личный кабинет")?.Execute(message, client);
                 return Ok();
             }
 
@@ -72,7 +74,46 @@ namespace Evect.Controllers
                     }
 
                     break;
-
+                    
+                case Actions.WaitingForEventCode:
+                    bool isValid = await _eventDb.IsEventCodeValid(text);
+                    if (isValid)
+                    {
+                        Event ev = await _userDb.Context.Events.FirstOrDefaultAsync(e => e.EventCode == text || e.AdminCode == text);
+                        bool have = user.UserEvents.FirstOrDefault(ue => ue.EventId == ev.EventId) != null;
+                        if (have)
+                        {
+                            await client.SendTextMessageAsync(
+                                chatId,
+                                "Вы уже присоединились к этому мероприятию",
+                                ParseMode.Html);
+                        }
+                        else
+                        {
+                            await client.SendTextMessageAsync(
+                                    chatId, 
+                                $"Вы успешно присоединились к мероприятию \"{ev.Name}\"",
+                                ParseMode.Html);
+                            UserEvent userEvent = new UserEvent()
+                            {
+                                UserId = user.UserId,
+                                EventId = ev.EventId
+                            };
+                            user.UserEvents.Add(userEvent);
+                            user.CurrentEventId = ev.EventId;
+                            _userDb.Context.Users.Update(user);
+                            await _userDb.Context.SaveChangesAsync();
+                        }
+                    }
+                    else
+                    {
+                        await client.SendTextMessageAsync(
+                            chatId, 
+                            $"Неправильный код(",
+                            ParseMode.Html);
+                    }
+                    break;
+                
                 case Actions.DeleteOrNot:
                     if (text == "Да")
                     {

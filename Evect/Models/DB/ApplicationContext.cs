@@ -21,18 +21,44 @@ namespace Evect.Models.DB
         {
             modelBuilder.Entity<User>()
                 .HasIndex(b => b.TelegramId);
-            
-            
-            modelBuilder.Entity<EventCode>()
+
+            modelBuilder.Entity<Event>()
                 .HasData(
-                    new EventCode() {EventCodeId = 1, Code = "evect_kim"},
-                    new EventCode() { EventCodeId = 2, Code = "evect_kim_admin", IsForOrganizer = true});
+                    new Event { 
+                        Name = "Тестовое мероприятие, оч крутое", 
+                        Info = "Крутое мероприятия для разномастных разработчиков", 
+                        EventCode = "event_kim",
+                        AdminCode = "event_admin"
+                    }, 
+                    new Event { 
+                        Name = "Второе тестовое", 
+                        Info = "DIFFFFFFFFFFFFFFFFFFFIND", 
+                        EventCode = "event_kim2",
+                        AdminCode = "event_admin2"
+                    }
+                    );
+
+            modelBuilder.Entity<UserEvent>()
+                .HasKey(us => new {us.EventId, us.UserEventId});
+            
+            modelBuilder.Entity<UserEvent>()
+                .HasOne(us => us.Event)
+                .WithMany(e => e.UserEvents)
+                .HasForeignKey(k => k.EventId);
+                
+            
+            modelBuilder.Entity<UserEvent>()
+                .HasOne(us => us.User)
+                .WithMany(e => e.UserEvents)
+                .HasForeignKey(k => k.UserEventId);
+                
+
+
         }
 
 
         public DbSet<User> Users { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Event> Events { get; set; }
-        public DbSet<EventCode> EventCodes { get; set; }
     }
 }

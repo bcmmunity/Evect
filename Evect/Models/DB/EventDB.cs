@@ -15,7 +15,7 @@ namespace Evect.Models.DB
 
         public async Task<bool> IsEventCodeValid(string code)
         {
-            return await Context.EventCodes.FirstOrDefaultAsync(ev => ev.Code == code) != null;
+            return await Context.Events.FirstOrDefaultAsync(ev => ev.EventCode == code || ev.AdminCode == code) != null;
         }
         
         

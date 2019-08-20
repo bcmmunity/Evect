@@ -6,6 +6,8 @@ namespace Evect.Models
         
         WaitingForEventCode,
         
-        DeleteOrNot
+        DeleteOrNot,
+        
+        Profile
     }
 }
