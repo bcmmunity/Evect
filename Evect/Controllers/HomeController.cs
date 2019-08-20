@@ -72,6 +72,10 @@ namespace Evect.Controllers
                             return Ok();
                         }
                     }
+                    await client.SendTextMessageAsync(
+                        chatId,
+                        "Я не понимаю вас",
+                        ParseMode.Html);
 
                     break;
                     
@@ -104,6 +108,7 @@ namespace Evect.Controllers
                             _userDb.Context.Users.Update(user);
                             await _userDb.Context.SaveChangesAsync();
                         }
+                        _userDb.ResetAction(chatId);
                     }
                     else
                     {
@@ -141,6 +146,28 @@ namespace Evect.Controllers
                             ParseMode.Html);
                     }
 
+                    break;
+                case Actions.Profile:
+                    if (text == "О мероприятии")
+                    {
+                        await client.SendTextMessageAsync(
+                            chatId,
+                            "мяу",
+                            ParseMode.Html);
+                    } else if (text == "Присоединиться к мероприятию")
+                    {
+                        await client.SendTextMessageAsync(
+                            chatId,
+                            "гав",
+                            ParseMode.Html);
+                    }
+                    else
+                    {
+                        await client.SendTextMessageAsync(
+                            chatId,
+                            "чот не то",
+                            ParseMode.Html);
+                    }
                     break;
             }
 

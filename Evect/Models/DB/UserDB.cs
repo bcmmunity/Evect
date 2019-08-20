@@ -89,6 +89,15 @@ namespace Evect.Models.DB
             await Context.SaveChangesAsync();
         }
 
+        public async void ChangeUserAction(long tgId, Actions action)
+        {
+                 
+            User user = await GetUserByChatId(tgId);
+            user.CurrentAction = action;
+            Context.Users.Update(user);
+            await Context.SaveChangesAsync();
+        }
+
         
 //        public async void ChangeUserParams()
         

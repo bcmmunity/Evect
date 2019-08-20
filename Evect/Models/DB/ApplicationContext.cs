@@ -25,12 +25,14 @@ namespace Evect.Models.DB
             modelBuilder.Entity<Event>()
                 .HasData(
                     new Event { 
+                        EventId = 1,
                         Name = "Тестовое мероприятие, оч крутое", 
                         Info = "Крутое мероприятия для разномастных разработчиков", 
                         EventCode = "event_kim",
                         AdminCode = "event_admin"
                     }, 
                     new Event { 
+                        EventId = 2,
                         Name = "Второе тестовое", 
                         Info = "DIFFFFFFFFFFFFFFFFFFFIND", 
                         EventCode = "event_kim2",

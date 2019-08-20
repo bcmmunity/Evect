@@ -10,7 +10,7 @@ namespace Evect.Models
         public static string Key { get; set; } = "913092744:AAGfI54AotPc_7P4l7abF-ZAuwji0b1Nfu0";
 
         public static string DatabaseConnectionString { get; set; } =
-           "Server=localhost\\SQLEXPRESS;Database=evect4;Trusted_Connection=True;";
+           "Server=localhost\\SQLEXPRESS;Database=evect5;Trusted_Connection=True;";
         
 //        public static string DatabaseConnectionString { get; set; } =
 //            "Server=localhost;Database=u0707180_evect;User Id=u0707180_evect;Password=pVmbs2at;";
