@@ -1,5 +1,8 @@
+using System;
 using System.Linq;
+using System.Net.Mail;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Evect.Models.DB;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
@@ -11,6 +14,7 @@ namespace Evect.Models.Commands
     public class ActionHandler
     {
         private readonly CommandHandler _commandHadler = new CommandHandler();
+        
         [UserAction(Actions.None)]
         public async void OnNone(Message message, TelegramBotClient client)
         {
@@ -75,9 +79,17 @@ namespace Evect.Models.Commands
                     user.CurrentEventId = ev.EventId;
                     userDb.Context.Users.Update(user);
                     await userDb.Context.SaveChangesAsync();
+
+                    if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))
+                    {
+                        await client.SendTextMessageAsync(
+                            chatId,
+                            "Похоже мы не все о вас знаем. Как вас зовут? Попрошу имя и фамилию через пробел",
+                            ParseMode.Html);
+                        userDb.ChangeUserAction(chatId, Actions.WaitingForName);
+                    }
                 }
 
-                userDb.ChangeUserAction(chatId, Actions.Profile);
             }
             else
             {
@@ -88,6 +100,73 @@ namespace Evect.Models.Commands
             }
         }
 
+        [UserAction(Actions.WaitingForName)]
+        public async void OnWaitingForName(Message message, TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+            EventDB eventDb = new EventDB();
+            UserDB userDb = new UserDB();
+
+            User user = await userDb.GetUserByChatId(chatId);
+
+            var names = text.Split(' ');
+            if (names.Length == 2)
+            {
+                user.FirstName = names[0];
+                user.LastName = names[1];
+                userDb.Context.Update(user);
+                await userDb.Context.SaveChangesAsync();
+                if (string.IsNullOrEmpty(user.Email))
+                {
+                    await client.SendTextMessageAsync(
+                        chatId,
+                        "Вот мы и познакомились, а теперь можно ваш адрес электронной почты?",
+                        ParseMode.Html);
+                    userDb.ChangeUserAction(chatId, Actions.WainingForEmail);
+                }
+            }
+            else
+            {
+                await client.SendTextMessageAsync(
+                    chatId,
+                    "Введите пожалуйста корректно имя и фамилию",
+                    ParseMode.Html);
+            }
+        }
+
+        [UserAction(Actions.WainingForEmail)]
+        public async void OnWaitingForEmail(Message message, TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+            UserDB userDb = new UserDB();
+
+            User user = await userDb.GetUserByChatId(chatId);
+            
+            if (Utils.IsEmailValid(text))
+            {
+                user.Email = text;
+                userDb.Context.Update(user);
+                await userDb.Context.SaveChangesAsync();
+                
+                
+                await client.SendTextMessageAsync(
+                    chatId,
+                    "Прекрасно, вам доступен весь мой функционал",
+                    ParseMode.Html);
+                
+                userDb.ChangeUserAction(chatId, Actions.Profile);
+            }
+            else
+            {
+                await client.SendTextMessageAsync(
+                    chatId,
+                    "Введите, пожалуйста, почту корректно",
+                    ParseMode.Html);
+            }
+            
+        }
         
         [UserAction(Actions.DeleteOrNot)]
         public async void OnDeleteOrNot(Message message, TelegramBotClient client)

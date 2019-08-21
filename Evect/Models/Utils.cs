@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Reflection;
 
 namespace Evect.Models
@@ -18,7 +19,19 @@ namespace Evect.Models
 
             return objects;
         }
-        
+
+        public static bool IsEmailValid(string email)
+        {
+            try
+            {
+                MailAddress m = new MailAddress(email);
+                return true;
+            }
+            catch (FormatException ex)
+            {
+                return false;
+            }
+        }
         
         
     }

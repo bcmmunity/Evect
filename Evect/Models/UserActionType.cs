@@ -8,6 +8,13 @@ namespace Evect.Models
         
         DeleteOrNot,
         
-        Profile
+        Profile,
+        
+        
+        #region private info
+        WaitingForName,
+        WainingForEmail,
+        
+        #endregion
     }
 }

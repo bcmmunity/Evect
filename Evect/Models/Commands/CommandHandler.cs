@@ -67,7 +67,7 @@ namespace Evect.Models.Commands
         }
 
 
-        [TelegramCommand("Войти по промо-коду")]
+        [TelegramCommand("Войти по ивент-коду")]
         public async void OnEnteringByCode(Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
