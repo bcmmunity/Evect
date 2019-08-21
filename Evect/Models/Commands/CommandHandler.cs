@@ -72,10 +72,7 @@ namespace Evect.Models.Commands
         {
             long chatId = message.Chat.Id;
             UserDB userDb = new UserDB();
-            User user = await userDb.GetUserByChatId(chatId);
-            user.CurrentAction = Actions.WaitingForEventCode;
-            userDb.Context.Users.Update(user);
-            await userDb.Context.SaveChangesAsync();
+            userDb.ChangeUserAction(chatId, Actions.WaitingForEventCode);
         }
         
         
