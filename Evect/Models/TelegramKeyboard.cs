@@ -2,7 +2,7 @@ namespace Evect.Models
 {
     public static class TelegramKeyboard
     {
-        public static Telegram.Bot.Types.ReplyMarkups.ReplyKeyboardMarkup GetKeyboard(string[][] buttons)
+        public static Telegram.Bot.Types.ReplyMarkups.ReplyKeyboardMarkup GetKeyboard(string[][] buttons, bool isOneTime = false)
         {
             int rows = buttons.Length;
 
@@ -19,11 +19,12 @@ namespace Evect.Models
                 }
             }
 
-
+            
             var keyboard = new Telegram.Bot.Types.ReplyMarkups.ReplyKeyboardMarkup
             {
                 Keyboard = keyboardButtons,
-                ResizeKeyboard = true
+                ResizeKeyboard = true,
+                OneTimeKeyboard = isOneTime
             };
 
             return keyboard;
