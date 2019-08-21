@@ -46,15 +46,13 @@ namespace Evect.Controllers
         {
             if (update == null)
                 return Ok();
-
-
+            
             var commands = Bot.Commands;
             var actions = Bot.ActionList;
             
             var message = update.Message;
             var client = new TelegramBotClient(AppSettings.Key);
             var chatId = message.Chat.Id;
-            var text = message.Text;
 
             User user = await _userDb.GetUserByChatId(chatId);
 
