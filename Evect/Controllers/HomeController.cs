@@ -26,6 +26,9 @@ namespace Evect.Controllers
         private CommandHandler _commandHadler;
         private ActionHandler _actionHandler;
 
+        private Dictionary<Action<Message, TelegramBotClient>, string> _commands;
+        private Dictionary<Action<Message, TelegramBotClient>, Actions> _actions;
+        
         public HomeController(ApplicationContext db)
         {
             _db = db;
@@ -34,6 +37,7 @@ namespace Evect.Controllers
 
             _commandHadler = new CommandHandler();
             _actionHandler = new ActionHandler();
+
         }
 
         public IActionResult Index()
@@ -48,8 +52,6 @@ namespace Evect.Controllers
             if (update == null)
                 return Ok();
 
-            var commands = Bot.Commands;
-            var actions = Bot.ActionList;
 
             var message = update.Message;
             var client = new TelegramBotClient(AppSettings.Key);
@@ -57,42 +59,85 @@ namespace Evect.Controllers
 
             User user = await _userDb.GetUserByChatId(chatId);
 
-            if (user == null)
-            {
-                foreach (var methodInfo in commands)
-                {
-                    var act = methodInfo.GetCustomAttribute<TelegramCommand>().StringCommand;
-                    if (act == "/start")
-                    {
-                        methodInfo.Invoke(_commandHadler, new object[] {message, client});
-                    }
-                }
+            var commands = Bot.Commands;
+            var actions = Bot.ActionList;
+            
+            Stopwatch w = Stopwatch.StartNew();
+            
+//            if (user == null)
+//            {
+//                foreach (var pair in _commands)
+//                {
+//                    if (pair.Value == "/start")
+//                    {
+//                        pair.Key(message, client);
+//                    } 
+//                }
+//
+//                return Ok();
+//            }
+//
+//            if (!user.IsAuthed)
+//            {
+//                foreach (var pair in _commands)
+//                {
+//                    if (pair.Value == "/start" || pair.Value == "Личный кабинет")
+//                    {
+//                        pair.Key(message, client);
+//                    } 
+//                }
+//                
+//                return Ok();
+//            }
+//            
+//            foreach (var pair in _actions)
+//            {
+//                if (pair.Value == user.CurrentAction)
+//                {
+//                    pair.Key(message, client);
+//                }
+//            }
 
-                return Ok();
+            if (user == null) 
+            { 
+                foreach (var methodInfo in commands) 
+                { 
+                    var act = methodInfo.GetCustomAttribute<TelegramCommand>().StringCommand; 
+                    if (act == "/start") 
+                    { 
+                        methodInfo.Invoke(_commandHadler, new object[] {message, client}); 
+                    } 
+                } 
+
+                return Ok(); 
+            } 
+
+            if (!user.IsAuthed) 
+            { 
+                foreach (var methodInfo in commands) 
+                { 
+                    var act = methodInfo.GetCustomAttribute<TelegramCommand>().StringCommand; 
+                    if (act == "/start" || act == "Личный кабинет") 
+                    { 
+                        methodInfo.Invoke(_commandHadler, new object[] {message, client}); 
+                    } 
+                } 
+
+                return Ok(); 
+            } 
+
+            foreach (var methodInfo in actions) 
+            { 
+                var act = methodInfo.GetCustomAttribute<UserAction>().Action; 
+                if (act == user.CurrentAction) 
+                { 
+                    methodInfo.Invoke(_actionHandler, new object[] {message, client}); 
+                } 
             }
 
-            if (!user.IsAuthed)
-            {
-                foreach (var methodInfo in commands)
-                {
-                    var act = methodInfo.GetCustomAttribute<TelegramCommand>().StringCommand;
-                    if (act == "/start" || act == "Личный кабинет")
-                    {
-                        methodInfo.Invoke(_commandHadler, new object[] {message, client});
-                    }
-                }
-
-                return Ok();
-            }
-
-            foreach (var methodInfo in actions)
-            {
-                var act = methodInfo.GetCustomAttribute<UserAction>().Action;
-                if (act == user.CurrentAction)
-                {
-                    methodInfo.Invoke(_actionHandler, new object[] {message, client});
-                }
-            }
+            
+            w.Stop();
+            await client.SendTextMessageAsync(chatId, w.ElapsedTicks.ToString(),ParseMode.Html);
 
             return Ok();
         }

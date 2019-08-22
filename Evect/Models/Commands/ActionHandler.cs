@@ -21,15 +21,25 @@ namespace Evect.Models.Commands
             var commands = Bot.Commands;
             var chatId = message.Chat.Id;
             var text = message.Text;
-            foreach (var methodInfo in commands)
-            {
-                var act = methodInfo.GetCustomAttribute<TelegramCommand>().StringCommand;
-                if (act == text)
-                {
-                    methodInfo.Invoke(_commandHadler, new object[] { message, client});
-                    return;
-                }
+//            foreach (var pair in commands)
+//            {
+//                if (pair.Value == text)
+//                {
+//                    pair.Key(message, client);
+//                    return;
+//                }
+//            }
+            
+            foreach (var methodInfo in commands) 
+            { 
+                var act = methodInfo.GetCustomAttribute<TelegramCommand>().StringCommand; 
+                if (act == text) 
+                { 
+                    methodInfo.Invoke(_commandHadler, new object[] { message, client}); 
+                    return; 
+                } 
             }
+            
 
             await client.SendTextMessageAsync(
                 chatId,
