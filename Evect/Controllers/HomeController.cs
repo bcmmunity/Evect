@@ -55,7 +55,7 @@ namespace Evect.Controllers
             var client = new TelegramBotClient(AppSettings.Key);
             var chatId = message.Chat.Id;
 
-            User user = await _userDb.GetUserByChatId(chatId);
+            User user = await _userDb.GetUserByChatId(chatId);//получаем айди юзера и его самого из бд
 
             if (user == null)
             {

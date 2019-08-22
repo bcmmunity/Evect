@@ -1,0 +1,6 @@
+C:\Users\Елизавета\Source\Repos\Evect5\Evect\obj\Debug\netcoreapp2.2\Evect.csprojAssemblyReference.cache
+C:\Users\Елизавета\Source\Repos\Evect5\Evect\obj\Debug\netcoreapp2.2\Evect.csproj.CoreCompileInputs.cache
+C:\Users\Елизавета\Source\Repos\Evect5\Evect\obj\Debug\netcoreapp2.2\Evect.RazorAssemblyInfo.cache
+C:\Users\Елизавета\Source\Repos\Evect5\Evect\obj\Debug\netcoreapp2.2\Evect.RazorAssemblyInfo.cs
+C:\Users\Елизавета\Source\Repos\Evect5\Evect\obj\Debug\netcoreapp2.2\Evect.AssemblyInfoInputs.cache
+C:\Users\Елизавета\Source\Repos\Evect5\Evect\obj\Debug\netcoreapp2.2\Evect.AssemblyInfo.cs

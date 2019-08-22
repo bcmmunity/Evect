@@ -17,7 +17,7 @@ namespace Evect.Models.DB
         
         #region Add/Remove/Edit/Login/Logoff users
         
-        public void AddUser(long tgId)
+        public void AddUser(long tgId)//добавление юзера
         {
             Context.Users.Add(new User {TelegramId = tgId, IsAuthed = true});
             Context.SaveChanges();
@@ -26,7 +26,6 @@ namespace Evect.Models.DB
 
         public async void AddUserAsync(long tgId)
         {
-
             await Context.Users.AddAsync(new User { TelegramId = tgId, IsAuthed = true});
             await Context.SaveChangesAsync();
         }
@@ -37,6 +36,13 @@ namespace Evect.Models.DB
         {
             User user = await GetUserByChatId(tgId);
             user.IsAuthed = true;
+            Context.Users.Update(user);
+            await Context.SaveChangesAsync();
+        }
+        public async void AdminAuthorized(long tgId)//АВТОРИЗАЦИЯ АДМИНОМ
+        {
+            User user = await GetUserByChatId(tgId);
+            user.IsAdminAuthorized = true;
             Context.Users.Update(user);
             await Context.SaveChangesAsync();
         }

@@ -14,7 +14,7 @@ namespace Evect.Models.Commands
         }
     }
     
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method)]//Этот метод применим только к методам
     public class UserAction : Attribute
     {
         public Actions Action{ get; set; }

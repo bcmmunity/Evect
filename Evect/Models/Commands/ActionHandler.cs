@@ -15,7 +15,7 @@ namespace Evect.Models.Commands
     {
         private readonly CommandHandler _commandHadler = new CommandHandler();
         
-        [UserAction(Actions.None)]
+        [UserAction(Actions.None)] 
         public async void OnNone(Message message, TelegramBotClient client)
         {
             var commands = Bot.Commands;
@@ -47,14 +47,22 @@ namespace Evect.Models.Commands
             UserDB userDb = new UserDB();
 
             User user = await userDb.GetUserByChatId(chatId);
-            
             bool isValid = await eventDb.IsEventCodeValid(text);
             if (isValid)
             {
                 Event ev = await userDb.Context.Events.FirstOrDefaultAsync(e =>
                     e.EventCode == text || e.AdminCode == text);
                 bool have = user.UserEvents.FirstOrDefault(ue => ue.EventId == ev.EventId) != null;
-                if (have)
+                bool IsAdminCode = await eventDb.IsAdminCode(text);
+                string[][] adminActions = { new[] { "Об ивенте" }, new[] { "Информация о пользователях" }, new[] { "Создать опрос" }, new[] { "Создать оповещение" } };
+                if(IsAdminCode)
+                {
+                    await client.SendTextMessageAsync(chatId, $"Включён режим организатора на мероприятии \"{ev.Name}\"" + "😇".ToString() + "\n" + "Вам доступен расширенный функционал:\n\n" + "0️⃣".ToString() + "<b>Об ивенте</b>- внести изменение в информацию о мероприятии" + "1️⃣".ToString() + "Можно получить <b>информацию по всем участникам</b>" + "2️⃣".ToString() + "<b>Создать опрос</b>- опрос рассылается всем участникам, тип опроса- оценка от 1 до 5"+ "3️⃣".ToString()+"<b>Создать оповещение</b>- сообщение отправляется всем участникам",ParseMode.Html, replyMarkup:TelegramKeyboard.GetKeyboard(adminActions));
+                    userDb.AdminAuthorized(chatId);
+                   // userDb.ChangeUserAction(chatId, Actions.AdminMode);
+                      
+                }
+                if (have && !IsAdminCode)
                 {
                     await client.SendTextMessageAsync(
                         chatId,
@@ -63,11 +71,13 @@ namespace Evect.Models.Commands
                 }
                 else
                 {
-                    await client.SendTextMessageAsync(
-                        chatId,
-                        $"Вы успешно присоединились к мероприятию \"{ev.Name}\"",
-                        ParseMode.Html);
-                    
+                    if (!IsAdminCode)
+                    {
+                        await client.SendTextMessageAsync(
+                            chatId,
+                            $"Вы успешно присоединились к мероприятию \"{ev.Name}\"",
+                            ParseMode.Html);
+                    }
                     
                     
                     UserEvent userEvent = new UserEvent()
@@ -80,7 +90,7 @@ namespace Evect.Models.Commands
                     userDb.Context.Users.Update(user);
                     await userDb.Context.SaveChangesAsync();
 
-                    if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))
+                    if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))//здесь мб сделать проверку на админский ли код
                     {
                         await client.SendTextMessageAsync(
                             chatId,
