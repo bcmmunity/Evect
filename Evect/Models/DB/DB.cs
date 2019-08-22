@@ -8,8 +8,10 @@ namespace Evect.Models.DB
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationContext>();
             // optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=eventbot;Trusted_Connection=True;MultipleActiveResultSets=true");
-            optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=eventbot;Trusted_Connection=True;MultipleActiveResultSets=true");//À»«¿
-           /* optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=evect2;Trusted_Connection=True;");*/
+            #region Liza
+            optionsBuilder.UseSqlServer("Server=localhost;Database=u0641156_bot;User Id=u0641156_bot;Password=ReportBot123!");
+            #endregion
+            /* optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=evect2;Trusted_Connection=True;");*/
             return new ApplicationContext(optionsBuilder.Options);
         }
     }

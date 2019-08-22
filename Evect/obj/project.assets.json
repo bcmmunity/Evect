@@ -12278,11 +12278,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Елизавета\\Source\\Repos\\Evect5\\Evect\\Evect.csproj",
+      "projectUniqueName": "C:\\Users\\Елизавета\\Source\\Repos\\Evect8\\Evect\\Evect.csproj",
       "projectName": "Evect",
-      "projectPath": "C:\\Users\\Елизавета\\Source\\Repos\\Evect5\\Evect\\Evect.csproj",
+      "projectPath": "C:\\Users\\Елизавета\\Source\\Repos\\Evect8\\Evect\\Evect.csproj",
       "packagesPath": "C:\\Users\\Елизавета\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Елизавета\\Source\\Repos\\Evect5\\Evect\\obj\\",
+      "outputPath": "C:\\Users\\Елизавета\\Source\\Repos\\Evect8\\Evect\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

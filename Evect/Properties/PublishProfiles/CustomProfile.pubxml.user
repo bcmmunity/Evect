@@ -7,6 +7,38 @@
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
     <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAA3cW6Qf/snkSm7mINlg5QpAAAAAACAAAAAAAQZgAAAAEAACAAAAAQOuUgap7VAhxGRwx8sL7qk43ZD57LgR6Nt8AqnTU2/QAAAAAOgAAAAAIAACAAAAAx1e6dd078C9xIaYPL3jmVqeCr0uMFpWwUhNVfSF/d8SAAAADwS/U+khyen2+tvrHdF0VIMShfet5rn3nQL6VSvndiokAAAADa/vpO+gl02JMbJSFCMNC0RUfctZYPiffTd/qkLtrcmaDqJirmejeB4rgAcdZzjZDlKtCOCsNx9MQeP3/YIDdU</EncryptedPassword>
-    <_PublishTargetUrl>ftp://31.31.196.160/https://bot.diffind.com</_PublishTargetUrl>
+    <_PublishTargetUrl>ftp://31.31.196.160/httpdocs/bot.diffind.com</_PublishTargetUrl>
   </PropertyGroup>
+  <ItemGroup>
+    <File Include="appsettings.Development.json">
+      <publishTime>08/23/2019 01:51:45</publishTime>
+    </File>
+    <File Include="appsettings.json">
+      <publishTime>08/23/2019 01:51:45</publishTime>
+    </File>
+    <File Include="Evect.deps.json">
+      <publishTime>08/23/2019 02:03:09</publishTime>
+    </File>
+    <File Include="Evect.dll">
+      <publishTime>08/23/2019 02:00:50</publishTime>
+    </File>
+    <File Include="Evect.pdb">
+      <publishTime>08/23/2019 02:00:50</publishTime>
+    </File>
+    <File Include="Evect.runtimeconfig.json">
+      <publishTime>08/23/2019 02:03:09</publishTime>
+    </File>
+    <File Include="Evect.Views.dll">
+      <publishTime>08/23/2019 02:01:07</publishTime>
+    </File>
+    <File Include="Evect.Views.pdb">
+      <publishTime>08/23/2019 02:01:07</publishTime>
+    </File>
+    <File Include="Telegram.Bot.dll">
+      <publishTime>08/07/2019 14:43:12</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>08/23/2019 02:03:09</publishTime>
+    </File>
+  </ItemGroup>
 </Project>
