@@ -17,7 +17,11 @@ namespace Evect.Models.DB
         {
             return await Context.Events.FirstOrDefaultAsync(ev => ev.EventCode == code || ev.AdminCode == code) != null;
         }
-        
+
+        public async Task<Event> GetEventByUserEvent(UserEvent ue)
+        {
+            return await Context.Events.FirstOrDefaultAsync(e => e.EventId == ue.EventId);
+        }
         
     }
 }

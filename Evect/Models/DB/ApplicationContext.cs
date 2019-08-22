@@ -9,6 +9,9 @@ namespace Evect.Models.DB
         {
             // ВЫКЛЮЧИТЬ ПРИ ДЕПЛОЕ НА СЕРВАК
 //            Database.EnsureDeleted();
+            
+            
+            
             Database.EnsureCreated();
         }
 

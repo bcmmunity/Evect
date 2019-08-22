@@ -12,19 +12,16 @@ namespace Evect.Models
     public static class Bot
     {
         private static TelegramBotClient _client;
-//        private static List<MethodInfo> _commandsList;
-//        private static List<MethodInfo> _actionList;
 
-//        private static Dictionary<Action<Message, TelegramBotClient>, string> _commandsList = new Dictionary<Action<Message, TelegramBotClient>, string>();
-//        private static Dictionary<Action<Message, TelegramBotClient>, Actions> _actionList =  new Dictionary<Action<Message, TelegramBotClient>, Actions>();
+
+        private static Dictionary<Action<Message, TelegramBotClient>, string > _commandsList = new Dictionary<Action<Message, TelegramBotClient>, string>();
+        private static Dictionary<Action<Message, TelegramBotClient>, Actions> _actionList =  new Dictionary<Action<Message, TelegramBotClient>, Actions>();
         
-        private static List<MethodInfo> _commandsList; 
-        private static List<MethodInfo> _actionList; 
-        public static IReadOnlyList<MethodInfo> Commands => _commandsList.AsReadOnly(); 
-        public static IReadOnlyList<MethodInfo> ActionList => _actionList.AsReadOnly();        
+        public static Dictionary<Action<Message, TelegramBotClient>, string> Commands => _commandsList;
+        public static Dictionary<Action<Message, TelegramBotClient>, Actions > ActionList => _actionList;
+        
 
-//        public static Dictionary<Action<Message, TelegramBotClient>, string> Commands => _commandsList;
-//        public static Dictionary<Action<Message, TelegramBotClient>, Actions> ActionList => _actionList;
+        
         
         
         public static async Task<TelegramBotClient> GetBotClientAsync()
@@ -36,7 +33,7 @@ namespace Evect.Models
             
             Assembly assembly = Assembly.GetAssembly(typeof(Actions));
 
-            /*
+            
             var commandsMethodInfo = assembly.GetTypes()
                 .SelectMany(t => t.GetMethods())
                 .Where(m => m.GetCustomAttributes(typeof(TelegramCommand), false).Length > 0)
@@ -68,17 +65,7 @@ namespace Evect.Models
                 Actions act = methodInfo.GetCustomAttribute<UserAction>().Action;
                 _actionList.Add(a, act);
             }
-            */
-            
-            _commandsList = assembly.GetTypes() 
-                .SelectMany(t => t.GetMethods()) 
-                .Where(m => m.GetCustomAttributes(typeof(TelegramCommand), false).Length > 0) 
-                .ToList(); 
 
-            _actionList = assembly.GetTypes() 
-                .SelectMany(t => t.GetMethods()) 
-                .Where(m => m.GetCustomAttributes(typeof(UserAction), false).Length > 0) 
-                .ToList();
             
             _client = new TelegramBotClient(AppSettings.Key);
             var hook = string.Format(AppSettings.Url, "api/message/update");

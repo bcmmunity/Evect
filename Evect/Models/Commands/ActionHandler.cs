@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using Evect.Models.DB;
 using Microsoft.EntityFrameworkCore;
@@ -21,25 +23,17 @@ namespace Evect.Models.Commands
             var commands = Bot.Commands;
             var chatId = message.Chat.Id;
             var text = message.Text;
-//            foreach (var pair in commands)
-//            {
-//                if (pair.Value == text)
-//                {
-//                    pair.Key(message, client);
-//                    return;
-//                }
-//            }
-            
-            foreach (var methodInfo in commands) 
-            { 
-                var act = methodInfo.GetCustomAttribute<TelegramCommand>().StringCommand; 
-                if (act == text) 
-                { 
-                    methodInfo.Invoke(_commandHadler, new object[] { message, client}); 
-                    return; 
+
+            foreach (var pair in commands)
+            {
+                if (pair.Value == text)
+                {
+                    pair.Key(message, client);
+                    return;
                 } 
             }
-            
+
+
 
             await client.SendTextMessageAsync(
                 chatId,
@@ -98,6 +92,15 @@ namespace Evect.Models.Commands
                             ParseMode.Html);
                         userDb.ChangeUserAction(chatId, Actions.WaitingForName);
                     }
+                    
+                    string[][] actions = { new[] { "О мероприятии", "Присоединиться к мероприятию" }, new[] {"Режим нетворкинга"}, new[] {"Записная книжка"}, new[] {"Все мероприятия"} };
+                    await client.SendTextMessageAsync(
+                        chatId,
+                        "Что нужно?",
+                        ParseMode.Html,
+                        replyMarkup: TelegramKeyboard.GetKeyboard(actions));
+                    
+                    userDb.ChangeUserAction(chatId, Actions.Profile);
                 }
 
             }
@@ -160,12 +163,13 @@ namespace Evect.Models.Commands
                 userDb.Context.Update(user);
                 await userDb.Context.SaveChangesAsync();
                 
-                
+                string[][] actions = { new[] { "О мероприятии", "Присоединиться к мероприятию" }, new[] {"Режим нетворкинга"}, new[] {"Записная книжка"}, new[] {"Все мероприятия"} };
+
                 await client.SendTextMessageAsync(
                     chatId,
                     "Прекрасно, вам доступен весь мой функционал",
-                    ParseMode.Html);
-                
+                    ParseMode.Html,
+                    replyMarkup: TelegramKeyboard.GetKeyboard(actions));
                 userDb.ChangeUserAction(chatId, Actions.Profile);
             }
             else
@@ -219,7 +223,7 @@ namespace Evect.Models.Commands
         public async void OnProfile(Message message, TelegramBotClient client)
         {
             UserDB userDb = new UserDB();
-            
+            EventDB eventDb = new EventDB();
             var chatId = message.Chat.Id;
             var text = message.Text;
 
@@ -237,7 +241,7 @@ namespace Evect.Models.Commands
                             $@"<b>Название: </b>{ev.Name}
 <b>Описание: </b>{ev.Info}",
                             ParseMode.Html);
-                        string[][] actions = { new[] { "О мероприятии" }, new[] {"Присоединиться к мероприятию"} };
+                        string[][] actions = { new[] { "О мероприятии", "Присоединиться к мероприятию" }, new[] {"Режим нетворкинга"}, new[] {"Записная книжка"}, new[] {"Все мероприятия"} };
                         await client.SendTextMessageAsync(chatId, "Что нужно?",ParseMode.Html,replyMarkup:TelegramKeyboard.GetKeyboard(actions, true));
                     }
                     else
@@ -257,12 +261,25 @@ namespace Evect.Models.Commands
                     userDb.ChangeUserAction(chatId, Actions.WaitingForEventCode);
                     break;
                 
-                case "Назад":
-                    userDb.ResetAction(chatId);
+                
+                case "Все мероприятия":
+                    StringBuilder builder = new StringBuilder();
+
+                    for (int i = 0; i < user.UserEvents.Count; i++)
+                    {
+                        Event ev = await eventDb.GetEventByUserEvent(user.UserEvents[i]);
+                        string cur = user.CurrentEventId == ev.EventId ? "<em>(Текущее)</em>" : "";
+                        builder.AppendLine($"<b>{i+1}:</b> {ev.Name} {cur}");
+                    }
+
+                    var data = new string[][] {new string[] {"1", "2", "3", "4"}};
+                    var data1 = new string[][] {new string[] {"anime", "colbek1", "colbek2", "meow"}};
+                    
                     await client.SendTextMessageAsync(
                         chatId,
-                        "test",
-                        ParseMode.Html);
+                        builder.ToString(),
+                        ParseMode.Html,
+                        replyMarkup: TelegramKeyboard.GetInlineKeyboard(data, data1));
                     break;
                 
                 default:
