@@ -2,9 +2,8 @@ namespace Evect.Models
 {
     public static class AppSettings
     {
-        //public static string Url { get; set; } = "https://e842e29f.ngrok.io:443/{0}"; // Перед ":" указать URL бота
-                                                                                      //        public static string Url { get; set; } = "https://evect.vrrk.ru:443/{0}"; // Перед ":" указать URL бота
-        public static string Url { get; set; } = "https://bot.diffind.com:443/{0}";//Лиза
+        public static string Url { get; set; } = "https://e842e29f.ngrok.io:443/{0}"; // Перед ":" указать URL бота
+//        public static string Url { get; set; } = "https://evect.vrrk.ru:443/{0}"; // Перед ":" указать URL бота
 
         public static string Name { get; set; } = "evect_bot"; // Здесь имя бота (без @)
 

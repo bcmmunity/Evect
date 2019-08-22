@@ -26,6 +26,9 @@ namespace Evect.Controllers
         private CommandHandler _commandHadler;
         private ActionHandler _actionHandler;
 
+        private Dictionary<Action<Message, TelegramBotClient>, string > _commands;
+        private Dictionary<Action<Message, TelegramBotClient>, Actions > _actions;
+        
         public HomeController(ApplicationContext db)
         {
             _db = db;
@@ -34,6 +37,10 @@ namespace Evect.Controllers
 
             _commandHadler = new CommandHandler();
             _actionHandler = new ActionHandler();
+        
+            _commands = Bot.Commands;
+            _actions = Bot.ActionList;
+                
         }
 
         public IActionResult Index()
@@ -45,12 +52,11 @@ namespace Evect.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Update update)
         {
+            
             if (update == null)
                 return Ok();
-
-            var commands = Bot.Commands;
-            var actions = Bot.ActionList;
-
+            
+            
             var message = update.Message;
             var client = new TelegramBotClient(AppSettings.Key);
             var chatId = message.Chat.Id;
@@ -59,13 +65,12 @@ namespace Evect.Controllers
 
             if (user == null)
             {
-                foreach (var methodInfo in commands)
+                foreach (var pair in _commands)
                 {
-                    var act = methodInfo.GetCustomAttribute<TelegramCommand>().StringCommand;
-                    if (act == "/start")
+                    if (pair.Value == "/start")
                     {
-                        methodInfo.Invoke(_commandHadler, new object[] {message, client});
-                    }
+                        pair.Key(message, client);
+                    } 
                 }
 
                 return Ok();
@@ -73,26 +78,26 @@ namespace Evect.Controllers
 
             if (!user.IsAuthed)
             {
-                foreach (var methodInfo in commands)
+                foreach (var pair in _commands)
                 {
-                    var act = methodInfo.GetCustomAttribute<TelegramCommand>().StringCommand;
-                    if (act == "/start" || act == "Личный кабинет")
+                    if (pair.Value == "/start" || pair.Value == "Личный кабинет")
                     {
-                        methodInfo.Invoke(_commandHadler, new object[] {message, client});
-                    }
+                        pair.Key(message, client);
+                    } 
                 }
-
+                
                 return Ok();
             }
-
-            foreach (var methodInfo in actions)
+            
+            foreach (var pair in _actions)
             {
-                var act = methodInfo.GetCustomAttribute<UserAction>().Action;
-                if (act == user.CurrentAction)
+                if (pair.Value == user.CurrentAction)
                 {
-                    methodInfo.Invoke(_actionHandler, new object[] {message, client});
+                    pair.Key(message, client);
                 }
             }
+
+            
 
             return Ok();
         }

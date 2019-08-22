@@ -63,8 +63,8 @@ namespace Evect.Models.Commands
             long chatId = message.Chat.Id;
             UserDB db = new UserDB();
             db.ChangeUserAction(chatId, Actions.Profile);
-            string[][] actions = { new[] { "О мероприятии" }, new[] { "Присоединиться к мероприятию" } };
-            await client.SendTextMessageAsync(chatId, "Что нужно?", ParseMode.Html, replyMarkup: TelegramKeyboard.GetKeyboard(actions, true));
+            string[][] actions = { new[] { "О мероприятии" }, new[] {"Присоединиться к мероприятию"} };
+            await client.SendTextMessageAsync(chatId, "Что нужно?",ParseMode.Html,replyMarkup:TelegramKeyboard.GetKeyboard(actions, true));
         }
 
 
