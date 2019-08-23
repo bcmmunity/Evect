@@ -176,7 +176,8 @@ namespace Evect.Models.Commands
                 else
                 {
                     string[][] back = { new[] { "Назад" } };
-                    userDb.ChangeUserAction(chatId, Actions.GetInformationAboutTheEvent);
+
+                   userDb.ChangeUserAction(chatId, Actions.GetInformationAboutTheEvent);
                     string info = eventDB.GetInfoAboutTheEvent(chatId);
                     await client.SendTextMessageAsync(chatId, info, replyMarkup: TelegramKeyboard.GetKeyboard(back));
                 }
