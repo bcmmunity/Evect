@@ -8,7 +8,7 @@ namespace Evect.Models.DB
             : base(options)
         {
             // ВЫКЛЮЧИТЬ ПРИ ДЕПЛОЕ НА СЕРВАК
-//            Database.EnsureDeleted();
+            // Database.EnsureDeleted();
             
             
             
@@ -105,7 +105,7 @@ namespace Evect.Models.DB
 
         }
 
-        //public DbSet<Log> Logs { get; set; }
+        public DbSet<Log> Logs { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Event> Events { get; set; }

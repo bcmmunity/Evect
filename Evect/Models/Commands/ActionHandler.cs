@@ -167,6 +167,7 @@ namespace Evect.Models.Commands
                     ParseMode.Html);
             }
         }
+        #region AdminModeAndAdminActions
         [UserAction(Actions.AdminMode)]
         public async void AdminMode(ApplicationContext context, Message message,TelegramBotClient client)
         {
@@ -197,9 +198,7 @@ namespace Evect.Models.Commands
             {
                 //EventDB eventDB = new EventDB();
                 long chatId = message.Chat.Id;
-                
-                
-                    string[][] back = { new[] { "Назад" } };
+                string[][] back = { new[] { "Назад" } };
                     UserDB.ChangeUserAction(context, chatId, Actions.CreateNotification);
                     await client.SendTextMessageAsync(chatId, "Отправьте сообщение,оно будет разослано всем участникам мероприятия", replyMarkup: TelegramKeyboard.GetKeyboard(back));
                 
@@ -209,6 +208,7 @@ namespace Evect.Models.Commands
 
             }*/
         }
+        #endregion
         [UserAction(Actions.GetInformationAboutTheEvent)]
         public async void InformationAboutTheEvent(ApplicationContext context, Message message,TelegramBotClient client)
         {
