@@ -63,7 +63,7 @@ namespace Evect.Models.DB
 
         }
 
-        public DbSet<Log> Logs { get; set; }
+        //public DbSet<Log> Logs { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Event> Events { get; set; }

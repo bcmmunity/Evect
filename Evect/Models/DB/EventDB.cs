@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace Evect.Models.DB
@@ -37,6 +38,28 @@ namespace Evect.Models.DB
             temp = temp + currentEvent.Info;
             return temp;
         }
+      public string GetInfoAboutTheEvent(long tgId)
+        {
+            List<User> users = Context.Users.ToList();
+            int EventId = 0;
+            foreach(var item in users)
+            {
+                if(item.TelegramId==tgId)
+                {
+                    EventId = item.CurrentEventId;
+                }
+            }
+            List<Event> events = Context.Events.ToList();
+            string temp = "";
+            foreach(var item in events)
+            {
+                if(item.EventId==EventId)
+                {
+                    temp = temp + item.Info;
+                }
+            }
+            return temp;
+        }
         public async void AddInformationAboutEvent(long chatid,string information)
         {
             User user = await Context.Users.FirstOrDefaultAsync(n => n.TelegramId == chatid);
@@ -46,7 +69,7 @@ namespace Evect.Models.DB
             Context.SaveChanges();
             
         }
-        public async Task<List<long>> GetAllParticipants(long chatId)
+        public async Task<List<long>> GetAllParticipants(long chatId,string message)
         {
             User user = await Context.Users.FirstOrDefaultAsync(n => n.TelegramId == chatId);
             int EventId = user.CurrentEventId;

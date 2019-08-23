@@ -104,13 +104,13 @@ namespace Evect.Models.DB
             await Context.SaveChangesAsync();
         }
 
-        public void AddLog(string log)
+       /* public void AddLog(string log)
         {
             Log logg = new Log();
             logg.Logss = log;
             Context.Logs.Add(logg);
             Context.SaveChanges();
-        }
+        }*/
         //        public async void ChangeUserParams()
 
 
