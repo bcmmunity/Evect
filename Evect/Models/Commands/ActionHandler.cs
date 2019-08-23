@@ -65,9 +65,10 @@ namespace Evect.Models.Commands
                 if(isAdminCode)
                 {
                     string[][] adminActions = { new[] { "Об ивенте" }, new[] { "Информация о пользователях" }, new[] { "Создать опрос" }, new[] { "Создать оповещение" } };
-                    await client.SendTextMessageAsync(chatId, $"Включён режим организатора на мероприятии \"{ev.Name}\"" + "😇".ToString() + "\n" + "Вам доступен расширенный функционал:\n\n" + "0️⃣".ToString() + "<b>Об ивенте</b>- внести изменение в информацию о мероприятии" + "1️⃣".ToString() + "Можно получить <b>информацию по всем участникам</b>" + "2️⃣".ToString() + "<b>Создать опрос</b>- опрос рассылается всем участникам, тип опроса- оценка от 1 до 5"+ "3️⃣".ToString()+"<b>Создать оповещение</b>- сообщение отправляется всем участникам",ParseMode.Html, replyMarkup:TelegramKeyboard.GetKeyboard(adminActions));
                     userDb.AdminAuthorized(chatId);
-                   // userDb.ChangeUserAction(chatId, Actions.AdminMode);
+                    userDb.ChangeUserAction(chatId, Actions.AdminMode);
+                    await client.SendTextMessageAsync(chatId, $"Включён режим организатора на мероприятии \"{ev.Name}\"" + "😇".ToString() + "\n" + "Вам доступен расширенный функционал:\n\n" + "0️⃣".ToString() + "<b>Об ивенте</b>- внести изменение в информацию о мероприятии" + "1️⃣".ToString() + "Можно получить <b>информацию по всем участникам</b>" + "2️⃣".ToString() + "<b>Создать опрос</b>- опрос рассылается всем участникам, тип опроса- оценка от 1 до 5"+ "3️⃣".ToString()+"<b>Создать оповещение</b>- сообщение отправляется всем участникам",ParseMode.Html, replyMarkup:TelegramKeyboard.GetKeyboard(adminActions));
+                    
                       
                 }
                 else
@@ -134,7 +135,61 @@ namespace Evect.Models.Commands
                     ParseMode.Html);
             }
         }
+        [UserAction(Actions.AdminMode)]
+        public async void AdminMode(Message message,TelegramBotClient client)
+        {
+            if(message.Text=="Об ивенте")
+            {
+                EventDB eventDB = new EventDB();
+                long chatId = message.Chat.Id;
+                UserDB userDb = new UserDB();
+                User user = await userDb.GetUserByChatId(chatId);
+                if (!user.IsAdminAuthorized)
+                {
+                    await client.SendTextMessageAsync(chatId, "Я не знаю такой команды пока");
+                }
+                else
+                {
+                    string[][] back = { new[] { "Назад" } };
+                    userDb.ChangeUserAction(chatId, Actions.GetInformationAboutTheEvent);
+                    string info = await eventDB.GetInformationAboutEvent(chatId);
+                    await client.SendTextMessageAsync(chatId, info, replyMarkup: TelegramKeyboard.GetKeyboard(back));
+                }
+            }
+            if(message.Text=="Информация о пользователях")
+            {
 
+            }
+            if(message.Text=="Создать оповещение")
+            {
+
+            }
+            if(message.Text=="Создать опрос")
+            {
+
+            }
+        }
+        [UserAction(Actions.GetInformationAboutTheEvent)]
+        public async void InformationAboutTheEvent(Message message,TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+            UserDB userDb = new UserDB();
+            if(text=="Назад")
+            {
+               string [][] menu = { new[] { "Об ивенте" }, new[] { "Информация о пользователях" }, new[] { "Создать опрос" }, new[] { "Создать оповещение" } };
+                userDb.ChangeUserAction(chatId, Actions.AdminMode);
+                await client.SendTextMessageAsync(chatId, "Я вернулся в главное меню", replyMarkup: TelegramKeyboard.GetKeyboard(menu));
+            }
+            else
+            {
+                EventDB eventDb = new EventDB();
+                eventDb.AddInformationAboutEvent(chatId,text);
+                await client.SendTextMessageAsync(chatId, "Данные о мероприятии успешно сохранены");
+            }
+            
+        }
+       
         [UserAction(Actions.WaitingForName)]
         public async void OnWaitingForName(Message message, TelegramBotClient client)
         {

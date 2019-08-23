@@ -78,41 +78,9 @@ namespace Evect.Models.Commands
             userDb.ChangeUserAction(chatId, Actions.WaitingForEventCode);
         }
 
-        [TelegramCommand("Об ивенте")]
-        public async void InformationAboutEventForAdmin(Message message, TelegramBotClient client)
-        {
-            EventDB eventDB = new EventDB();
-            long chatId = message.Chat.Id;
-
-            UserDB userDb = new UserDB();
-            User user = await userDb.GetUserByChatId(chatId);
-            if (!user.IsAdminAuthorized)
-            {
-                await client.SendTextMessageAsync(chatId, "Я не знаю такой команды пока");
-
-            }
-            else
-            {
-                string[][] back = { new[] { "Назад" } };
-                userDb.ChangeUserAction(chatId, Actions.GetInformationAboutTheEvent);
-                string info = await eventDB.GetInformationAboutEvent(chatId);
-                await client.SendTextMessageAsync(chatId, info, replyMarkup: TelegramKeyboard.GetKeyboard(back));
-
-            }
-
-
-        }
+     
       
-        /*[TelegramCommand("Назад")]*/
-        [TelegramCommand("Информация о пользователях")]
-        public async void Infon(Message message, TelegramBotClient client)
-        {
-            
-
-
-        }
-        /* [TelegramCommand("Создать оповещение")]
-         [TelegramCommand("Опрос")]*/
+       
 
 
     } 

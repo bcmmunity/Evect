@@ -36,7 +36,15 @@ namespace Evect.Models.DB
             temp = temp + currentEvent.Info;
             return temp;
         }
-        
+        public async void AddInformationAboutEvent(long chatid,string information)
+        {
+            User user = await Context.Users.FirstOrDefaultAsync(n => n.TelegramId == chatid);
+            int eventId = user.CurrentEventId;
+            Event currentEvent = await Context.Events.FirstOrDefaultAsync(n => n.EventId == eventId);
+            currentEvent.Info = information;
+            Context.SaveChanges();
+            
+        }
         
     }
 }
