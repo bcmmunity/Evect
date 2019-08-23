@@ -32,7 +32,10 @@ namespace Evect.Models
         #region AdminActions
         AdminMode,
         GetInformationAboutTheEvent,
+        AddNewInformationAboutEvent,
+        EditInformationAboutEvent,
         CreateNotification,
+
         #endregion
 
     }
