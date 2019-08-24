@@ -11,10 +11,14 @@ namespace Evect.Models.Commands
         [TelegramCommand("/start")]
         public async void OnStart(ApplicationContext context, Message message, TelegramBotClient client)
         {
+            UserDB.AddLog(context,"start0");
             long chatId = message.Chat.Id;
+            UserDB.AddLog(context, "start1");
             if (!await UserDB.IsUserExists(context, chatId))
             {
+                UserDB.AddLog(context, "start2");
                 UserDB.AddUser(context, chatId);
+                UserDB.AddLog(context, "start3");
             }
             else if (!await UserDB.IsUserExistsAndAuthed(context, chatId))
             {
@@ -45,7 +49,7 @@ namespace Evect.Models.Commands
                 if (user.CurrentAction != Actions.DeleteOrNot)
                 {
                     string[][] actions = { new[] { "Да" }, new[] { "Нет" } };
-                    await client.SendTextMessageAsync(chatId, "**Сохранить** ваши данные или <b>полносью удалить</b>",
+                    await client.SendTextMessageAsync(chatId, "**Сохранить** ваши данные или <b>полностью удалить</b>",
                         ParseMode.Markdown,
                         replyMarkup: TelegramKeyboard.GetKeyboard(actions, true));
 

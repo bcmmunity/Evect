@@ -9,8 +9,11 @@ namespace Evect.Models.DB
 
         public static void AddUser(ApplicationContext context, long tgId)//добавление юзера
         {
+            AddLog(context, "adduser0");
             context.Users.Add(new User {TelegramId = tgId, IsAuthed = true});
+            AddLog(context, "adduser1");
             context.SaveChanges();
+            AddLog(context, "adduser2");
         }
         
 
@@ -108,13 +111,13 @@ namespace Evect.Models.DB
         
         
         
-       /* public static void AddLog(string log)
+        public static void AddLog(ApplicationContext context,string log)
         {
             Log logg = new Log();
             logg.Logss = log;
             context.Logs.Add(logg);
             context.SaveChanges();
-        }*/
+        }
         //        public static async void ChangeUserParams()
 
 

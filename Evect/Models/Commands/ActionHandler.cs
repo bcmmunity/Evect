@@ -16,8 +16,8 @@ namespace Evect.Models.Commands
     public class ActionHandler
     {
         private readonly CommandHandler _commandHadler = new CommandHandler();
-        
-        [UserAction(Actions.None)] 
+
+        [UserAction(Actions.None)]
         public async void OnNone(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var commands = Bot.Commands;
@@ -30,7 +30,7 @@ namespace Evect.Models.Commands
                 {
                     pair.Key(context, message, client);
                     return;
-                } 
+                }
             }
 
 
@@ -41,39 +41,39 @@ namespace Evect.Models.Commands
                 ParseMode.Html);
         }
 
-        
+
         [UserAction(Actions.WaitingForEventCode)]
         public async void OnWaitingEventCode(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
             EventDB eventDb = new EventDB();
-            
+
 
             User user = await UserDB.GetUserByChatId(context, chatId);
 
             if (text == "Назад")
             {
-                
+
             }
-            
+
             bool isValid = await eventDb.IsEventCodeValid(text);
             if (isValid)
             {
                 Event ev = await context.Events.FirstOrDefaultAsync(e =>
                     e.EventCode == text || e.AdminCode == text);
-                
+
                 bool have = user.UserEvents.FirstOrDefault(ue => ue.EventId == ev.EventId) != null;
-                
+
                 bool isAdminCode = await eventDb.IsAdminCode(text);
-                
-                
-                if(isAdminCode)
+
+
+                if (isAdminCode)
                 {
                     string[][] adminActions = { new[] { "Об ивенте" }, new[] { "Информация о пользователях" }, new[] { "Создать опрос" }, new[] { "Создать оповещение" } };
                     UserDB.AdminAuthorized(context, chatId);
                     UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
-                    if(!have)
+                    if (!have)
                     {
                         UserEvent userEvent = new UserEvent() { UserId = user.UserId, EventId = ev.EventId };
                         user.UserEvents.Add(userEvent);
@@ -82,7 +82,7 @@ namespace Evect.Models.Commands
                         context.Users.Update(user);
                         context.SaveChanges();
                     }
-                    await client.SendTextMessageAsync(chatId, $"Включён режим организатора на мероприятии \"{ev.Name}\"" + "😇".ToString() + "\n" + "Вам доступен расширенный функционал:\n\n" + "0️⃣".ToString() + "<b>Об ивенте</b>- внести изменение в информацию о мероприятии" + "1️⃣".ToString() + "Можно получить <b>информацию по всем участникам</b>" + "2️⃣".ToString() + "<b>Создать опрос</b>- опрос рассылается всем участникам, тип опроса- оценка от 1 до 5"+ "3️⃣".ToString()+"<b>Создать оповещение</b>- сообщение отправляется всем участникам",ParseMode.Html, replyMarkup:TelegramKeyboard.GetKeyboard(adminActions));                  
+                    await client.SendTextMessageAsync(chatId, $"Включён режим организатора на мероприятии \"{ev.Name}\"" + "😇".ToString() + "\n" + "Вам доступен расширенный функционал:\n\n" + "0️⃣".ToString() + "<b>Об ивенте</b>- внести изменение в информацию о мероприятии" + "1️⃣".ToString() + "Можно получить <b>информацию по всем участникам</b>" + "2️⃣".ToString() + "<b>Создать опрос</b>- опрос рассылается всем участникам, тип опроса- оценка от 1 до 5" + "3️⃣".ToString() + "<b>Создать оповещение</b>- сообщение отправляется всем участникам", ParseMode.Html, replyMarkup: TelegramKeyboard.GetKeyboard(adminActions));
                 }
                 else
                 {
@@ -91,11 +91,11 @@ namespace Evect.Models.Commands
                         await client.SendTextMessageAsync(
                             chatId,
                             "Вы уже присоединились к этому мероприятию",
-                            ParseMode.Html); 
-                        
-                        
+                            ParseMode.Html);
+
+
                         UserDB.ChangeUserAction(context, chatId, Actions.Profile);
-                        string[][] actions = { new[] { "О мероприятии", "Присоединиться к мероприятию" }, new[] {"Режим нетворкинга"}, new[] {"Записная книжка"}, new[] {"Все мероприятия"} };
+                        string[][] actions = { new[] { "О мероприятии", "Присоединиться к мероприятию" }, new[] { "Режим нетворкинга" }, new[] { "Записная книжка" }, new[] { "Все мероприятия" } };
                         await client.SendTextMessageAsync(
                             chatId,
                             "Что нужно?",
@@ -110,21 +110,21 @@ namespace Evect.Models.Commands
                             UserId = user.UserId,
                             EventId = ev.EventId
                         };
-                        
+
                         user.UserEvents.Add(userEvent);
                         user.CurrentEventId = ev.EventId;
                         context.Users.Update(user);
                         context.SaveChanges();
 
-                        
-                        
+
+
                         await client.SendTextMessageAsync(
                             chatId,
                             $"Вы успешно присоединились к мероприятию: {ev.Name}",
-                            ParseMode.Html); 
-                        
-                        
-                        
+                            ParseMode.Html);
+
+
+
                         if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))//здесь мб сделать проверку на админский ли код
                         {
                             await client.SendTextMessageAsync(
@@ -132,7 +132,7 @@ namespace Evect.Models.Commands
                                 "Похоже мы не все о вас знаем. Как вас зовут? Попрошу имя и фамилию через пробел",
                                 ParseMode.Html);
                             UserDB.ChangeUserAction(context, chatId, Actions.WaitingForName);
-                            
+
                         } else if (string.IsNullOrEmpty(user.Email))
                         {
                             await client.SendTextMessageAsync(
@@ -143,20 +143,20 @@ namespace Evect.Models.Commands
                         }
                         else
                         {
-                            string[][] actions = { new[] { "О мероприятии", "Присоединиться к мероприятию" }, new[] {"Режим нетворкинга"}, new[] {"Записная книжка"}, new[] {"Все мероприятия"} };
+                            string[][] actions = { new[] { "О мероприятии", "Присоединиться к мероприятию" }, new[] { "Режим нетворкинга" }, new[] { "Записная книжка" }, new[] { "Все мероприятия" } };
                             await client.SendTextMessageAsync(
                                 chatId,
                                 "Что нужно?",
                                 ParseMode.Html,
                                 replyMarkup: TelegramKeyboard.GetKeyboard(actions));
-                    
+
                             UserDB.ChangeUserAction(context, chatId, Actions.Profile);
                         }
-                    
-                        
+
+
                     }
                 }
-                
+
 
             }
             else
@@ -169,30 +169,30 @@ namespace Evect.Models.Commands
         }
         #region AdminModeAndAdminActions
         [UserAction(Actions.AdminMode)]
-        public async void AdminMode(ApplicationContext context, Message message,TelegramBotClient client)
+        public async void AdminMode(ApplicationContext context, Message message, TelegramBotClient client)
         {
-            if(message.Text=="Об ивенте")
+            if (message.Text == "Об ивенте")
             {
                 EventDB eventDB = new EventDB();
                 long chatId = message.Chat.Id;
-                 User user = await UserDB.GetUserByChatId(context, chatId);
+                User user = await UserDB.GetUserByChatId(context, chatId);
                 if (!user.IsAdminAuthorized)
                 {
                     await client.SendTextMessageAsync(chatId, "Я не знаю такой команды пока");
                 }
                 else
                 {
-                    string[][] back = { new[] { "Добавить новую статью" },new[] { "Редактировать" },new[]{ "Назад" } };
-                   UserDB.ChangeUserAction(context, chatId, Actions.GetInformationAboutTheEvent);
+                    string[][] back = { new[] { "Добавить новую статью" }, new[] { "Редактировать" }, new[] { "Назад" } };
+                    UserDB.ChangeUserAction(context, chatId, Actions.GetInformationAboutTheEvent);
                     string info = eventDB.GetInfoAboutTheEvent(chatId);
                     await client.SendTextMessageAsync(chatId, info, replyMarkup: TelegramKeyboard.GetKeyboard(back));
                 }
             }
-           /* if(message.Text=="Информация о пользователях")
-            {
+            /* if(message.Text=="Информация о пользователях")
+             {
 
-            }*/
-           else if(message.Text=="Создать оповещение")
+             }*/
+            else if (message.Text == "Создать оповещение")
             {
                 //EventDB eventDB = new EventDB();
                 long chatId = message.Chat.Id;
@@ -207,14 +207,14 @@ namespace Evect.Models.Commands
         }
 
         [UserAction(Actions.GetInformationAboutTheEvent)]
-        public async void InformationAboutTheEvent(ApplicationContext context, Message message,TelegramBotClient client)
+        public async void InformationAboutTheEvent(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
-            
-            if(text=="Назад")
+
+            if (text == "Назад")
             {
-               string [][] menu = { new[] { "Об ивенте" }, new[] { "Информация о пользователях" }, new[] { "Создать опрос" }, new[] { "Создать оповещение" } };
+                string[][] menu = { new[] { "Об ивенте" }, new[] { "Информация о пользователях" }, new[] { "Создать опрос" }, new[] { "Создать оповещение" } };
                 UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
                 await client.SendTextMessageAsync(chatId, "Я вернулся в главное меню", replyMarkup: TelegramKeyboard.GetKeyboard(menu));
             }
@@ -222,28 +222,29 @@ namespace Evect.Models.Commands
             {
                 UserDB.ChangeUserAction(context, chatId, Actions.EditInformationAboutEvent);
                 EventDB eventDb = new EventDB();
-                string[][] back = { new[] {"Назад"} };
+                string[][] back = { new[] { "Назад" } };
                 string info = eventDb.GetInfoAboutTheEvent(chatId);
-               // await client.SendTextMessageAsync(chatId, "Вы можете отредактировать информацию о мероприятии", replyMarkup: TelegramKeyboard.GetKeyboard());
-                
+
+                // await client.SendTextMessageAsync(chatId, "Вы можете отредактировать информацию о мероприятии", replyMarkup: TelegramKeyboard.GetKeyboard());
+
             }
-            else if(text=="Добавить новую статью")
+            else if (text == "Добавить новую статью")
             {
                 UserDB.ChangeUserAction(context, chatId, Actions.AddNewInformationAboutEvent);
                 string[][] back = { new[] { "Назад" } };
                 await client.SendTextMessageAsync(chatId, "Отправьте статью обычным сообщением", replyMarkup: TelegramKeyboard.GetKeyboard(back));
             }
-            else 
+            else
             {
                 EventDB eventDb = new EventDB();
                 eventDb.AddInformationAboutEvent(chatId, text);
                 await client.SendTextMessageAsync(chatId, "Данные о мероприятии успешно сохранены");
             }
-           
-            
+
+
         }
         [UserAction(Actions.AddNewInformationAboutEvent)]//"Добавить новую статью"
-        public async void AddInfoAboutEvent(ApplicationContext context,Message message,TelegramBotClient client)
+        public async void AddInfoAboutEvent(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
@@ -259,6 +260,29 @@ namespace Evect.Models.Commands
             {
                 eventDb.AddInformationAboutEvent(chatId, text);
                 await client.SendTextMessageAsync(chatId, "Данные о мероприятии успешно добавлены", replyMarkup: TelegramKeyboard.GetKeyboard(menu));
+            }
+        }
+        [UserAction(Actions.CreateNotification)]
+        public async void SendNotification(ApplicationContext context,Message message,TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+            if(message.Text=="Назад")
+            {
+                UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
+                string[][] adminMode = { new[] { "Об ивенте" }, new[] { "Информация о пользователях" }, new[] { "Создать опрос" }, new[] { "Создать оповещение" } };
+                await client.SendTextMessageAsync(chatId, "Я вернулся в главное меню", replyMarkup: TelegramKeyboard.GetKeyboard(adminMode));
+            }
+            else
+            {
+                EventDB eventDb = new EventDB();
+                
+                List<long> usersToSend =await eventDb.GetAllParticipantsOfEvent(chatId);
+                foreach(var item in usersToSend)
+                {
+                    await client.SendTextMessageAsync(item, text, ParseMode.Markdown);//проверить,работает ли с форматированием?
+                }
+                await client.SendTextMessageAsync(chatId, "Ваше сообщение успешно разослано всем участникам мероприятия");
             }
         }
 #endregion

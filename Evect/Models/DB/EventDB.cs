@@ -89,7 +89,7 @@ namespace Evect.Models.DB
             Context.SaveChanges();
             
         }
-        public async Task<List<long>> GetAllParticipants(long chatId,string message)
+        public async Task<List<long>> GetAllParticipantsOfEvent(long chatId)
         {
             User user = await Context.Users.FirstOrDefaultAsync(n => n.TelegramId == chatId);
             int EventId = user.CurrentEventId;
@@ -102,8 +102,7 @@ namespace Evect.Models.DB
                     UsersToSend.Add(item.TelegramId);
                 }
             }
-            return UsersToSend;
-            
+            return UsersToSend;            
         }
         
     }
