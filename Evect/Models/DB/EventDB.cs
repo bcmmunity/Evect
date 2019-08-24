@@ -106,8 +106,11 @@ namespace Evect.Models.DB
         }
         public async Task<string> GetInfrormationAboutUsers(long chatId,string message)
         {
-            
-            switch(message)
+            User user = await Context.Users.FirstOrDefaultAsync(n => n.TelegramId == chatId);
+            int eventId = user.CurrentEventId;
+            Event eventt = await Context.Events.FirstOrDefaultAsync(n => n.EventId == eventId);
+            InfoAboutUsers info = await Context.InfoAboutUsers.FirstOrDefaultAsync(m => m.EventId == eventId);
+            switch (message)
             {
                 case "Количество пользователей":
                     {
@@ -117,18 +120,42 @@ namespace Evect.Models.DB
                     }
                 case "Количество активаций режима общения":
                     {
-                        return " ";
+                       return info.AmountOfActivationsOfNetworking.ToString() ;
                     }
                 case "Число запросов контактов":
                     {
-                        return " ";
+                        return info.AmountOfRequestsOfContacts.ToString();
                     }
                 case "Число запросов встреч":
                     {
-                        return " ";
+                        return  info.AmountOfRequestsOfMettings.ToString();
                     }
             }
             return "Бот не знает такой команды";
+        }
+        public async void AddInfoAboutUsers(long chatId,string type)
+        {//добавить в info о пользователях eventId
+            User user=await Context.Users.FirstOrDefaultAsync(n => n.TelegramId == chatId);
+            int eventId = user.CurrentEventId;
+            Event eventt = await Context.Events.FirstOrDefaultAsync(n => n.EventId == eventId);
+            InfoAboutUsers info = await Context.InfoAboutUsers.FirstOrDefaultAsync(m => m.EventId == eventId);
+            switch (type)
+            {   case "Количество активаций режима общения":
+                    {
+                        info.AmountOfActivationsOfNetworking++;
+                    }
+                    break;
+                case "Число запросов контактов":
+                    {
+                        info.AmountOfRequestsOfContacts++;
+                    }
+                    break;
+                case "Число запросов встреч":
+                    {
+                        info.AmountOfRequestsOfMettings++;
+                    }
+                    break;
+            }
         }
         
     }

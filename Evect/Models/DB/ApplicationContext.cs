@@ -8,7 +8,7 @@ namespace Evect.Models.DB
             : base(options)
         {
             // ВЫКЛЮЧИТЬ ПРИ ДЕПЛОЕ НА СЕРВАК
-            // Database.EnsureDeleted();
+           // Database.EnsureDeleted();
             
             
             
@@ -34,7 +34,11 @@ namespace Evect.Models.DB
                     LastName = "kim",
                     Email = "moranmr8@gmail.com"
                 });
-            
+         /*   modelBuilder.Entity<InfoAboutUsers>().HasData(new InfoAboutUsers { EventId = 1 }, new InfoAboutUsers { EventId = 2 },
+                new InfoAboutUsers { EventId = 3 },
+                new InfoAboutUsers { EventId = 4 },
+                new InfoAboutUsers { EventId = 5 },
+                new InfoAboutUsers { EventId = 6 });*/
             modelBuilder.Entity<Event>()
                 .HasData(
                     new Event { 

@@ -50,31 +50,25 @@ namespace Evect.Controllers
         {
             ApplicationContext db = new ApplicationContext(new DbContextOptions<ApplicationContext>());
 
-
             if (update == null)
                 return Ok();
-
             var message = update.Message;
             var client = new TelegramBotClient(AppSettings.Key);
             var chatId = message.Chat.Id;
             var text = message.Text;
-            
-            
+           
             User user = await UserDB.GetUserByChatId(db, chatId); //получаем айди юзера и его самого из бд
-
             if (user == null)
             {
-                foreach (var pair in _commands)
+               foreach (var pair in _commands)
                 {
                     if (text == "/start" && pair.Value == "/start")
                     {
                         await pair.Key(db, message, client);
-
-                    }
-                }
-                return Ok();
+                       }
+                   }
+               return Ok();
             }
-
             if (!user.IsAuthed)
             {
                 foreach (var pair in _commands)

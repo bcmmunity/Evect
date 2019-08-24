@@ -90,12 +90,12 @@ namespace Evect.Models.Commands
                         + "0️⃣".ToString() 
                         + "<b>Об ивенте</b>- внести изменение в информацию о мероприятии" 
                         + "1️⃣".ToString() 
-                        + "Можно получить <b>информацию по всем участникам</b>" 
+                        + "Можно получить <b>информацию по всем участникам</b\n
                         + "2️⃣".ToString() 
-                        + "<b>Создать опрос</b>- опрос рассылается всем участникам, тип опроса- оценка от 1 до 5" 
+                        + "<b>Создать опрос</b>- опрос рассылается всем участникам, тип опроса- оценка от 1 до 5\n" 
                         + "3️⃣".ToString() 
                         + "<b>Создать оповещение</b>- сообщение отправляется всем участникам", 
-                        ParseMode.Markdown, replyMarkup: keyboard.Markup);
+                        ParseMode.Html, replyMarkup: keyboard.Markup);
                 }
                 else
                 {
@@ -677,8 +677,11 @@ namespace Evect.Models.Commands
                 case "Режим нетворкинга":
                     if (user.CompanyAndPosition != null) // TODO: Проверка на то, зарегистрирован ли пользователь
                     {
+                        //ОТ ЛИЗЫ
+                        eventDb.AddInfoAboutUsers(chatId, "Количество активаций режима общения");
                         UserDB.ChangeUserAction(context, chatId, Actions.FirstQuestion);
-                        
+                        //КОНЕЦ ОТ ЛИЗЫ
+
                         // Phrase shows user that mode has changed
                         await client.SendTextMessageAsync(
                             chatId,

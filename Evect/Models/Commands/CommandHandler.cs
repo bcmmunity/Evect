@@ -13,15 +13,12 @@ namespace Evect.Models.Commands
         [TelegramCommand("/start")]
         public async Task OnStart(ApplicationContext context, Message message, TelegramBotClient client)
         {
-            UserDB.AddLog(context,"start0");
+         
             long chatId = message.Chat.Id;
-            UserDB.AddLog(context, "start1");
             if (!await UserDB.IsUserExists(context, chatId))
             {
-                UserDB.AddLog(context, "start2");
-                UserDB.AddUser(context, chatId);
-                UserDB.AddLog(context, "start3");
-            }
+                 UserDB.AddUser(context, chatId);
+                }
             else if (!await UserDB.IsUserExistsAndAuthed(context, chatId))
             {
                 UserDB.UserLogin(context, chatId);
