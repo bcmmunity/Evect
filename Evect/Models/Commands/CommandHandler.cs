@@ -31,9 +31,12 @@ namespace Evect.Models.Commands
                 await client.SendTextMessageAsync(chatId, "Мы вас уже знаем", ParseMode.Html);
             }
 
-            string[][] actions = { new[] { "Войти по ивент-коду" }, new[] { "Личный кабинет" } };
+            TelegramKeyboard keyboard = new TelegramKeyboard();
+            keyboard.AddRow("Войти по ивент-коду");
+            keyboard.AddRow("Личный кабинет");
+
             await client.SendTextMessageAsync(chatId, "Чудненько " + "😇" + " Можем приступить", ParseMode.Markdown);
-            await client.SendTextMessageAsync(chatId, "У вас есть личный кабинет? Если нет, то войдите по **ивент-коду** \n P.S.**Ивент-код** отправлен в письме регистрации", ParseMode.Markdown, replyMarkup: TelegramKeyboard.GetKeyboard(actions));
+            await client.SendTextMessageAsync(chatId, "У вас есть личный кабинет? Если нет, то войдите по **ивент-коду** \n P.S.**Ивент-код** отправлен в письме регистрации", ParseMode.Markdown, replyMarkup: keyboard.Markup);
 
         }
 
@@ -49,10 +52,12 @@ namespace Evect.Models.Commands
             {
                 if (user.CurrentAction != Actions.DeleteOrNot)
                 {
-                    string[][] actions = { new[] { "Да" }, new[] { "Нет" } };
+                    TelegramKeyboard keyboard = new TelegramKeyboard();
+                    keyboard.AddRow("Да");
+                    keyboard.AddRow("Нет");
                     await client.SendTextMessageAsync(chatId, "**Сохранить** ваши данные или <b>полностью удалить</b>",
                         ParseMode.Markdown,
-                        replyMarkup: TelegramKeyboard.GetKeyboard(actions, true));
+                        replyMarkup: keyboard.Markup);
 
                     UserDB.ChangeUserAction(context, chatId, Actions.DeleteOrNot);
                 }
@@ -84,12 +89,18 @@ namespace Evect.Models.Commands
             }
             else
             {
-                string[][] actions = { new[] { "О мероприятии", "Присоединиться к мероприятию" }, new[] {"Режим нетворкинга"}, new[] {"Записная книжка"}, new[] {"Все мероприятия"} };
+                
+                TelegramKeyboard keyboard = new TelegramKeyboard();
+                keyboard.AddRow("О мероприятии", "Присоединиться к мероприятию");
+                keyboard.AddRow("Режим нетворкинга");
+                keyboard.AddRow("Записная книжка");
+                keyboard.AddRow("Все мероприятия");
+                
                 await client.SendTextMessageAsync(
                     chatId,
                     "Что нужно?",
                     ParseMode.Html,
-                    replyMarkup: TelegramKeyboard.GetKeyboard(actions));
+                    replyMarkup: keyboard.Markup);
                     
                 UserDB.ChangeUserAction(context, chatId, Actions.Profile);
             }

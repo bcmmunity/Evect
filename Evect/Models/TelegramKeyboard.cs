@@ -1,28 +1,73 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Telegram.Bot.Types.ReplyMarkups;
+
 namespace Evect.Models
 {
-    public static class TelegramKeyboard
+    public class TelegramKeyboard
     {
-        public static Telegram.Bot.Types.ReplyMarkups.ReplyKeyboardMarkup GetKeyboard(string[][] buttons, bool isOneTime = false)
+        private List<List<KeyboardButton>> _buttons;
+
+        private ReplyKeyboardMarkup _markup;
+        public ReplyKeyboardMarkup Markup => GetKeyboard(_buttons, _isOneTime);
+        private readonly bool _isOneTime;
+
+        public TelegramKeyboard()
         {
-            int rows = buttons.Length;
+            _buttons = new List<List<KeyboardButton>>();
+            Clear();
+        }
 
-            Telegram.Bot.Types.ReplyMarkups.KeyboardButton[][] keyboardButtons =
-                new Telegram.Bot.Types.ReplyMarkups.KeyboardButton[rows][];
-
-            for (int row = 0; row < rows; row++)
+        public TelegramKeyboard(bool isOneTime) : this()
+        {
+            _isOneTime = isOneTime;
+        }
+        
+        public TelegramKeyboard(IEnumerable<IEnumerable<string>> buttons, bool isOneTime = false) : this(isOneTime)
+        {
+            foreach (var enumerable in buttons)
             {
-                keyboardButtons[row] = new Telegram.Bot.Types.ReplyMarkups.KeyboardButton[buttons[row].Length];
-
-                for (int column = 0; column < buttons[row].Length; column++)
-                {
-                    keyboardButtons[row][column] = buttons[row][column];
-                }
+                AddRow(enumerable);
             }
+        }
 
-            
-            var keyboard = new Telegram.Bot.Types.ReplyMarkups.ReplyKeyboardMarkup
+        public void AddRow(params string[] buttons)
+        {
+            if (buttons.Length != 0)
             {
-                Keyboard = keyboardButtons,
+                List<KeyboardButton> tempButtons = buttons
+                    .Where(bb => bb != null)
+                    .Select(b => new KeyboardButton(b))
+                    .ToList();
+                _buttons.Add(tempButtons);
+            }
+            else
+            {
+                throw new ArgumentException("'buttons' array has zero length");
+            }
+        }
+
+        public void AddRow(IEnumerable<string> buttons)
+        {
+            if (buttons != null)
+            {
+                List<KeyboardButton> tempButtons = buttons.Select(b => new KeyboardButton(b)).ToList();
+                _buttons.Add(tempButtons);
+            }
+        }
+
+        private ReplyKeyboardMarkup GetKeyboard(List<List<KeyboardButton>> buttons, bool isOneTime)
+        {
+            if (buttons.Count == 0)
+                throw new ArgumentException("You haven't added any row");
+            
+            if (buttons.Any(b => b.Count == 0))
+                throw new ArgumentException("One of rows doesnt have buttons ");
+            
+            var keyboard = new ReplyKeyboardMarkup
+            {
+                Keyboard = buttons,
                 ResizeKeyboard = true,
                 OneTimeKeyboard = isOneTime
             };
@@ -30,28 +75,11 @@ namespace Evect.Models
             return keyboard;
         }
 
-        public static Telegram.Bot.Types.ReplyMarkups.InlineKeyboardMarkup GetInlineKeyboard(string[][] buttons,
-            string[][] callback_data)
+        public void Clear()
         {
-            int rows = buttons.Length;
-            Telegram.Bot.Types.ReplyMarkups.InlineKeyboardButton[][] keyboardButtons =
-                new Telegram.Bot.Types.ReplyMarkups.InlineKeyboardButton[rows][];
-
-            for (int row = 0; row < rows; row++)
-            {
-                keyboardButtons[row] = new Telegram.Bot.Types.ReplyMarkups.InlineKeyboardButton[buttons[row].Length];
-
-                for (int column = 0; column < buttons[row].Length; column++)
-                {
-                    keyboardButtons[row][column] = new Telegram.Bot.Types.ReplyMarkups.InlineKeyboardButton
-                        {Text = buttons[row][column], CallbackData = callback_data[row][column]};
-                }
-            }
-
-
-            var keyboard = new Telegram.Bot.Types.ReplyMarkups.InlineKeyboardMarkup(keyboardButtons);
-
-            return keyboard;
+            _buttons.Clear();
         }
+        
+        
     }
 }
