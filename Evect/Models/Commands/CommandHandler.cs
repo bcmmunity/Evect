@@ -102,6 +102,8 @@ namespace Evect.Models.Commands
 
 
         }
+        
+        
       
         /*[TelegramCommand("Назад")]*/
         [TelegramCommand("Информация о пользователях")]
@@ -113,6 +115,15 @@ namespace Evect.Models.Commands
         }
         /* [TelegramCommand("Создать оповещение")]
          [TelegramCommand("Опрос")]*/
+        
+
+        [TelegramCommand("тестовая команд")]
+        public async void InfoAbout(Message message, TelegramBotClient client)
+        {
+            
+        }
+//        [TelegramCommand("Создать оповещение")]
+//        [TelegramCommand("Опрос")]
 
 
     } 
