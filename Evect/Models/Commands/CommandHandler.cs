@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Evect.Models.DB;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -9,7 +10,7 @@ namespace Evect.Models.Commands
     {
 
         [TelegramCommand("/start")]
-        public async void OnStart(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnStart(ApplicationContext context, Message message, TelegramBotClient client)
         {
             UserDB.AddLog(context,"start0");
             long chatId = message.Chat.Id;
@@ -38,7 +39,7 @@ namespace Evect.Models.Commands
 
 
         [TelegramCommand("/stop")]
-        public async void OnStop(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnStop(ApplicationContext context, Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
             
@@ -60,7 +61,7 @@ namespace Evect.Models.Commands
         }
 
         [TelegramCommand("Личный кабинет")]
-        public async void OnProfile(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnProfile(ApplicationContext context, Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
             User user = await UserDB.GetUserByChatId(context, chatId);
@@ -96,7 +97,7 @@ namespace Evect.Models.Commands
 
 
         [TelegramCommand("Войти по ивент-коду")]
-        public async void OnEnteringByCode(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnEnteringByCode(ApplicationContext context, Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
             await client.SendTextMessageAsync(chatId, "Введите ивент-код",ParseMode.Html);

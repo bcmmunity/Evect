@@ -19,19 +19,17 @@ namespace Evect.Controllers
 {
     public class HomeController : Controller
     {
-        
         private UserDB _userDb;
         private EventDB _eventDb;
 
         private CommandHandler _commandHadler;
         private ActionHandler _actionHandler;
 
-        private Dictionary<Action<ApplicationContext, Message, TelegramBotClient>, string> _commands;
-        private Dictionary<Action<ApplicationContext, Message, TelegramBotClient>, Actions> _actions;
+        private Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, string> _commands;
+        private Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, Actions> _actions;
 
         public HomeController(ApplicationContext db)
         {
-            
             _eventDb = new EventDB();
 
             _commandHadler = new CommandHandler();
@@ -50,55 +48,55 @@ namespace Evect.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Update update)
         {
+            ApplicationContext db = new ApplicationContext(new DbContextOptions<ApplicationContext>());
+
 
             if (update == null)
                 return Ok();
 
-            using (ApplicationContext db = new ApplicationContext(new DbContextOptions<ApplicationContext>()))
+            var message = update.Message;
+            var client = new TelegramBotClient(AppSettings.Key);
+            var chatId = message.Chat.Id;
+
+            User user = await UserDB.GetUserByChatId(db, chatId); //получаем айди юзера и его самого из бд
+
+            if (user == null)
             {
-                var message = update.Message;
-                var client = new TelegramBotClient(AppSettings.Key);
-                var chatId = message.Chat.Id;
-
-                User user = await UserDB.GetUserByChatId(db, chatId); //получаем айди юзера и его самого из бд
-
-                if (user == null)
+                foreach (var pair in _commands)
                 {
-                    foreach (var pair in _commands)
+                    if (pair.Value == "/start")
                     {
-                        if (pair.Value == "/start")
-                        {
-                            pair.Key(db, message, client);
-                        }
-                    }
+                        await pair.Key(db, message, client);
 
-                    return Ok();
-                }
-
-                if (!user.IsAuthed)
-                {
-                    foreach (var pair in _commands)
-                    {
-                        if (pair.Value == "/start" || pair.Value == "Личный кабинет")
-                        {
-                            pair.Key(db, message, client);
-                        }
-                    }
-
-                    return Ok();
-                }
-
-                foreach (var pair in _actions)
-                {
-                    if (pair.Value == user.CurrentAction)
-                    {
-                        pair.Key(db, message, client);
                     }
                 }
+                return Ok();
             }
 
+            if (!user.IsAuthed)
+            {
+                foreach (var pair in _commands)
+                {
+                    if (pair.Value == "/start" || pair.Value == "Личный кабинет")
+                    {
+                        await pair.Key(db, message, client);
 
+                    }
+                }
+                return Ok();
+            }
+
+            foreach (var pair in _actions)
+            {
+                if (pair.Value == user.CurrentAction)
+                {
+                    await pair.Key(db, message, client);
+                }
+            }
+            
             return Ok();
+
+
         }
     }
 }
