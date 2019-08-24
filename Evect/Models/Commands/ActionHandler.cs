@@ -276,7 +276,6 @@ namespace Evect.Models.Commands
             else
             {
                 EventDB eventDb = new EventDB();
-                
                 List<long> usersToSend =await eventDb.GetAllParticipantsOfEvent(chatId);
                 foreach(var item in usersToSend)
                 {
