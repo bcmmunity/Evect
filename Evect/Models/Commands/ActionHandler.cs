@@ -213,13 +213,22 @@ namespace Evect.Models.Commands
                     keyboard.AddRow("Назад");
                     UserDB.ChangeUserAction(context, chatId, Actions.GetInformationAboutTheEvent);
                     string info = eventDB.GetInfoAboutTheEvent(chatId);
-                    await client.SendTextMessageAsync(chatId, info, replyMarkup: keyboard.Markup);
+                    await client.SendTextMessageAsync(chatId, info, replyMarkup:keyboard.Markup);
                 }
             }
-            /* if(message.Text=="Информация о пользователях")
+            else if(message.Text=="Информация о пользователях")
              {
-
-             }*/
+                TelegramKeyboard keyboard = new TelegramKeyboard();
+                var chatId = message.Chat.Id;
+                keyboard.AddRow("Количество пользователей");
+                keyboard.AddRow("Количество активаций режима общения");
+                keyboard.AddRow("Число запросов контактов");
+                keyboard.AddRow("Число запросов встреч");
+                keyboard.AddRow("Назад");
+                UserDB.ChangeUserAction(context, chatId, Actions.InformationAboutUsers);
+                await client.SendTextMessageAsync(chatId, "Выберите интересующий Вас пункт",replyMarkup: keyboard.Markup);
+               // await client.SendTextMessageAsync(chatId, "Эти функции очень скоро будут доступны" + "😅".ToString(), ParseMode.Html);
+             }
             else if (message.Text == "Создать оповещение")
             {
                 //EventDB eventDB = new EventDB();
@@ -296,7 +305,7 @@ namespace Evect.Models.Commands
             UserDB.ChangeUserAction(context, chatId, Actions.GetInformationAboutTheEvent);
             if (message.Text == "Назад")
             {
-
+                
                 await client.SendTextMessageAsync(chatId, "Я вернулся назад", replyMarkup: keyboard.Markup);
             }
             else
@@ -305,7 +314,7 @@ namespace Evect.Models.Commands
                 await client.SendTextMessageAsync(chatId, "Данные о мероприятии успешно добавлены", replyMarkup: keyboard.Markup);
             }
         }
-        [UserAction(Actions.CreateNotification)]
+        [UserAction(Actions.CreateNotification)]//создать оповещение
         public async Task SendNotification(ApplicationContext context,Message message,TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
@@ -334,7 +343,51 @@ namespace Evect.Models.Commands
                 await client.SendTextMessageAsync(chatId, "Ваше сообщение успешно разослано всем участникам мероприятия");
             }
         }
-#endregion
+        [UserAction(Actions.InformationAboutUsers)]
+        public async Task GetInformationAboutUsers(ApplicationContext context,Message message,TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            EventDB eventDB = new EventDB();
+            switch(message.Text)
+            {
+                case "Назад":
+                    {
+                        TelegramKeyboard keyboard = new TelegramKeyboard();
+                        keyboard.AddRow("Об ивенте");
+                        keyboard.AddRow("Инвормация о пользователях");
+                        keyboard.AddRow("Создать опрос");
+                        keyboard.AddRow("Создать оповещение");
+                        UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
+                        await client.SendTextMessageAsync(chatId, "Я вернулся назад", replyMarkup: keyboard.Markup);
+                    }
+                    break;
+                case "Количество пользователей":
+                    {
+                        string AmountOfUsers =await eventDB.GetInfrormationAboutUsers(chatId,message.Text);
+                        await client.SendTextMessageAsync(chatId, AmountOfUsers);
+                    }
+                    break;
+                case "Количество активаций режима общения":
+                    {
+                        string AmountOfActivationOfNetworkingMode =await eventDB.GetInfrormationAboutUsers(chatId, message.Text);
+                        await client.SendTextMessageAsync(chatId,AmountOfActivationOfNetworkingMode);
+                    }
+                    break;
+                case "Число запросов контактов":
+                    {
+                        string AmountOfRequestsOfContacts =await eventDB.GetInfrormationAboutUsers(chatId, message.Text);
+                        await client.SendTextMessageAsync(chatId,AmountOfRequestsOfContacts);
+                    }
+                    break;
+                case "Число запросов встреч":
+                    {
+                        string AmountOfRequestsOfMeetings =await eventDB.GetInfrormationAboutUsers(chatId, message.Text);
+                        await client.SendTextMessageAsync(chatId, AmountOfRequestsOfMeetings);
+                    }
+                    break;
+            }
+            }
+         #endregion
         [UserAction(Actions.WaitingForName)]
         public async Task OnWaitingForName(ApplicationContext context, Message message, TelegramBotClient client)
         {

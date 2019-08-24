@@ -35,6 +35,7 @@ namespace Evect.Models
         AddNewInformationAboutEvent,
         EditInformationAboutEvent,
         CreateNotification,
+        InformationAboutUsers,
 
         #endregion
 

@@ -110,5 +110,6 @@ namespace Evect.Models.DB
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<UserValidation> Validations { get; set; }
+        public DbSet<InfoAboutUsers> InfoAboutUsers { get; set; }
     }
 }

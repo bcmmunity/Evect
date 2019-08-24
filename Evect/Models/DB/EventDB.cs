@@ -104,6 +104,32 @@ namespace Evect.Models.DB
             }
             return UsersToSend;            
         }
+        public async Task<string> GetInfrormationAboutUsers(long chatId,string message)
+        {
+            
+            switch(message)
+            {
+                case "Количество пользователей":
+                    {
+                       List<long>participants= await GetAllParticipantsOfEvent(chatId);
+                        string t = participants.Count.ToString();
+                        return t;
+                    }
+                case "Количество активаций режима общения":
+                    {
+                        return " ";
+                    }
+                case "Число запросов контактов":
+                    {
+                        return " ";
+                    }
+                case "Число запросов встреч":
+                    {
+                        return " ";
+                    }
+            }
+            return "Бот не знает такой команды";
+        }
         
     }
 }
