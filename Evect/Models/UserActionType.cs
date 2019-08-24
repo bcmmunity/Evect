@@ -15,6 +15,7 @@ namespace Evect.Models
         WaitingForName,
         WainingForEmail,
         #endregion
+        
         #region AdminActions
         AdminMode,
         GetInformationAboutTheEvent,

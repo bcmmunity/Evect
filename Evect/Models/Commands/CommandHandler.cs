@@ -73,6 +73,8 @@ namespace Evect.Models.Commands
         {
             long chatId = message.Chat.Id;
             UserDB userDb = new UserDB();
+            await client.SendTextMessageAsync(chatId, "Введите ивент-код",ParseMode.Html);
+
             userDb.ChangeUserAction(chatId, Actions.WaitingForEventCode);
         }
 
