@@ -78,6 +78,15 @@ namespace Evect.Models.Commands
                             chatId,
                             "Вы уже присоединились к этому мероприятию",
                             ParseMode.Html); 
+                        
+                        
+                        userDb.ChangeUserAction(chatId, Actions.Profile);
+                        string[][] actions = { new[] { "О мероприятии", "Присоединиться к мероприятию" }, new[] {"Режим нетворкинга"}, new[] {"Записная книжка"}, new[] {"Все мероприятия"} };
+                        await client.SendTextMessageAsync(
+                            chatId,
+                            "Что нужно?",
+                            ParseMode.Html,
+                            replyMarkup: TelegramKeyboard.GetKeyboard(actions));
                     }
                     else
                     {
@@ -93,6 +102,15 @@ namespace Evect.Models.Commands
                         userDb.Context.Users.Update(user);
                         await userDb.Context.SaveChangesAsync();
 
+                        
+                        
+                        await client.SendTextMessageAsync(
+                            chatId,
+                            $"Вы успешно присоединились к мероприятию: {ev.Name}",
+                            ParseMode.Html); 
+                        
+                        
+                        
                         if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))//здесь мб сделать проверку на админский ли код
                         {
                             await client.SendTextMessageAsync(
@@ -250,6 +268,7 @@ namespace Evect.Models.Commands
             var text = message.Text;
 
             User user = await userDb.GetUserByChatId(chatId);
+            StringBuilder builder = new StringBuilder();
 
             switch (text)
             {
@@ -258,10 +277,14 @@ namespace Evect.Models.Commands
                     if (isReg)
                     {
                         Event ev = userDb.Context.Events.Find(user.CurrentEventId);
+                        builder.Clear();
+
+                        builder.AppendLine($"<b>Название: </b>{ev.Name}");
+                        builder.AppendLine($"Для вашего удобства мы подготовили статью в Telegraph: {ev.TelegraphLink}");
+
                         await client.SendTextMessageAsync(
                             chatId,
-                            $@"<b>Название: </b>{ev.Name}
-<b>Описание: </b>{ev.Info}",
+                            builder.ToString(),
                             ParseMode.Html);
                         string[][] actions = { new[] { "О мероприятии", "Присоединиться к мероприятию" }, new[] {"Режим нетворкинга"}, new[] {"Записная книжка"}, new[] {"Все мероприятия"} };
                         await client.SendTextMessageAsync(chatId, "Что нужно?",ParseMode.Html,replyMarkup:TelegramKeyboard.GetKeyboard(actions, true));
@@ -285,8 +308,7 @@ namespace Evect.Models.Commands
                 
                 
                 case "Все мероприятия":
-                    StringBuilder builder = new StringBuilder();
-
+                    builder.Clear();
                     for (int i = 0; i < user.UserEvents.Count; i++)
                     {
                         Event ev = await eventDb.GetEventByUserEvent(user.UserEvents[i]);

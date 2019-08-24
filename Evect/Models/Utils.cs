@@ -24,10 +24,30 @@ namespace Evect.Models
 
         public static bool IsEmailValid(string email)
         {
+            
+            if (string.IsNullOrWhiteSpace(email)) return false;
+
+            // MUST CONTAIN ONE AND ONLY ONE @
+            var atCount = email.Count(c => c == '@');
+            if (atCount != 1) return false;
+
+            // MUST CONTAIN PERIOD
+            if (!email.Contains(".")) return false;
+
+            // @ MUST OCCUR BEFORE LAST PERIOD
+            var indexOfAt = email.IndexOf("@", StringComparison.Ordinal);
+            var lastIndexOfPeriod = email.LastIndexOf(".", StringComparison.Ordinal);
+            var atBeforeLastPeriod = lastIndexOfPeriod > indexOfAt && lastIndexOfPeriod - indexOfAt > 1;
+            if (!atBeforeLastPeriod) return false;
+
+            if (lastIndexOfPeriod == email.Length - 1) return false;
+
+            if (!Char.IsLetter(email[email.Length - 1])) return false;
+
             try
             {
                 MailAddress m = new MailAddress(email);
-                return true;
+                return m.Address == email;
             }
             catch (FormatException ex)
             {

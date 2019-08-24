@@ -32,14 +32,16 @@ namespace Evect.Models.DB
                         Name = "Тестовое мероприятие, оч крутое", 
                         Info = "Крутое мероприятия для разномастных разработчиков", 
                         EventCode = "event_kim",
-                        AdminCode = "event_admin"
+                        AdminCode = "event_admin",
+                        TelegraphLink = "https://telegra.ph/Testovaya-statya-dlya-event-08-24"
                     }, 
                     new Event { 
                         EventId = 2,
                         Name = "Второе тестовое", 
                         Info = "DIFFFFFFFFFFFFFFFFFFFIND", 
                         EventCode = "event_kim2",
-                        AdminCode = "event_admin2"
+                        AdminCode = "event_admin2",
+                        TelegraphLink = "https://telegra.ph/Testovaya-statya-dlya-event-08-24"
                     }
                     );
 
