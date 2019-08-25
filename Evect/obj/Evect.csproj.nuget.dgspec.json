@@ -1,0 +1,73 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj": {}
+  },
+  "projects": {
+    "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj",
+        "projectName": "Evect",
+        "projectPath": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj",
+        "packagesPath": "/Users/Modernwolf/.nuget/packages/",
+        "outputPath": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/Users/Modernwolf/.config/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "Microsoft.AspNetCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Microsoft.AspNetCore.Razor.Design": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Telegram.Bot": {
+              "target": "Package",
+              "version": "[15.0.0, )"
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}
