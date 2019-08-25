@@ -101,9 +101,16 @@ namespace Evect.Models.DB
             User user = await GetUserByChatId(tgId);
             user.CurrentAction = action;
             Context.Users.Update(user);
-            await Context.SaveChangesAsync();
+            Context.SaveChanges();
         }
 
+        public async Task ChangeUserActionAsync(long tgId, Actions action)
+        {
+            await Task.Run(() => ChangeUserAction(tgId, action));
+        }
+        
+        
+        
        /* public void AddLog(string log)
         {
             Log logg = new Log();

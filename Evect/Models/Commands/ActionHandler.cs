@@ -67,7 +67,7 @@ namespace Evect.Models.Commands
                 {
                     string[][] adminActions = { new[] { "Об ивенте" }, new[] { "Информация о пользователях" }, new[] { "Создать опрос" }, new[] { "Создать оповещение" } };
                     userDb.AdminAuthorized(chatId);
-                    userDb.ChangeUserAction(chatId, Actions.AdminMode);
+                    await userDb.ChangeUserActionAsync(chatId, Actions.AdminMode);
                     if(!have)
                     {
                         UserEvent userEvent = new UserEvent() { UserId = user.UserId, EventId = ev.EventId };
@@ -127,6 +127,7 @@ namespace Evect.Models.Commands
                                 "Похоже мы не все о вас знаем. Как вас зовут? Попрошу имя и фамилию через пробел",
                                 ParseMode.Html);
                             userDb.ChangeUserAction(chatId, Actions.WaitingForName);
+                            
                         } else if (string.IsNullOrEmpty(user.Email))
                         {
                             await client.SendTextMessageAsync(
