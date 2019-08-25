@@ -24,6 +24,26 @@ namespace Evect.Models.DB
         {
             return await Context.Events.FirstOrDefaultAsync(e => e.EventId == ue.EventId);
         }
+
+        public async Task<List<Event>> GetUserEvents(long chatId)
+        {
+            User user = await UserDB.GetUserByChatId(Context, chatId);
+            List<Event> events = new List<Event>();
+
+            if (user.CurrentEventId > 0)
+            {
+                events.Add(Context.Events.Find(user.CurrentEventId));
+            }
+            
+            
+            foreach (var ue in user.UserEvents)
+            {
+                if (ue.EventId == user.CurrentEventId) continue;
+                events.Add(await GetEventByUserEvent(ue));
+            }
+
+            return events;
+        }
         
         public async Task<bool> IsAdminCode(string code)
         {

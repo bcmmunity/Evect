@@ -7,125 +7,115 @@ namespace Evect.Models.DB
     public class UserDB : DB
     {
 
-        public readonly ApplicationContext Context;
-        
-        public UserDB()
+        public static void AddUser(ApplicationContext context, long tgId)//добавление юзера
         {
-            Context = Connect();
-        }
-
-        
-   
-        
-        public void AddUser(long tgId)//добавление юзера
-        {
-            Context.Users.Add(new User {TelegramId = tgId, IsAuthed = true});
-            Context.SaveChanges();
+            context.Users.Add(new User {TelegramId = tgId, IsAuthed = true});
+            context.SaveChanges();
         }
         
 
-        public async void AddUserAsync(long tgId)
+        public static async void AddUserAsync(ApplicationContext context, long tgId)
         {
-            await Context.Users.AddAsync(new User { TelegramId = tgId, IsAuthed = true});
-            await Context.SaveChangesAsync();
+            await context.Users.AddAsync(new User { TelegramId = tgId, IsAuthed = true});
+            context.SaveChanges();
         }
         
         
     
-        public async void UserLogin(long tgId)
+        public static async void UserLogin(ApplicationContext context, long tgId)
         {
-            User user = await GetUserByChatId(tgId);
+            User user = await GetUserByChatId(context, tgId);
             user.IsAuthed = true;
-            Context.Users.Update(user);
-            await Context.SaveChangesAsync();
+            context.Users.Update(user);
+            context.SaveChanges();
         }
-        public async void AdminAuthorized(long tgId)//АВТОРИЗАЦИЯ АДМИНОМ
+        public static async void AdminAuthorized(ApplicationContext context, long tgId)//АВТОРИЗАЦИЯ АДМИНОМ
         {
-            User user = await GetUserByChatId(tgId);
+            User user = await GetUserByChatId(context, tgId);
             user.IsAdminAuthorized = true;
-            Context.Users.Update(user);
-            await Context.SaveChangesAsync();
+            context.Users.Update(user);
+            context.SaveChanges();
         }
         
-        public async void UserLogoff(long tgId)
+        public static async void UserLogoff(ApplicationContext context, long tgId)
         {
-            User user = await GetUserByChatId(tgId);
+            User user = await GetUserByChatId(context, tgId);
             user.IsAuthed = false;
-            Context.Users.Update(user);
-            await Context.SaveChangesAsync();
+            context.Users.Update(user);
+            context.SaveChanges();
         }
 
-        public async void ResetAction(long tgId)
+        public static async void ResetAction(ApplicationContext context, long tgId)
         {
-            User user = await GetUserByChatId(tgId);
+            User user = await GetUserByChatId(context, tgId);
             user.CurrentAction = Actions.None;
-            Context.Users.Update(user);
-            await Context.SaveChangesAsync();
+            context.Users.Update(user);
+            context.SaveChanges();
         }
         
-        public async Task<bool> IsUserExists(long tgId)
+        public static async Task<bool> IsUserExists(ApplicationContext context, long tgId)
         {
-            return await Context.Users.FirstOrDefaultAsync(u => u.TelegramId == tgId) != null;
+            return await context.Users.FirstOrDefaultAsync(u => u.TelegramId == tgId) != null;
         }
         
         
-        public async Task<bool> IsUserExistsAndAuthed(long tgId)
+        public static async Task<bool> IsUserExistsAndAuthed(ApplicationContext context, long tgId)
         {
-            User user = await GetUserByChatId(tgId);
+            User user = await GetUserByChatId(context, tgId);
             return user != null && user.IsAuthed;
         }
 
 
 
-        public async Task<User> GetUserByChatId(long tgId)
+        public static async Task<User> GetUserByChatId(ApplicationContext context, long tgId)
         {
-            return await Context.Users
+            return await context.Users
                 .Include(u => u.UserEvents)
                 .FirstOrDefaultAsync(u => u.TelegramId == tgId);
         }
 
-        public async void ResetUserAction(long tgId)
+        public static async void ResetUserAction(ApplicationContext context, long tgId)
         {
-            User user = await GetUserByChatId(tgId);
+            User user = await GetUserByChatId(context, tgId);
             user.CurrentAction = Actions.None;
-            Context.Users.Update(user);
-            await Context.SaveChangesAsync();
+            context.Users.Update(user);
+            await context.SaveChangesAsync();
         }
 
-        public async void ChangeUserAction(long tgId, Actions action)
+        public static async void ChangeUserAction(ApplicationContext context, long tgId, Actions action)
         {
                  
-            User user = await GetUserByChatId(tgId);
+            User user = await GetUserByChatId(context, tgId);
             user.CurrentAction = action;
-            Context.Users.Update(user);
-            Context.SaveChanges();
+            context.Users.Update(user);
+            context.SaveChanges();
         }
 
-        public async Task ChangeUserActionAsync(long tgId, Actions action)
+        public static async Task ChangeUserActionAsync(ApplicationContext context, long tgId, Actions action)
         {
-            await Task.Run(() => ChangeUserAction(tgId, action));
+            await Task.Run(() => ChangeUserAction(context, tgId, action));
         }
 
         /// <summary>
         ///  Проверяет наличие пользователя с введным адресом электронной почти
         /// </summary>
-        public async Task<bool> CheckEmailInDB(string email)
+        public static async Task<bool> CheckEmailInDB(ApplicationContext context, string email)
         {
-            User user = await Context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            User user = await context.Users.FirstOrDefaultAsync(u => u.Email == email);
             return user != null;
         }
         
         
         
         
-       /* public void AddLog(string log)
+       /* public static void AddLog(string log)
         {
             Log logg = new Log();
             logg.Logss = log;
-            Context.Logs.Add(logg);
-            Context.SaveChanges();
+            context.Logs.Add(logg);
+            context.SaveChanges();
         }*/
-        //        public async void ChangeUserParams()
+        //        public static async void ChangeUserParams()
 
 
 

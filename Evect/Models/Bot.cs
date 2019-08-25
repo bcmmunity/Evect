@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Evect.Models.Commands;
+using Evect.Models.DB;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -14,11 +15,11 @@ namespace Evect.Models
         private static TelegramBotClient _client;
 
 
-        private static Dictionary<Action<Message, TelegramBotClient>, string > _commandsList = new Dictionary<Action<Message, TelegramBotClient>, string>();
-        private static Dictionary<Action<Message, TelegramBotClient>, Actions> _actionList =  new Dictionary<Action<Message, TelegramBotClient>, Actions>();
+        private static Dictionary<Action<ApplicationContext, Message, TelegramBotClient>, string > _commandsList = new Dictionary<Action<ApplicationContext,Message, TelegramBotClient>, string>();
+        private static Dictionary<Action<ApplicationContext,Message, TelegramBotClient>, Actions> _actionList =  new Dictionary<Action<ApplicationContext,Message, TelegramBotClient>, Actions>();
         
-        public static Dictionary<Action<Message, TelegramBotClient>, string> Commands => _commandsList;
-        public static Dictionary<Action<Message, TelegramBotClient>, Actions > ActionList => _actionList;
+        public static Dictionary<Action<ApplicationContext,Message, TelegramBotClient>, string> Commands => _commandsList;
+        public static Dictionary<Action<ApplicationContext,Message, TelegramBotClient>, Actions > ActionList => _actionList;
         
 
         
@@ -30,6 +31,7 @@ namespace Evect.Models
             {
                 return _client;
             }
+            
             
             Assembly assembly = Assembly.GetAssembly(typeof(Actions));
 
@@ -44,8 +46,8 @@ namespace Evect.Models
             
             foreach (var methodInfo in commandsMethodInfo)
             {
-                Action<Message, TelegramBotClient> a = 
-                    (Action<Message, TelegramBotClient>) Delegate.CreateDelegate(typeof(Action<Message, TelegramBotClient>), _commandHandler,methodInfo);
+                Action<ApplicationContext, Message, TelegramBotClient> a = 
+                    (Action<ApplicationContext, Message, TelegramBotClient>) Delegate.CreateDelegate(typeof(Action<ApplicationContext,Message, TelegramBotClient>), _commandHandler, methodInfo);
 
                 string c = methodInfo.GetCustomAttribute<TelegramCommand>().StringCommand;
                 _commandsList.Add(a, c);
@@ -59,8 +61,8 @@ namespace Evect.Models
             
             foreach (var methodInfo in actionMethodInfo)
             {
-                Action<Message, TelegramBotClient> a = 
-                                    (Action<Message, TelegramBotClient>) Delegate.CreateDelegate(typeof(Action<Message, TelegramBotClient>),_actionHandler ,methodInfo);
+                Action<ApplicationContext,Message, TelegramBotClient> a = 
+                                    (Action<ApplicationContext,Message, TelegramBotClient>) Delegate.CreateDelegate(typeof(Action<ApplicationContext,Message, TelegramBotClient>),_actionHandler ,methodInfo);
                 
                 Actions act = methodInfo.GetCustomAttribute<UserAction>().Action;
                 _actionList.Add(a, act);

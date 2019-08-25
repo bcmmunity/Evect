@@ -52,6 +52,38 @@ namespace Evect.Models.DB
                         EventCode = "event_kim2",
                         AdminCode = "event_admin2",
                         TelegraphLink = "https://telegra.ph/Testovaya-statya-dlya-event-08-24"
+                    },
+                    new Event { 
+                        EventId = 3,
+                        Name = "Третье тестовое", 
+                        Info = "DIFFFFFFFFFFFFFFFFFFFIND", 
+                        EventCode = "event_kim3",
+                        AdminCode = "event_admin3",
+                        TelegraphLink = "https://telegra.ph/Testovaya-statya-dlya-event-08-24"
+                    },
+                    new Event { 
+                        EventId = 4,
+                        Name = "Четвертое тестовое", 
+                        Info = "DIFFFFFFFFFFFFFFFFFFFIND", 
+                        EventCode = "event_kim4",
+                        AdminCode = "event_admin4",
+                        TelegraphLink = "https://telegra.ph/Testovaya-statya-dlya-event-08-24"
+                    },
+                    new Event { 
+                        EventId = 5,
+                        Name = "Пятое тестовое", 
+                        Info = "DIFFFFFFFFFFFFFFFFFFFIND", 
+                        EventCode = "event_kim5",
+                        AdminCode = "event_admin5",
+                        TelegraphLink = "https://telegra.ph/Testovaya-statya-dlya-event-08-24"
+                    },
+                    new Event { 
+                        EventId = 6,
+                        Name = "Шестое тестовое", 
+                        Info = "DIFFFFFFFFFFFFFFFFFFFIND", 
+                        EventCode = "event_kim6",
+                        AdminCode = "event_admin6",
+                        TelegraphLink = "https://telegra.ph/Testovaya-statya-dlya-event-08-24"
                     }
                     );
 

@@ -26,13 +26,12 @@ namespace Evect.Controllers
         private CommandHandler _commandHadler;
         private ActionHandler _actionHandler;
 
-        private Dictionary<Action<Message, TelegramBotClient>, string > _commands;
-        private Dictionary<Action<Message, TelegramBotClient>, Actions > _actions;
+        private Dictionary<Action<ApplicationContext, Message, TelegramBotClient>, string > _commands;
+        private Dictionary<Action<ApplicationContext,Message, TelegramBotClient>, Actions > _actions;
         
         public HomeController(ApplicationContext db)
         {
             _db = db;
-            _userDb = new UserDB();
             _eventDb = new EventDB();
 
             _commandHadler = new CommandHandler();
@@ -52,6 +51,8 @@ namespace Evect.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Update update)
         {
+            _db = new ApplicationContext(new DbContextOptions<ApplicationContext>());
+            
             if (update == null)
                 return Ok();
             
@@ -60,7 +61,7 @@ namespace Evect.Controllers
             var client = new TelegramBotClient(AppSettings.Key);
             var chatId = message.Chat.Id;
 
-            User user = await _userDb.GetUserByChatId(chatId);//получаем айди юзера и его самого из бд
+            User user = await UserDB.GetUserByChatId(_db, chatId);//получаем айди юзера и его самого из бд
 
             if (user == null)
             {
@@ -68,7 +69,7 @@ namespace Evect.Controllers
                 {
                     if (pair.Value == "/start")
                     {
-                        pair.Key(message, client);
+                        pair.Key(_db, message, client);
                     } 
                 }
 
@@ -81,7 +82,7 @@ namespace Evect.Controllers
                 {
                     if (pair.Value == "/start" || pair.Value == "Личный кабинет")
                     {
-                        pair.Key(message, client);
+                        pair.Key(_db, message, client);
                     } 
                 }
                 
@@ -92,7 +93,7 @@ namespace Evect.Controllers
             {
                 if (pair.Value == user.CurrentAction)
                 {
-                    pair.Key(message, client);
+                    pair.Key(_db, message, client);
                 }
             }
 

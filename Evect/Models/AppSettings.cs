@@ -21,7 +21,7 @@ namespace Evect.Models
 
           
           public static string DatabaseConnectionString { get; set; } =
-             "Server=localhost\\SQLEXPRESS;Database=evect13;Trusted_Connection=True;";
+             "Server=localhost\\SQLEXPRESS;Database=evect19;Trusted_Connection=True;";
         #endregion
 
     }

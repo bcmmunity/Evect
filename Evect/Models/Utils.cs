@@ -79,8 +79,45 @@ namespace Evect.Models
             Random random = new Random();
             return random.Next(1000, 10000).ToString();
         }
-        
-        
+
+        public static string GetCheckmark(int type = 1)
+        {
+            switch (type)
+            {
+                case 1:
+                    return "✅";
+                case 2:
+                    return "✔";
+                case 3:
+                    return "☑";
+                case 4:
+                    return "✓";
+                default:
+                    return "✅";
+            }
+        }
+
+        public static List<List<T>> SplitList<T>(int width, List<T> list)
+        {
+            List<List<T>> splited = new List<List<T>>();
+            if (list.Count <= width)
+            {
+                splited.Add(list);
+                return splited;
+            }
+
+            int numberOfLists = list.Count / width;
+
+            for (int i = 0; i <= numberOfLists; i++) 
+            { 
+                List<T> newList = list.Skip(i * width).Take(width).ToList();
+                splited.Add(newList); 
+            }
+            
+            return splited;
+
+
+        }
         
         
     }

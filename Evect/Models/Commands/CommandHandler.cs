@@ -9,17 +9,16 @@ namespace Evect.Models.Commands
     {
 
         [TelegramCommand("/start")]
-        public async void OnStart(Message message, TelegramBotClient client)
+        public async void OnStart(ApplicationContext context, Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
-            UserDB db = new UserDB();
-            if (!await db.IsUserExists(chatId))
+            if (!await UserDB.IsUserExists(context, chatId))
             {
-                db.AddUser(chatId);
+                UserDB.AddUser(context, chatId);
             }
-            else if (!await db.IsUserExistsAndAuthed(chatId))
+            else if (!await UserDB.IsUserExistsAndAuthed(context, chatId))
             {
-                db.UserLogin(chatId);
+                UserDB.UserLogin(context, chatId);
                 await client.SendTextMessageAsync(chatId, "Мы рады вас снова видеть", ParseMode.Html);
             }
             else
@@ -35,14 +34,13 @@ namespace Evect.Models.Commands
 
 
         [TelegramCommand("/stop")]
-        public async void OnStop(Message message, TelegramBotClient client)
+        public async void OnStop(ApplicationContext context, Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
+            
+            User user = await UserDB.GetUserByChatId(context, chatId);
 
-            UserDB db = new UserDB();
-            User user = await db.GetUserByChatId(chatId);
-
-            if (await db.IsUserExistsAndAuthed(chatId))
+            if (await UserDB.IsUserExistsAndAuthed(context, chatId))
             {
                 if (user.CurrentAction != Actions.DeleteOrNot)
                 {
@@ -51,18 +49,17 @@ namespace Evect.Models.Commands
                         ParseMode.Markdown,
                         replyMarkup: TelegramKeyboard.GetKeyboard(actions, true));
 
-                    db.ChangeUserAction(chatId, Actions.DeleteOrNot);
+                    UserDB.ChangeUserAction(context, chatId, Actions.DeleteOrNot);
                 }
 
             }
         }
 
         [TelegramCommand("Личный кабинет")]
-        public async void OnProfile(Message message, TelegramBotClient client)
+        public async void OnProfile(ApplicationContext context, Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
-            UserDB userDb = new UserDB();
-            User user = await userDb.GetUserByChatId(chatId);
+            User user = await UserDB.GetUserByChatId(context, chatId);
             
             if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))//здесь мб сделать проверку на админский ли код
             {
@@ -70,7 +67,7 @@ namespace Evect.Models.Commands
                     chatId,
                     "Похоже мы не все о вас знаем. Как вас зовут? Попрошу имя и фамилию через пробел",
                     ParseMode.Html);
-                userDb.ChangeUserAction(chatId, Actions.WaitingForName);
+                UserDB.ChangeUserAction(context, chatId, Actions.WaitingForName);
                             
             } else if (string.IsNullOrEmpty(user.Email))
             {
@@ -78,7 +75,7 @@ namespace Evect.Models.Commands
                     chatId,
                     "Вот мы и познакомились, а теперь можно ваш адрес электронной почты?",
                     ParseMode.Html);
-                userDb.ChangeUserAction(chatId, Actions.WainingForEmail);
+                UserDB.ChangeUserAction(context, chatId, Actions.WainingForEmail);
             }
             else
             {
@@ -89,19 +86,18 @@ namespace Evect.Models.Commands
                     ParseMode.Html,
                     replyMarkup: TelegramKeyboard.GetKeyboard(actions));
                     
-                userDb.ChangeUserAction(chatId, Actions.Profile);
+                UserDB.ChangeUserAction(context, chatId, Actions.Profile);
             }
         }
 
 
         [TelegramCommand("Войти по ивент-коду")]
-        public async void OnEnteringByCode(Message message, TelegramBotClient client)
+        public async void OnEnteringByCode(ApplicationContext context, Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
-            UserDB userDb = new UserDB();
             await client.SendTextMessageAsync(chatId, "Введите ивент-код",ParseMode.Html);
 
-            userDb.ChangeUserAction(chatId, Actions.WaitingForEventCode);
+            UserDB.ChangeUserAction(context, chatId, Actions.WaitingForEventCode);
         }
 
      

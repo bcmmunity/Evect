@@ -6,6 +6,7 @@ namespace Evect.Models
         
         WaitingForEventCode,
         WaitingForValidationCode,
+        AllEventsChangePage,
         
         DeleteOrNot,
         
