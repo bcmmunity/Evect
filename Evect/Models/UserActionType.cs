@@ -8,9 +8,20 @@ namespace Evect.Models
         
         DeleteOrNot,
         
-        Profile,
+        Profile, 
         
+        FirstQuestion,
         
+        SecondQuestion,
+        
+        ThirdQuestion,
+        
+        AddingParentTag,
+        
+        ChoosingTags,
+        
+        Networking,
+
         #region private info
         WaitingForName,
         WainingForEmail,

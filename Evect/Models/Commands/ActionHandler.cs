@@ -51,6 +51,7 @@ namespace Evect.Models.Commands
             UserDB userDb = new UserDB();
 
             User user = await userDb.GetUserByChatId(chatId);
+            
             bool isValid = await eventDb.IsEventCodeValid(text);
             if (isValid)
             {
@@ -387,7 +388,6 @@ namespace Evect.Models.Commands
 
                     var data = new string[][] {new string[] {"1", "2", "3", "4"}};
                     var data1 = new string[][] {new string[] {"anime", "colbek1", "colbek2", "meow"}};
-                    
                     await client.SendTextMessageAsync(
                         chatId,
                         builder.ToString(),
@@ -395,6 +395,29 @@ namespace Evect.Models.Commands
                         replyMarkup: TelegramKeyboard.GetInlineKeyboard(data, data1));
                     break;
                 
+                case "Режим нетворкинга":
+                    if (user.CompanyAndPosition != null) // TODO: Проверка на то, зарегистрирован ли пользователь
+                    {
+                        userDb.ChangeUserAction(chatId, Actions.FirstQuestion);
+                        
+                        // Phrase shows user that mode has changed
+                        await client.SendTextMessageAsync(
+                            chatId,
+                            "**Где и кем вы работаете? [1/3]**\n\nДля **режима общения** жизненно необходимо ввести дополнительные сведения – **3 вопроса и 2 этапа выбора тегов** (тег – сфера деятельности человека, упрощает поиск нужных вам людей).\n\nДавайте начнём 🙃",
+                            ParseMode.Markdown);
+                        // First question
+                        await client.SendTextMessageAsync(
+                            chatId,
+                            "Это поможет людям понять, чем вы можете быть им интересен. Пришли мне, пожалуйста, название компании и твою должность. __Например__, \"Дизайнер в Яндекс\"",
+                            ParseMode.Markdown);
+                    }
+                    else
+                    {
+                        userDb.ChangeUserAction(chatId, Actions.Networking);   
+                    }
+
+                    break;
+
                 default:
                     await client.SendTextMessageAsync(
                         chatId,
@@ -402,8 +425,115 @@ namespace Evect.Models.Commands
                         ParseMode.Html);
                     break;
             }
+        }
+
+        #region Network mode
+        [UserAction(Actions.FirstQuestion)]
+        public async void OnFirstQuestion(Message message, TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+            UserDB userDb = new UserDB();
+
+            User user = await userDb.GetUserByChatId(chatId);
+
+            user.CompanyAndPosition = text;
             
+            userDb.ChangeUserAction(chatId, Actions.SecondQuestion);
+            await client.SendTextMessageAsync(
+                chatId, "Теперь интересные вопросы😜 \n**Чем вы можете быть полезны? [2/3]**", ParseMode.Markdown);
+        }
+
+        [UserAction(Actions.SecondQuestion)]
+        public async void OnSecondQuestion(Message message, TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+            UserDB userDb = new UserDB();
+
+            User user = await userDb.GetUserByChatId(chatId);
+
+            user.Utility = text;
+
+            userDb.ChangeUserAction(chatId, Actions.ThirdQuestion);
+            await client.SendTextMessageAsync(
+                chatId, "Более отвлечённый вопрос🤗\n**О чем бы вы хотели пообщаться? [3/3]**\nТемы рабочие и не очень", ParseMode.Markdown);
         }
         
+        [UserAction(Actions.ThirdQuestion)]
+        public async void OnThirdQuestion(Message message, TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+            UserDB userDb = new UserDB();
+            User user = await userDb.GetUserByChatId(chatId);
+            
+            string[][] ans = {new[] {""}}; // Array of this Parent Tags (will be in DB, I guess)
+            
+            user.Communication = text;
+
+            userDb.ChangeUserAction(chatId, Actions.AddingParentTag);
+            await client.SendTextMessageAsync(
+                chatId, "😋 Хорошо, перейдём к **тегам**." +
+                        "\n\nПо тегам можно легко и удобно __сортировать__ нужных вам людей. Сначала выбираются группы тегов, но с помощью кнопки **добавить тег** можно не ограничиваться одной группой" +
+                        "\n\nВы можете их менять по кнопке мой профиль" +
+                        "\n\nА сейчас выберите ВАШИ теги (подходят лично **ВАМ**) **[1/2]**", 
+                ParseMode.Markdown, replyMarkup: TelegramKeyboard.GetKeyboard(ans, true));
+        }
+
+        [UserAction(Actions.AddingParentTag)]
+        public async void OnAddingTags(Message message, TelegramBotClient client)
+        {
+            // Add one tag and than more tags (next Action.ChoosingTags)
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+            UserDB userDb = new UserDB();
+            User user = await userDb.GetUserByChatId(chatId);
+
+            string[][] tags = {new[] {""}, new []{""}}; // Array of Tags of this Parent Tag (will be in DB, I guess) for INLINE keyboard
+            string[][] callbackData = {new[] {""}};
+            string[][] ans = {new[] {"Ок"}, new []{"Добавить тег"}, new []{"Выбрать заново"}}; // Variants of actions
+            
+            // TODO: Add inline keyboard (tags)
+
+            await client.SendTextMessageAsync(
+                chatId, "Ваши теги:", ParseMode.Markdown, // Editing while choosing tags?
+                replyMarkup: TelegramKeyboard.GetInlineKeyboard(tags, callbackData));
+            
+            await client.SendTextMessageAsync(
+                chatId, "Ваши теги:", ParseMode.Markdown, // Editing while choosing tags?
+                replyMarkup: TelegramKeyboard.GetKeyboard(ans, true));
+            
+            userDb.ChangeUserAction(chatId, Actions.ChoosingTags);
+        }
+
+        [UserAction(Actions.ChoosingTags)]
+        public async void OnChoosingTags(Message message, TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+            UserDB userDb = new UserDB();
+            User user = await userDb.GetUserByChatId(chatId);
+            
+            // Gets users callbacks from inline keyboard and receiving answers from normal keyboard
+            switch (text)
+            {
+                case "ОК": // Starts Action with setting searching tags
+                    break;
+                
+                case "Добавить тег": // ???
+                    break;
+                
+                case "Выбрать заново": // Returns to Action with Parent Tags? Deletes all tags that user has now
+                    userDb.ChangeUserAction(chatId, Actions.AddingParentTag);
+                    string[][] ans = {new[] {""}}; // Array of this Parent Tags (will be in DB, I guess)
+                    
+                    await client.SendTextMessageAsync(
+                        chatId, "Выберите спецальность:", ParseMode.Markdown, // Editing while choosing tags?
+                        replyMarkup: TelegramKeyboard.GetKeyboard(ans, true));
+                    break;
+            }
+        }
+        #endregion
     }
 }

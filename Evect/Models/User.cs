@@ -9,8 +9,9 @@ namespace Evect.Models
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Company { get; set; }
-        public string Position { get; set; }
+        public string CompanyAndPosition { get; set; }
+        public string Utility { get; set; }
+        public string Communication { get; set; }
         public string Phone { get; set; }
         public bool IsAuthed { get; set; }
         public bool IsAdminAuthorized { get; set; }
