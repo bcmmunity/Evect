@@ -55,23 +55,29 @@ namespace Evect.Models
             }
         }
         
-        public  async Task SendEmailAsync(string email,string subject,string message)//эмейл получателя,тема письма,текст письма
+        public static async Task SendEmailAsync(string email,string subject,string message)
         {
-            var emailMessage = new MimeMessage();//создет объект отправляемого сообщения
-            emailMessage.From.Add(new MailboxAddress("Администрация бота", "info@diffind.com"));//определяется отправитель
-            emailMessage.To.Add(new MailboxAddress(email));//коллекция получателей
+            var emailMessage = new MimeMessage();
+            emailMessage.From.Add(new MailboxAddress("Администрация бота", "info@diffind.com"));
+            emailMessage.To.Add(new MailboxAddress(email));
             emailMessage.Subject = subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Plain)//тело сообщения
+            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Plain)
             {
                 Text = message
             };
-            using (var client = new MailKit.Net.Smtp.SmtpClient())//непосредственно само отправление сообщения
+            using (var client = new MailKit.Net.Smtp.SmtpClient())
             {
-                await client.ConnectAsync("wpl19.hosting.reg.ru", 587,false);//подключение к серверу
-                await client.AuthenticateAsync("info@diffind.com", "Diffind123!");//аутенфикация
-                await client.SendAsync(emailMessage);//отправка сообщения
-                await client.DisconnectAsync(true);//отключение
+                await client.ConnectAsync("wpl19.hosting.reg.ru", 587,false);
+                await client.AuthenticateAsync("info@diffind.com", "Diffind123!");
+                await client.SendAsync(emailMessage);
+                await client.DisconnectAsync(true);
             }
+        }
+
+        public static string GenerateRandomCode()
+        {
+            Random random = new Random();
+            return random.Next(1000, 10000).ToString();
         }
         
         

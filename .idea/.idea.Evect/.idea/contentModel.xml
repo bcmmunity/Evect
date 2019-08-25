@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="$PROJECT_DIR$" t="IncludeFlat">
+    <e p="C:\projects\C#\Evect" t="IncludeFlat">
       <e p="Evect" t="IncludeRecursive">
         <e p="appsettings.Development.json" t="Include" />
         <e p="appsettings.json" t="Include" />
@@ -27,12 +27,14 @@
           </e>
           <e p="ErrorViewModel.cs" t="Include" />
           <e p="Event.cs" t="Include" />
+          <e p="Log.cs" t="Include" />
           <e p="Tag.cs" t="Include" />
           <e p="TelegramKeyboard.cs" t="Include" />
           <e p="User.cs" t="Include" />
           <e p="UserActionType.cs" t="Include" />
           <e p="UserEvent.cs" t="Include" />
           <e p="UserTag.cs" t="Include" />
+          <e p="UserValidation.cs" t="Include" />
           <e p="Utils.cs" t="Include" />
         </e>
         <e p="obj" t="ExcludeRecursive">
@@ -45,6 +47,9 @@
         <e p="Program.cs" t="Include" />
         <e p="Properties" t="Include">
           <e p="launchSettings.json" t="Include" />
+          <e p="PublishProfiles" t="Include">
+            <e p="CustomProfile.pubxml" t="Include" />
+          </e>
         </e>
         <e p="Startup.cs" t="Include" />
         <e p="Views" t="Include">
@@ -58,9 +63,9 @@
       <e p="Evect.sln" t="IncludeFlat" />
       <e p="packages" t="ExcludeRecursive" />
     </e>
-    <e p="$USER_HOME$/Library/Caches/Rider2019.2/extResources" t="IncludeRecursive" />
-    <e p="$USER_HOME$/Library/Caches/Rider2019.2/resharper-host/local/Transient/ReSharperHost/v192/SolutionCaches/_Evect.-2016196777.00" t="ExcludeRecursive" />
-    <e p="$APPLICATION_CONFIG_DIR$/consoles/db" t="IncludeRecursive" />
-    <e p="$APPLICATION_CONFIG_DIR$/extensions" t="IncludeRecursive" />
+    <e p="C:\Users\smari\.Rider2019.1\config\consoles\db" t="IncludeRecursive" />
+    <e p="C:\Users\smari\.Rider2019.1\config\extensions" t="IncludeRecursive" />
+    <e p="C:\Users\smari\.Rider2019.1\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\smari\.Rider2019.1\system\resharper-host\local\Transient\ReSharperHost\v191\SolutionCaches\_Evect.787436745.00" t="ExcludeRecursive" />
   </component>
 </project>

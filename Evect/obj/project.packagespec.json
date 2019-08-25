@@ -1,13 +1,13 @@
 ﻿{
   "version": "1.0.0",
   "restore": {
-    "projectUniqueName": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj",
+    "projectUniqueName": "C:\\projects\\C#\\Evect\\Evect\\Evect.csproj",
     "projectName": "Evect",
-    "projectPath": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj",
-    "outputPath": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/obj/",
+    "projectPath": "C:\\projects\\C#\\Evect\\Evect\\Evect.csproj",
+    "outputPath": "C:\\projects\\C#\\Evect\\Evect\\obj\\",
     "projectStyle": "PackageReference",
     "fallbackFolders": [
-      "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+      "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
     ],
     "originalTargetFrameworks": [
       "netcoreapp2.2"
@@ -29,6 +29,10 @@
   "frameworks": {
     "netcoreapp2.2": {
       "dependencies": {
+        "MailKit": {
+          "target": "Package",
+          "version": "[2.2.0, )"
+        },
         "Microsoft.AspNetCore.App": {
           "suppressParent": "All",
           "target": "Package",
@@ -45,6 +49,10 @@
           "target": "Package",
           "version": "[2.2.0, )",
           "autoReferenced": true
+        },
+        "MimeKit": {
+          "target": "Package",
+          "version": "[2.2.0, )"
         },
         "Telegram.Bot": {
           "target": "Package",

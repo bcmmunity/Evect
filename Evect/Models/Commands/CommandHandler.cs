@@ -29,7 +29,7 @@ namespace Evect.Models.Commands
 
             string[][] actions = { new[] { "Войти по ивент-коду" }, new[] { "Личный кабинет" } };
             await client.SendTextMessageAsync(chatId, "Чудненько " + "😇" + " Можем приступить", ParseMode.Markdown);
-            await client.SendTextMessageAsync(chatId, "У вас есть личный кабинет? Если нет, то войдите по <b>ивент-коду</b> \n P.S.<b>Ивент-код</b> отправлен в письме регистрации", ParseMode.Html, replyMarkup: TelegramKeyboard.GetKeyboard(actions));
+            await client.SendTextMessageAsync(chatId, "У вас есть личный кабинет? Если нет, то войдите по **ивент-коду** \n P.S.**Ивент-код** отправлен в письме регистрации", ParseMode.Markdown, replyMarkup: TelegramKeyboard.GetKeyboard(actions));
 
         }
 
@@ -47,8 +47,8 @@ namespace Evect.Models.Commands
                 if (user.CurrentAction != Actions.DeleteOrNot)
                 {
                     string[][] actions = { new[] { "Да" }, new[] { "Нет" } };
-                    await client.SendTextMessageAsync(chatId, "<b>Сохранить</b> ваши данные или <b>полносью удалить</b>",
-                        ParseMode.Html,
+                    await client.SendTextMessageAsync(chatId, "**Сохранить** ваши данные или <b>полносью удалить</b>",
+                        ParseMode.Markdown,
                         replyMarkup: TelegramKeyboard.GetKeyboard(actions, true));
 
                     db.ChangeUserAction(chatId, Actions.DeleteOrNot);
@@ -61,10 +61,36 @@ namespace Evect.Models.Commands
         public async void OnProfile(Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
-            UserDB db = new UserDB();
-            db.ChangeUserAction(chatId, Actions.Profile);
-            string[][] actions = { new[] { "О мероприятии" }, new[] {"Присоединиться к мероприятию"} };
-            await client.SendTextMessageAsync(chatId, "Что нужно?",ParseMode.Html,replyMarkup:TelegramKeyboard.GetKeyboard(actions, true));
+            UserDB userDb = new UserDB();
+            User user = await userDb.GetUserByChatId(chatId);
+            
+            if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))//здесь мб сделать проверку на админский ли код
+            {
+                await client.SendTextMessageAsync(
+                    chatId,
+                    "Похоже мы не все о вас знаем. Как вас зовут? Попрошу имя и фамилию через пробел",
+                    ParseMode.Html);
+                userDb.ChangeUserAction(chatId, Actions.WaitingForName);
+                            
+            } else if (string.IsNullOrEmpty(user.Email))
+            {
+                await client.SendTextMessageAsync(
+                    chatId,
+                    "Вот мы и познакомились, а теперь можно ваш адрес электронной почты?",
+                    ParseMode.Html);
+                userDb.ChangeUserAction(chatId, Actions.WainingForEmail);
+            }
+            else
+            {
+                string[][] actions = { new[] { "О мероприятии", "Присоединиться к мероприятию" }, new[] {"Режим нетворкинга"}, new[] {"Записная книжка"}, new[] {"Все мероприятия"} };
+                await client.SendTextMessageAsync(
+                    chatId,
+                    "Что нужно?",
+                    ParseMode.Html,
+                    replyMarkup: TelegramKeyboard.GetKeyboard(actions));
+                    
+                userDb.ChangeUserAction(chatId, Actions.Profile);
+            }
         }
 
 

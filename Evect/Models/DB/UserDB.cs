@@ -15,7 +15,7 @@ namespace Evect.Models.DB
         }
 
         
-        #region Add/Remove/Edit/Login/Logoff users
+   
         
         public void AddUser(long tgId)//добавление юзера
         {
@@ -63,9 +63,6 @@ namespace Evect.Models.DB
             await Context.SaveChangesAsync();
         }
         
-        
-        #endregion
-        
         public async Task<bool> IsUserExists(long tgId)
         {
             return await Context.Users.FirstOrDefaultAsync(u => u.TelegramId == tgId) != null;
@@ -108,6 +105,16 @@ namespace Evect.Models.DB
         {
             await Task.Run(() => ChangeUserAction(tgId, action));
         }
+
+        /// <summary>
+        ///  Проверяет наличие пользователя с введным адресом электронной почти
+        /// </summary>
+        public async Task<bool> CheckEmailInDB(string email)
+        {
+            User user = await Context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return user != null;
+        }
+        
         
         
         

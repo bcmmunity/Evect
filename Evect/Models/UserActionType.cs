@@ -5,6 +5,7 @@ namespace Evect.Models
         None,
         
         WaitingForEventCode,
+        WaitingForValidationCode,
         
         DeleteOrNot,
         

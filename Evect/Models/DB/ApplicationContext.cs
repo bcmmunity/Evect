@@ -24,7 +24,17 @@ namespace Evect.Models.DB
         {
             modelBuilder.Entity<User>()
                 .HasIndex(b => b.TelegramId);
-
+            
+            modelBuilder.Entity<User>()
+                .HasData(new User
+                {
+                    UserId = 1,
+                    TelegramId = 12312312,
+                    FirstName = "artem",
+                    LastName = "kim",
+                    Email = "moranmr8@gmail.com"
+                });
+            
             modelBuilder.Entity<Event>()
                 .HasData(
                     new Event { 
@@ -67,5 +77,6 @@ namespace Evect.Models.DB
         public DbSet<User> Users { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Event> Events { get; set; }
+        public DbSet<UserValidation> Validations { get; set; }
     }
 }
