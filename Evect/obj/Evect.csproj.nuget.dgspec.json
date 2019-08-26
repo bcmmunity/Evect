@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj": {}
+    "C:\\projects\\c#\\Evect\\Evect\\Evect.csproj": {}
   },
   "projects": {
-    "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj": {
+    "C:\\projects\\c#\\Evect\\Evect\\Evect.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj",
+        "projectUniqueName": "C:\\projects\\c#\\Evect\\Evect\\Evect.csproj",
         "projectName": "Evect",
-        "projectPath": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj",
-        "packagesPath": "/Users/Modernwolf/.nuget/packages/",
-        "outputPath": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/obj/",
+        "projectPath": "C:\\projects\\c#\\Evect\\Evect\\Evect.csproj",
+        "packagesPath": "C:\\Users\\Xiaomi\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\c#\\Evect\\Evect\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "/Users/Modernwolf/.config/NuGet/NuGet.Config"
+          "C:\\Users\\Xiaomi\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp2.2"
@@ -39,6 +39,10 @@
       "frameworks": {
         "netcoreapp2.2": {
           "dependencies": {
+            "MailKit": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
             "Microsoft.AspNetCore.App": {
               "suppressParent": "All",
               "target": "Package",
@@ -55,6 +59,10 @@
               "target": "Package",
               "version": "[2.2.0, )",
               "autoReferenced": true
+            },
+            "MimeKit": {
+              "target": "Package",
+              "version": "[2.2.0, )"
             },
             "Telegram.Bot": {
               "target": "Package",

@@ -474,11 +474,17 @@ namespace Evect.Models.Commands
                     
                     
                     var events = Utils.SplitList(2, (await eventDb.GetUserEvents(chatId)).Select(e => e.Name).ToList());
+                    
 
-                    string[] test = events[0].ToArray();
-                    test[0] = $"{test[0]} {Utils.GetCheckmark()}";
+                    List<string> temp = events[0];
+                    temp[0] = $"{temp[0]} {Utils.GetCheckmark()}";
 
-                    string[][] keyboard = {test, new[] {"|", "X", "2"}};
+                    var forKeyboard = Utils.SplitList(1, temp);
+
+                    forKeyboard.Add(new List<string> {"|", "X", "2"});
+                    
+                    string[][] forKeyboardArr = forKeyboard.Select(e => e.ToArray()).ToArray();
+                    
                     
 //                    foreach (var ev in events)
 //                    {
@@ -489,7 +495,7 @@ namespace Evect.Models.Commands
                         chatId,
                         "Все мероприятия",
                         ParseMode.Html,
-                        replyMarkup: TelegramKeyboard.GetKeyboard(keyboard));
+                        replyMarkup: TelegramKeyboard.GetKeyboard(forKeyboardArr));
                     
                     UserDB.ChangeUserAction(context, chatId, Actions.AllEventsChangePage);
                     
@@ -560,20 +566,27 @@ namespace Evect.Models.Commands
                         if (eventDb.Context.Events.Find(user.CurrentEventId).Name == t)
                         {
                             events[page - 1][i] = $"{t} {Utils.GetCheckmark()}";
+                            break;
                         } 
                         
                     }
-                
-                    string[] test = events[page - 1].ToArray();
+                    
 
                     string left = page - 1 > 0 ? $"{page - 1}" : "|";
                     string right = page + 1 < events.Count ? $"{page + 1}" : "|";
-                    string[][] keyboard = {test, new[] {left, "X", right}};
+                    
+
+                    var forKeyboard = Utils.SplitList(1, events[page - 1]);
+
+                    forKeyboard.Add(new List<string> {left, "X", right});
+                    
+                    string[][] forKeyboardArr = forKeyboard.Select(e => e.ToArray()).ToArray();
+                    
                     await client.SendTextMessageAsync(
                         chatId,
                         "Все мероприятия",
                         ParseMode.Html,
-                        replyMarkup: TelegramKeyboard.GetKeyboard(keyboard));
+                        replyMarkup: TelegramKeyboard.GetKeyboard(forKeyboardArr));
                 }
                 
             }
