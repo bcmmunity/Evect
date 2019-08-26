@@ -79,7 +79,7 @@ namespace Evect.Models.DB
             User user = await GetUserByChatId(context, tgId);
             user.CurrentAction = Actions.None;
             context.Users.Update(user);
-            await context.SaveChangesAsync();
+            context.SaveChanges();
         }
 
         public static async void ChangeUserAction(ApplicationContext context, long tgId, Actions action)

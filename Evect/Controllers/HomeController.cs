@@ -19,27 +19,26 @@ namespace Evect.Controllers
 {
     public class HomeController : Controller
     {
-        private ApplicationContext _db;
+        
         private UserDB _userDb;
         private EventDB _eventDb;
 
         private CommandHandler _commandHadler;
         private ActionHandler _actionHandler;
 
-        private Dictionary<Action<ApplicationContext, Message, TelegramBotClient>, string > _commands;
-        private Dictionary<Action<ApplicationContext,Message, TelegramBotClient>, Actions > _actions;
-        
+        private Dictionary<Action<ApplicationContext, Message, TelegramBotClient>, string> _commands;
+        private Dictionary<Action<ApplicationContext, Message, TelegramBotClient>, Actions> _actions;
+
         public HomeController(ApplicationContext db)
         {
-            _db = db;
+            
             _eventDb = new EventDB();
 
             _commandHadler = new CommandHandler();
             _actionHandler = new ActionHandler();
-        
+
             _commands = Bot.Commands;
             _actions = Bot.ActionList;
-                
         }
 
         public IActionResult Index()
@@ -51,53 +50,53 @@ namespace Evect.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Update update)
         {
-            _db = new ApplicationContext(new DbContextOptions<ApplicationContext>());
-            
+
             if (update == null)
                 return Ok();
-            
-            
-            var message = update.Message;
-            var client = new TelegramBotClient(AppSettings.Key);
-            var chatId = message.Chat.Id;
 
-            User user = await UserDB.GetUserByChatId(_db, chatId);//получаем айди юзера и его самого из бд
-
-            if (user == null)
+            using (ApplicationContext db = new ApplicationContext(new DbContextOptions<ApplicationContext>()))
             {
-                foreach (var pair in _commands)
+                var message = update.Message;
+                var client = new TelegramBotClient(AppSettings.Key);
+                var chatId = message.Chat.Id;
+
+                User user = await UserDB.GetUserByChatId(db, chatId); //получаем айди юзера и его самого из бд
+
+                if (user == null)
                 {
-                    if (pair.Value == "/start")
+                    foreach (var pair in _commands)
                     {
-                        pair.Key(_db, message, client);
-                    } 
+                        if (pair.Value == "/start")
+                        {
+                            pair.Key(db, message, client);
+                        }
+                    }
+
+                    return Ok();
                 }
 
-                return Ok();
-            }
-
-            if (!user.IsAuthed)
-            {
-                foreach (var pair in _commands)
+                if (!user.IsAuthed)
                 {
-                    if (pair.Value == "/start" || pair.Value == "Личный кабинет")
+                    foreach (var pair in _commands)
                     {
-                        pair.Key(_db, message, client);
-                    } 
+                        if (pair.Value == "/start" || pair.Value == "Личный кабинет")
+                        {
+                            pair.Key(db, message, client);
+                        }
+                    }
+
+                    return Ok();
                 }
-                
-                return Ok();
-            }
-            
-            foreach (var pair in _actions)
-            {
-                if (pair.Value == user.CurrentAction)
+
+                foreach (var pair in _actions)
                 {
-                    pair.Key(_db, message, client);
+                    if (pair.Value == user.CurrentAction)
+                    {
+                        pair.Key(db, message, client);
+                    }
                 }
             }
 
-            
 
             return Ok();
         }
