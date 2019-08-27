@@ -5,6 +5,7 @@ using System.Net.Mail;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Evect.Models.DB;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
@@ -18,7 +19,7 @@ namespace Evect.Models.Commands
         private readonly CommandHandler _commandHadler = new CommandHandler();
 
         [UserAction(Actions.None)]
-        public async void OnNone(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnNone(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var commands = Bot.Commands;
             var chatId = message.Chat.Id;
@@ -43,7 +44,7 @@ namespace Evect.Models.Commands
 
 
         [UserAction(Actions.WaitingForEventCode)]
-        public async void OnWaitingEventCode(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnWaitingEventCode(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
@@ -169,7 +170,7 @@ namespace Evect.Models.Commands
         }
         #region AdminModeAndAdminActions
         [UserAction(Actions.AdminMode)]
-        public async void AdminMode(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task AdminMode(ApplicationContext context, Message message, TelegramBotClient client)
         {
             if (message.Text == "Об ивенте")
             {
@@ -207,7 +208,7 @@ namespace Evect.Models.Commands
         }
 
         [UserAction(Actions.GetInformationAboutTheEvent)]
-        public async void InformationAboutTheEvent(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task InformationAboutTheEvent(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
@@ -244,7 +245,7 @@ namespace Evect.Models.Commands
 
         }
         [UserAction(Actions.AddNewInformationAboutEvent)]//"Добавить новую статью"
-        public async void AddInfoAboutEvent(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task AddInfoAboutEvent(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
@@ -263,7 +264,7 @@ namespace Evect.Models.Commands
             }
         }
         [UserAction(Actions.CreateNotification)]
-        public async void SendNotification(ApplicationContext context,Message message,TelegramBotClient client)
+        public async Task SendNotification(ApplicationContext context,Message message,TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
@@ -287,7 +288,7 @@ namespace Evect.Models.Commands
         }
 #endregion
         [UserAction(Actions.WaitingForName)]
-        public async void OnWaitingForName(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnWaitingForName(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
@@ -322,7 +323,7 @@ namespace Evect.Models.Commands
         }
 
         [UserAction(Actions.WainingForEmail)]
-        public async void OnWaitingForEmail(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnWaitingForEmail(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
@@ -378,7 +379,7 @@ namespace Evect.Models.Commands
         }
 
         [UserAction(Actions.WaitingForValidationCode)]
-        public async void OnWaitingForValidationCode(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnWaitingForValidationCode(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var text = message.Text;
             var chatId = message.Chat.Id;
@@ -434,7 +435,7 @@ namespace Evect.Models.Commands
         
         
         [UserAction(Actions.DeleteOrNot)]
-        public async void OnDeleteOrNot(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnDeleteOrNot(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
@@ -471,7 +472,7 @@ namespace Evect.Models.Commands
         
         
         [UserAction(Actions.Profile)]
-        public async void OnProfile(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnProfile(ApplicationContext context, Message message, TelegramBotClient client)
         {
             
             EventDB eventDb = new EventDB();
@@ -488,10 +489,11 @@ namespace Evect.Models.Commands
                     if (isReg)
                     {
                         Event ev = context.Events.Find(user.CurrentEventId);
+                        string linkType = ev.TelegraphLink.Contains("telegra.ph") ? "Telegraph" : "Teletype";
                         builder.Clear();
-
+                        
                         builder.AppendLine($"<b>Название: </b>{ev.Name}");
-                        builder.AppendLine($"Для вашего удобства мы подготовили статью в Telegraph: {ev.TelegraphLink}");
+                        builder.AppendLine($"Для вашего удобства мы подготовили статью в {linkType}: {ev.TelegraphLink}");
 
                         await client.SendTextMessageAsync(
                             chatId,
@@ -590,7 +592,7 @@ namespace Evect.Models.Commands
         }
 
         [UserAction(Actions.AllEventsChangePage)]
-        public async void OnEventsChangePage(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnEventsChangePage(ApplicationContext context, Message message, TelegramBotClient client)
         {
             EventDB eventDb = new EventDB();
             
@@ -673,7 +675,7 @@ namespace Evect.Models.Commands
         
         #region Network mode
         [UserAction(Actions.FirstQuestion)]
-        public async void OnFirstQuestion(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnFirstQuestion(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
@@ -689,7 +691,7 @@ namespace Evect.Models.Commands
         }
 
         [UserAction(Actions.SecondQuestion)]
-        public async void OnSecondQuestion(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnSecondQuestion(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
@@ -705,7 +707,7 @@ namespace Evect.Models.Commands
         }
         
         [UserAction(Actions.ThirdQuestion)]
-        public async void OnThirdQuestion(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnThirdQuestion(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
@@ -726,7 +728,7 @@ namespace Evect.Models.Commands
         }
 
         [UserAction(Actions.AddingParentTag)]
-        public async void OnAddingTags(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnAddingTags(ApplicationContext context, Message message, TelegramBotClient client)
         {
             // Add one tag and than more tags (next Action.ChoosingTags)
             var chatId = message.Chat.Id;
@@ -752,7 +754,7 @@ namespace Evect.Models.Commands
         }
 
         [UserAction(Actions.ChoosingTags)]
-        public async void OnChoosingTags(ApplicationContext context, Message message, TelegramBotClient client)
+        public async Task OnChoosingTags(ApplicationContext context, Message message, TelegramBotClient client)
         {
             var chatId = message.Chat.Id;
             var text = message.Text;

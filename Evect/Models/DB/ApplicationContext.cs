@@ -59,7 +59,7 @@ namespace Evect.Models.DB
                         Info = "DIFFFFFFFFFFFFFFFFFFFIND", 
                         EventCode = "event_kim3",
                         AdminCode = "event_admin3",
-                        TelegraphLink = "https://telegra.ph/Testovaya-statya-dlya-event-08-24"
+                        TelegraphLink = "https://teletype.in/@verrok/SyOMtebSB"
                     },
                     new Event { 
                         EventId = 4,
