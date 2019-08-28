@@ -57,14 +57,16 @@ namespace Evect.Controllers
             var message = update.Message;
             var client = new TelegramBotClient(AppSettings.Key);
             var chatId = message.Chat.Id;
-
+            var text = message.Text;
+            
+            
             User user = await UserDB.GetUserByChatId(db, chatId); //получаем айди юзера и его самого из бд
 
             if (user == null)
             {
                 foreach (var pair in _commands)
                 {
-                    if (pair.Value == "/start")
+                    if (text == "/start" && pair.Value == "/start")
                     {
                         await pair.Key(db, message, client);
 
@@ -77,7 +79,7 @@ namespace Evect.Controllers
             {
                 foreach (var pair in _commands)
                 {
-                    if (pair.Value == "/start" || pair.Value == "Личный кабинет")
+                    if ((text == "/start" || text == "Личный кабинет") && (pair.Value == "/start" || pair.Value == "Личный кабинет"))
                     {
                         await pair.Key(db, message, client);
 

@@ -806,18 +806,14 @@ namespace Evect.Models.Commands
             TelegramKeyboard keyboard = new TelegramKeyboard(true);
             TelegramInlineKeyboard inlineKeyboard = new TelegramInlineKeyboard();
             
-            keyboard.AddRow("Ок");
+            keyboard.AddRow("Ок"); // Variants of actions
             keyboard.AddRow("Добавить тег");
             keyboard.AddRow("Выбрать заново");
 
             inlineKeyboard
-                .AddTextRow("123")
+                .AddTextRow("123") // Array of Tags of this Parent Tag (will be in DB, I guess) for INLINE keyboard
                 .AddCallbackRow("123");
-            
-            string[][] tags = {new[] {""}, new []{""}}; // Array of Tags of this Parent Tag (will be in DB, I guess) for INLINE keyboard
-            string[][] callbackData = {new[] {""}};
-            string[][] ans = {new[] {"Ок"}, new []{"Добавить тег"}, new []{"Выбрать заново"}}; // Variants of actions
-            
+
             // TODO: Add inline keyboard (tags)
 
             await client.SendTextMessageAsync(
