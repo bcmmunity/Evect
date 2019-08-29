@@ -108,7 +108,7 @@ namespace Evect.Models
 
             int numberOfLists = list.Count / width;
 
-            for (int i = 0; i <= numberOfLists; i++) 
+            for (int i = 0; i < numberOfLists; i++) 
             { 
                 List<T> newList = list.Skip(i * width).Take(width).ToList();
                 splited.Add(newList); 

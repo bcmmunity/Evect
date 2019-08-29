@@ -8,7 +8,7 @@ namespace Evect.Models.DB
             : base(options)
         {
             // ВЫКЛЮЧИТЬ ПРИ ДЕПЛОЕ НА СЕРВАК
-           // Database.EnsureDeleted();
+//           Database.EnsureDeleted();
             
             
             
