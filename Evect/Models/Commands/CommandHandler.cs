@@ -1,3 +1,4 @@
+using System.Text;
 using System.Threading.Tasks;
 using Evect.Models.DB;
 using Telegram.Bot;
@@ -36,7 +37,7 @@ namespace Evect.Models.Commands
             keyboard.AddRow("Личный кабинет");
 
             await client.SendTextMessageAsync(chatId, "Чудненько " + "😇" + " Можем приступить", ParseMode.Markdown);
-            await client.SendTextMessageAsync(chatId, "У вас есть личный кабинет? Если нет, то войдите по **ивент-коду** \n P.S.**Ивент-код** отправлен в письме регистрации", ParseMode.Markdown, replyMarkup: keyboard.Markup);
+            await client.SendTextMessageAsync(chatId, "У вас есть личный кабинет? Если нет, то войдите по *ивент-коду* \n P.S.*Ивент-код* отправлен в письме регистрации", ParseMode.Markdown, replyMarkup: keyboard.Markup);
 
         }
 
@@ -70,22 +71,19 @@ namespace Evect.Models.Commands
         {
             long chatId = message.Chat.Id;
             User user = await UserDB.GetUserByChatId(context, chatId);
+            StringBuilder builder = new StringBuilder();
             
-            if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))//здесь мб сделать проверку на админский ли код
+            if (string.IsNullOrEmpty(user.Email))
             {
-                await client.SendTextMessageAsync(
-                    chatId,
-                    "Похоже мы не все о вас знаем. Как вас зовут? Попрошу имя и фамилию через пробел",
-                    ParseMode.Html);
-                UserDB.ChangeUserAction(context, chatId, Actions.WaitingForName);
+                builder.AppendLine(@"Я смотрю мы вас не знаем, войдите по ивент коду ");
+                builder.AppendLine();
+                builder.AppendLine(@"Введите ивент код");
                             
-            } else if (string.IsNullOrEmpty(user.Email))
-            {
                 await client.SendTextMessageAsync(
                     chatId,
-                    "Вот мы и познакомились, а теперь можно ваш адрес электронной почты?",
-                    ParseMode.Html);
-                UserDB.ChangeUserAction(context, chatId, Actions.WainingForEmail);
+                    builder.ToString(),
+                    ParseMode.Markdown);
+                UserDB.ChangeUserAction(context, chatId, Actions.WaitingForEventCode);
             }
             else
             {
@@ -111,7 +109,7 @@ namespace Evect.Models.Commands
         public async Task OnEnteringByCode(ApplicationContext context, Message message, TelegramBotClient client)
         {
             long chatId = message.Chat.Id;
-            await client.SendTextMessageAsync(chatId, "Введите ивент-код",ParseMode.Html);
+            await client.SendTextMessageAsync(chatId, "Пожалуйста, введите *ивент-код*",ParseMode.Markdown);
 
             UserDB.ChangeUserAction(context, chatId, Actions.WaitingForEventCode);
         }
