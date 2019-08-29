@@ -8,7 +8,7 @@ namespace Evect.Models.DB
             : base(options)
         {
             // ВЫКЛЮЧИТЬ ПРИ ДЕПЛОЕ НА СЕРВАК
-            // Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             
             
             
@@ -264,9 +264,6 @@ namespace Evect.Models.DB
                 .HasOne(us => us.User)
                 .WithMany(e => e.UserEvents)
                 .HasForeignKey(k => k.UserEventId);
-                
-
-
         }
 
         public DbSet<Log> Logs { get; set; }
