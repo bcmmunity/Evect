@@ -14,7 +14,7 @@ namespace Evect.Models.Commands
         }
     }
     
-    [AttributeUsage(AttributeTargets.Method)]//Этот метод применим только к методам
+    [AttributeUsage(AttributeTargets.Method)]
     public class UserAction : Attribute
     {
         public Actions Action{ get; set; }
@@ -23,6 +23,18 @@ namespace Evect.Models.Commands
         {
             Action = action;
         }
+    }
+    
+    [AttributeUsage(AttributeTargets.Method)]
+    public class InlineCallback : Attribute
+    {
+        public string[] Callbacks { get; set; }
+
+        public InlineCallback(params string[] callbacks)
+        {
+            Callbacks = callbacks;
+        }
+        
     }
     
 }
