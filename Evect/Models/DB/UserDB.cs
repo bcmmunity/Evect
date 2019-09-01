@@ -17,7 +17,7 @@ namespace Evect.Models.DB
         }
         
 
-        public static async void AddUserAsync(ApplicationContext context, long tgId)
+        public static async Task AddUserAsync(ApplicationContext context, long tgId)
         {
             await context.Users.AddAsync(new User { TelegramId = tgId, IsAuthed = true});
             context.SaveChanges();
@@ -25,14 +25,14 @@ namespace Evect.Models.DB
         
         
     
-        public static async void UserLogin(ApplicationContext context, long tgId)
+        public static async Task UserLogin(ApplicationContext context, long tgId)
         {
             User user = await GetUserByChatId(context, tgId);
             user.IsAuthed = true;
             context.Users.Update(user);
             context.SaveChanges();
         }
-        public static async void AdminAuthorized(ApplicationContext context, long tgId)//ÀÂÒÎÐÈÇÀÖÈß ÀÄÌÈÍÎÌ
+        public static async Task AdminAuthorized(ApplicationContext context, long tgId)//ÀÂÒÎÐÈÇÀÖÈß ÀÄÌÈÍÎÌ
         {
             User user = await GetUserByChatId(context, tgId);
             user.IsAdminAuthorized = true;
@@ -40,7 +40,7 @@ namespace Evect.Models.DB
             context.SaveChanges();
         }
         
-        public static async void UserLogoff(ApplicationContext context, long tgId)
+        public static async Task UserLogoff(ApplicationContext context, long tgId)
         {
             User user = await GetUserByChatId(context, tgId);
             user.IsAuthed = false;
@@ -48,7 +48,7 @@ namespace Evect.Models.DB
             context.SaveChanges();
         }
 
-        public static async void ResetAction(ApplicationContext context, long tgId)
+        public static async Task ResetAction(ApplicationContext context, long tgId)
         {
             User user = await GetUserByChatId(context, tgId);
             user.CurrentAction = Actions.None;
@@ -77,7 +77,7 @@ namespace Evect.Models.DB
                 .FirstOrDefaultAsync(u => u.TelegramId == tgId);
         }
 
-        public static async void ResetUserAction(ApplicationContext context, long tgId)
+        public static async Task ResetUserAction(ApplicationContext context, long tgId)
         {
             User user = await GetUserByChatId(context, tgId);
             user.CurrentAction = Actions.None;
@@ -85,7 +85,7 @@ namespace Evect.Models.DB
             context.SaveChanges();
         }
 
-        public static async void ChangeUserAction(ApplicationContext context, long tgId, Actions action)
+        public static async Task ChangeUserAction(ApplicationContext context, long tgId, Actions action)
         {
                  
             User user = await GetUserByChatId(context, tgId);
@@ -118,7 +118,7 @@ namespace Evect.Models.DB
             context.Logs.Add(logg);
             context.SaveChanges();
         }
-        //        public static async void ChangeUserParams()
+        //        public static async Task ChangeUserParams()
 
 
 

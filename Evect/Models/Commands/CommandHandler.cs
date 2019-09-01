@@ -21,7 +21,7 @@ namespace Evect.Models.Commands
                 }
             else if (!await UserDB.IsUserExistsAndAuthed(context, chatId))
             {
-                UserDB.UserLogin(context, chatId);
+                await UserDB.UserLogin(context, chatId);
                 await client.SendTextMessageAsync(chatId, "Мы рады вас снова видеть", ParseMode.Html);
             }
             else
@@ -57,7 +57,7 @@ namespace Evect.Models.Commands
                         ParseMode.Markdown,
                         replyMarkup: keyboard.Markup);
 
-                    UserDB.ChangeUserAction(context, chatId, Actions.DeleteOrNot);
+                    await UserDB.ChangeUserAction(context, chatId, Actions.DeleteOrNot);
                 }
 
             }
@@ -80,7 +80,7 @@ namespace Evect.Models.Commands
                     chatId,
                     builder.ToString(),
                     ParseMode.Markdown);
-                UserDB.ChangeUserAction(context, chatId, Actions.WaitingForEventCode);
+                await UserDB.ChangeUserAction(context, chatId, Actions.WaitingForEventCode);
             }
             else
             {
@@ -97,7 +97,7 @@ namespace Evect.Models.Commands
                     ParseMode.Html,
                     replyMarkup: keyboard.Markup);
                     
-                UserDB.ChangeUserAction(context, chatId, Actions.Profile);
+                await UserDB.ChangeUserAction(context, chatId, Actions.Profile);
             }
         }
 
@@ -108,7 +108,7 @@ namespace Evect.Models.Commands
             long chatId = message.Chat.Id;
             await client.SendTextMessageAsync(chatId, "Пожалуйста, введите *ивент-код*",ParseMode.Markdown);
 
-            UserDB.ChangeUserAction(context, chatId, Actions.WaitingForEventCode);
+            await UserDB.ChangeUserAction(context, chatId, Actions.WaitingForEventCode);
         }
 
      
