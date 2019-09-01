@@ -10,31 +10,20 @@ namespace Evect.Models
 {
     public class Utils
     {
-        public static IEnumerable<T> GetEnumerableOfType<T>(params object[] constuctorArgs) where T : class
-        {
-            List<T> objects = new List<T>();
-            foreach (Type type in Assembly.GetAssembly(typeof(T)).GetTypes()
-                .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(T))))
-            {
-                objects.Add((T)Activator.CreateInstance(type, constuctorArgs));
-            }
-
-            return objects;
-        }
 
         public static bool IsEmailValid(string email)
         {
             
             if (string.IsNullOrWhiteSpace(email)) return false;
 
-            // MUST CONTAIN ONE AND ONLY ONE @
+            // почта должна содержать 1 и только 1 собачу
             var atCount = email.Count(c => c == '@');
             if (atCount != 1) return false;
 
-            // MUST CONTAIN PERIOD
+            // должна содержать точку
             if (!email.Contains(".")) return false;
 
-            // @ MUST OCCUR BEFORE LAST PERIOD
+            // @ собачка должна стоять раньше точки и разница индексов должна быть больше 1
             var indexOfAt = email.IndexOf("@", StringComparison.Ordinal);
             var lastIndexOfPeriod = email.LastIndexOf(".", StringComparison.Ordinal);
             var atBeforeLastPeriod = lastIndexOfPeriod > indexOfAt && lastIndexOfPeriod - indexOfAt > 1;
@@ -42,7 +31,7 @@ namespace Evect.Models
 
             if (lastIndexOfPeriod == email.Length - 1) return false;
 
-            if (!Char.IsLetter(email[email.Length - 1])) return false;
+            if (!Char.IsLetterOrDigit(email[email.Length - 1])) return false;
 
             try
             {
@@ -97,6 +86,11 @@ namespace Evect.Models
             }
         }
 
+        /// <summary>
+        /// Разбивает изначальный список на энное количество списков опреленной длины
+        /// </summary>
+        /// <param name="width">длина списка </param>
+        /// <param name="list">изначальный список</param>
         public static List<List<T>> SplitList<T>(int width, List<T> list)
         {
             List<List<T>> splited = new List<List<T>>();
