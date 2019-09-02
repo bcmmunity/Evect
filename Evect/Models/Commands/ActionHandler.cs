@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Evect.Models.DB;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +16,8 @@ namespace Evect.Models.Commands
 {
     public class ActionHandler
     {
+        private readonly CommandHandler _commandHadler = new CommandHandler();
+
         [UserAction(Actions.None)]
         public async Task OnNone(ApplicationContext context, Message message, TelegramBotClient client)
         {
@@ -953,50 +958,89 @@ namespace Evect.Models.Commands
             User user = await UserDB.GetUserByChatId(context, chatId);
 
             TelegramKeyboard keyboard = new TelegramKeyboard(true);
-            keyboard.AddRow("123");
 
             user.Communication = text;
-
+            
+            // For answer
+            
+            List<Tag> parentTags = context.Tags.Where(x => x.Level == 1).ToList();
+            
+            foreach (var parentTag in parentTags)
+            {
+                keyboard.AddRow(parentTag.Name);
+            }
+            
             await UserDB.ChangeUserAction(context, chatId, Actions.AddingParentTag);
             await client.SendTextMessageAsync(
                 chatId, "😋 Хорошо, перейдём к **тегам**." +
                         "\n\nПо тегам можно легко и удобно __сортировать__ нужных вам людей. Сначала выбираются группы тегов, но с помощью кнопки **добавить тег** можно не ограничиваться одной группой" +
                         "\n\nВы можете их менять по кнопке мой профиль" +
-                        "\n\nА сейчас выберите ВАШИ теги (подходят лично **ВАМ**) **[1/2]**",
+                        "\n\nА сейчас выберите ВАШИ теги (подходят лично **ВАМ**) **[1/2]**", 
                 ParseMode.Markdown, replyMarkup: keyboard.Markup);
         }
 
+        #region Editing user
+        
         [UserAction(Actions.AddingParentTag)]
         public async Task OnAddingTags(ApplicationContext context, Message message, TelegramBotClient client)
         {
             // Add one tag and than more tags (next Action.ChoosingTags)
             var chatId = message.Chat.Id;
             var text = message.Text;
-
+            
             User user = await UserDB.GetUserByChatId(context, chatId);
+            Tag parentTag = context.Tags.FirstOrDefault(x => x.Name == text);
+
+            UserTag userTag = new UserTag();
+            userTag.TagId = parentTag.TagId;
+            userTag.UserId = user.UserId;
+            context.Users.Find(user).UserTags.Add(userTag); // Adding Parent Tag to User in DB
+            context.SaveChanges();
 
             TelegramKeyboard keyboard = new TelegramKeyboard(true);
             TelegramInlineKeyboard inlineKeyboard = new TelegramInlineKeyboard();
 
+            // Listing tags of this parent tag to user
+            List<Tag> childTags = context.Tags.Where(x => x.Level == 2).ToList();
+            string ans = "";
+            string[][] tags = new string[childTags.Count-1][]; // Array of Tags of this Parent Tag (will be in DB, I guess) for INLINE keyboard
+            string[][] callbackData = new string[childTags.Count-1][];
+            int i = 1; 
+
+            foreach (var tag in childTags)
+            {
+                ans += i.ToString() + ") " + tag.Name;
+                inlineKeyboard.AddTextRow(i.ToString()).AddCallbackRow(tag.TagId.ToString());
+                i++;
+            }
+            
             keyboard.AddRow("Ок"); // Variants of actions
             keyboard.AddRow("Добавить тег");
             keyboard.AddRow("Выбрать заново");
 
-            inlineKeyboard
-                .AddTextRow("123") // Array of Tags of this Parent Tag (will be in DB, I guess) for INLINE keyboard
-                .AddCallbackRow("123");
-
-            // TODO: Add inline keyboard (tags)
+            // For My profile 
+//            string chosenTags = "";
+//
+//            if (user.UserTags.Where(x => x.UserId == user.UserId) != null)
+//            {
+//                foreach (var tag in user.UserTags.Where(x => x.UserId == user.UserId))
+//                {
+//                    chosenTags = context.Tags.FirstOrDefault(x => x.TagId == tag.TagId && x.ParentTag == null).Name + " "; 
+//                }
+//
+//                await client.SendTextMessageAsync(
+//                    chatId, "Сейчас вы выбрали: " + chosenTags, ParseMode.Markdown);
+//            }
 
             await client.SendTextMessageAsync(
-                chatId, "Ваши теги:", ParseMode.Markdown, // Editing while choosing tags?
+                chatId, "Выберите теги:", ParseMode.Markdown, // Editing while choosing tags?
                 replyMarkup: inlineKeyboard.Markup);
-
+            
             await client.SendTextMessageAsync(
-                chatId, "Ваши теги:", ParseMode.Markdown, // Editing while choosing tags?
+                chatId, "", ParseMode.Markdown,
                 replyMarkup: keyboard.Markup);
-
-            await UserDB.ChangeUserAction(context, chatId, Actions.ChoosingTags);
+            
+            UserDB.ChangeUserAction(context, chatId, Actions.ChoosingTags);
         }
 
         [UserAction(Actions.ChoosingTags)]
@@ -1004,30 +1048,333 @@ namespace Evect.Models.Commands
         {
             var chatId = message.Chat.Id;
             var text = message.Text;
-
+            
             User user = await UserDB.GetUserByChatId(context, chatId);
-
+            
+            TelegramKeyboard keyboard = new TelegramKeyboard(true);
+            
+            List<UserTag> userTags = context.UserTags.Where(x => x.UserId == user.UserId).ToList();
+            List<Tag> parentTags = context.Tags.Where(x => x.Level == 1).ToList();
+            string chosenTags = "";
+            string[][] tags = new string[parentTags.Count-1][]; // Array of Tags of this Parent Tag (will be in DB, I guess) for INLINE keyboard
+            int i = 0;
+            
             // Gets users callbacks from inline keyboard and receiving answers from normal keyboard
             switch (text)
             {
-                case "ОК": // Starts Action with setting searching tags
+                case "ОК": // Shows all Networking buttons 
+                    if (context.UserTags.FirstOrDefault(x => x.UserId == user.UserId) != null)
+                    {
+                        foreach (var tag in user.UserTags.Where(x => x.UserId == user.UserId))
+                        {
+                            chosenTags += context.Tags.FirstOrDefault(x => x.TagId == tag.TagId && x.Level == 2).Name + ", ";
+                        }
+                        
+                        foreach (var parentTag in parentTags)
+                        {
+                            keyboard.AddRow(parentTag.Name);
+                        }
+                        
+                        await client.SendTextMessageAsync(
+                            chatId, "Ваши теги:\n" + chosenTags,
+                            ParseMode.Markdown);
+
+                        await client.SendTextMessageAsync(
+                            chatId, "😎 Последний шаг\n\nВыберите **теги** нужных ВАМ людей (**ВЫ** их ищете) – _теги поиска_",
+                            ParseMode.Markdown, replyMarkup: keyboard.Markup);
+                        
+                        UserDB.ChangeUserAction(context, chatId, Actions.SearchingParentTag);
+                    }
+                    else
+                    {
+                        await client.SendTextMessageAsync(
+                            chatId, "Пожалуйста, выберите теги!", ParseMode.Markdown);
+                    }
+
                     break;
+                
+                case "Добавить тег": // Add new parent tag
+                    UserDB.ChangeUserAction(context, chatId, Actions.AddingParentTag);
+                    
+                    context.UserTags.RemoveRange(userTags); // Delete ALL previous tags
 
-                case "Добавить тег": // ???
-                    break;
+                    foreach (var parentTag in parentTags)
+                    {
+                        keyboard.AddRow(parentTag.Name);
+                    }
+                    
+                    if (context.UserTags.FirstOrDefault(x => x.UserId == user.UserId) != null)
+                    {
+                        foreach (var tag in user.UserTags.Where(x => x.UserId == user.UserId))
+                        {
+                            chosenTags += context.Tags.FirstOrDefault(x => x.TagId == tag.TagId && x.Level == 1).Name + " "; 
+                        }
 
-                case "Выбрать заново": // Returns to Action with Parent Tags? Deletes all tags that user has now
-                    await UserDB.ChangeUserAction(context, chatId, Actions.AddingParentTag);
-                    TelegramKeyboard keyboard = new TelegramKeyboard(true);
-                    keyboard.AddRow("123"); // Array of this Parent Tags (will be in DB, I guess)
-
+                        await client.SendTextMessageAsync(
+                            chatId, "Вы выбрали: " + chosenTags, ParseMode.Markdown);
+                    }
+                    
                     await client.SendTextMessageAsync(
-                        chatId, "Выберите спецальность:", ParseMode.Markdown, // Editing while choosing tags?
-                        replyMarkup: keyboard.Markup);
+                        chatId, "Выберите допольнительный тег:", 
+                        ParseMode.Markdown, replyMarkup: keyboard.Markup);
                     break;
+                
+                case "Выбрать заново": // Returns to Action with Parent Tags? Deletes all tags that user has now
+                    UserDB.ChangeUserAction(context, chatId, Actions.AddingParentTag);
+                    
+                    context.UserTags.RemoveRange(userTags); // Delete ALL previous tags
+
+                    foreach (var parentTag in parentTags)
+                    {
+                        keyboard.AddRow(parentTag.Name);
+                    }
+                    
+                    await client.SendTextMessageAsync(
+                        chatId, "Выберите тег:", 
+                        ParseMode.Markdown, replyMarkup: keyboard.Markup);
+                    break;
+                
+                default:
+                    try
+                    {
+                        int id = Convert.ToInt32(text);
+                    }
+                    catch
+                    {
+                        break;
+                    }
+
+                    if (context.Tags.FirstOrDefault(x => x.TagId == Convert.ToInt32(text)) != null)
+                    {
+                        Tag tag = context.Tags.FirstOrDefault(x => x.TagId == Convert.ToInt32(text));
+                        
+                        UserTag userTag = new UserTag();
+                        userTag.TagId = tag.TagId;
+                        userTag.UserId = user.UserId;
+                        context.UserTags.Add(userTag);
+                        context.SaveChanges();
+                        
+                        await client.SendTextMessageAsync(
+                            chatId, "Тег " + tag.Name + " добавлен.", 
+                            ParseMode.Markdown);
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+            }
+        }
+        #endregion
+        
+        // ================================= Editing Search Parametrs ================================================
+
+        [UserAction(Actions.SearchingParentTag)]
+        public async Task OnSearchingParentTag(ApplicationContext context, Message message, TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+            
+            User user = await UserDB.GetUserByChatId(context, chatId);
+            Tag parentTag = context.Tags.FirstOrDefault(x => x.Name == text);
+
+            UserTag userTag = new UserTag();
+            userTag.TagId = parentTag.TagId;
+            userTag.UserId = user.UserId;
+            userTag.ForSearching = true;
+            context.Users.Find(user).UserTags.Add(userTag); // Adding Parent Tag to User in DB
+            context.SaveChanges();
+
+            TelegramKeyboard keyboard = new TelegramKeyboard(true);
+            TelegramInlineKeyboard inlineKeyboard = new TelegramInlineKeyboard();
+
+            // Listing tags of this parent tag to user
+            List<Tag> childTags = context.Tags.Where(x => x.Level == 2).ToList();
+            string ans = "";
+            string[][] tags = new string[childTags.Count-1][]; // Array of Tags of this Parent Tag (will be in DB, I guess) for INLINE keyboard
+            string[][] callbackData = new string[childTags.Count-1][];
+            int i = 1; 
+
+            foreach (var tag in childTags)
+            {
+                ans += i.ToString() + ") " + tag.Name;
+                inlineKeyboard.AddTextRow(i.ToString()).AddCallbackRow(tag.TagId.ToString());
+                i++;
+            }
+            
+            keyboard.AddRow("Ок"); // Variants of actions
+            keyboard.AddRow("Добавить тег");
+            keyboard.AddRow("Выбрать заново");
+            
+            await client.SendTextMessageAsync(
+                chatId, "Выберите теги:", ParseMode.Markdown, // Editing while choosing tags?
+                replyMarkup: inlineKeyboard.Markup);
+            
+            await client.SendTextMessageAsync(
+                chatId, "", ParseMode.Markdown,
+                replyMarkup: keyboard.Markup);
+            
+            UserDB.ChangeUserAction(context, chatId, Actions.SearchingTags);
+        }
+        
+        [UserAction(Actions.SearchingTags)]
+        public async Task OnSearchingTags(ApplicationContext context, Message message, TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+
+            User user = await UserDB.GetUserByChatId(context, chatId);
+            
+            TelegramKeyboard keyboard = new TelegramKeyboard(true);
+            
+            List<UserTag> userTags = context.UserTags.Where(x => x.UserId == user.UserId).ToList();
+            List<Tag> parentTags = context.Tags.Where(x => x.Level == 1).ToList();
+            string chosenTags = "";
+            string[][] tags = new string[parentTags.Count-1][]; // Array of Tags of this Parent Tag (will be in DB, I guess) for INLINE keyboard
+            int i = 0;
+            
+            // Gets users callbacks from inline keyboard and receiving answers from normal keyboard
+            switch (text)
+            {
+                case "ОК": // Shows all Networking buttons 
+                    if (context.UserTags.FirstOrDefault(x => x.UserId == user.UserId) != null)
+                    {
+                        foreach (var tag in user.UserTags.Where(x => x.UserId == user.UserId))
+                        {
+                            chosenTags += context.Tags.FirstOrDefault(x => x.TagId == tag.TagId && x.Level == 2).Name + " ";
+                        }
+                        
+                        keyboard.AddRow("Мой профиль");
+                        keyboard.AddRow("Записная книжка");
+                        keyboard.AddRow("Общение");
+                        keyboard.AddRow("Вернуться на главную");
+                        
+                        foreach (var parentTag in parentTags)
+                        {
+                            keyboard.AddRow(parentTag.Name);
+                        }
+                        
+                        await client.SendTextMessageAsync(
+                            chatId, "Теги нужных людей:\n" + chosenTags,
+                            ParseMode.Markdown);
+
+                        await client.SendTextMessageAsync(
+                            chatId, "Поздравляю 🥳 Настройка режима общения завершена!" +
+                                    "\n\n📝 В **Мой профиль** вы можете редактировать всю информацию о себе и изменять теги" +
+                                    "\n\n📒 В **Записной книжке** храняться выбранные контакты" +
+                                    "\n\n☕️ **Общение** запустит основную функцию. В ней вы можете добавлять людей в **книжку** или приглашать их на **встречу**",
+                            ParseMode.Markdown, replyMarkup: keyboard.Markup);
+                        
+                        UserDB.ChangeUserAction(context, chatId, Actions.Networking);
+                    }
+                    else
+                    {
+                        await client.SendTextMessageAsync(
+                            chatId, "Пожалуйста, выберите теги!", ParseMode.Markdown);
+                    }
+
+                    break;
+                
+                case "Добавить тег": // Add new parent tag
+                    UserDB.ChangeUserAction(context, chatId, Actions.AddingParentTag);
+                    
+                    context.UserTags.RemoveRange(userTags); // Delete ALL previous tags
+
+                    foreach (var parentTag in parentTags)
+                    {
+                        keyboard.AddRow(parentTag.Name);
+                    }
+                    
+                    if (context.UserTags.FirstOrDefault(x => x.UserId == user.UserId) != null)
+                    {
+                        foreach (var tag in user.UserTags.Where(x => x.UserId == user.UserId))
+                        {
+                            chosenTags += context.Tags.FirstOrDefault(x => x.TagId == tag.TagId && x.Level == 1).Name + " "; 
+                        }
+
+                        await client.SendTextMessageAsync(
+                            chatId, "Вы выбрали: " + chosenTags, ParseMode.Markdown);
+                    }
+                    
+                    await client.SendTextMessageAsync(
+                        chatId, "Выберите допольнительный тег:", 
+                        ParseMode.Markdown, replyMarkup: keyboard.Markup);
+                    break;
+                
+                case "Выбрать заново": // Returns to Action with Parent Tags? Deletes all tags that user has now
+                    UserDB.ChangeUserAction(context, chatId, Actions.AddingParentTag);
+                    
+                    context.UserTags.RemoveRange(userTags); // Delete ALL previous tags
+
+                    foreach (var parentTag in parentTags)
+                    {
+                        keyboard.AddRow(parentTag.Name);
+                    }
+                    
+                    await client.SendTextMessageAsync(
+                        chatId, "Выберите тег:", 
+                        ParseMode.Markdown, replyMarkup: keyboard.Markup);
+                    break;
+                
+                default:
+                    try
+                    {
+                        int id = Convert.ToInt32(text);
+                    }
+                    catch
+                    {
+                        break;
+                    }
+
+                    if (context.Tags.FirstOrDefault(x => x.TagId == Convert.ToInt32(text)) != null)
+                    {
+                        Tag tag = context.Tags.FirstOrDefault(x => x.TagId == Convert.ToInt32(text));
+                        
+                        UserTag userTag = new UserTag();
+                        userTag.TagId = tag.TagId;
+                        userTag.UserId = user.UserId;
+                        userTag.ForSearching = true;
+                        context.UserTags.Add(userTag);
+                        context.SaveChanges();
+                        
+                        await client.SendTextMessageAsync(
+                            chatId, "Тег " + tag.Name + " добавлен.", 
+                            ParseMode.Markdown);
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
             }
         }
 
+        [UserAction(Actions.NetworkingMenu)] // Waiting for "Мой профиль", "Общение", etc.
+        public async Task OnNetworkingMenu(ApplicationContext context, Message message, TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+
+            User user = await UserDB.GetUserByChatId(context, chatId);
+            
+            TelegramKeyboard keyboard = new TelegramKeyboard(true);
+
+            switch (text)
+            {
+                case "Мой профиль":
+                    break;
+                
+                case "Записная книжка":
+                    // Переходит Contactbook
+                    break;
+                
+                case "Общение":
+                    break;
+
+                case "Вернуться на главную":
+                    break;
+            }
+        }
         #endregion
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\projects\C#\Evect" t="IncludeFlat">
+    <e p="$PROJECT_DIR$" t="IncludeFlat">
       <e p="Evect" t="IncludeRecursive">
         <e p="appsettings.Development.json" t="Include" />
         <e p="appsettings.json" t="Include" />
@@ -17,6 +17,7 @@
             <e p="ActionHandler.cs" t="Include" />
             <e p="Attributes.cs" t="Include" />
             <e p="CommandHandler.cs" t="Include" />
+            <e p="InlineHandler.cs" t="Include" />
           </e>
           <e p="ContactsBook.cs" t="Include" />
           <e p="db" t="Include">
@@ -27,8 +28,10 @@
           </e>
           <e p="ErrorViewModel.cs" t="Include" />
           <e p="Event.cs" t="Include" />
+          <e p="InfoAboutUsers.cs" t="Include" />
           <e p="Log.cs" t="Include" />
           <e p="Tag.cs" t="Include" />
+          <e p="TelegramInlineKeyboard.cs" t="Include" />
           <e p="TelegramKeyboard.cs" t="Include" />
           <e p="User.cs" t="Include" />
           <e p="UserActionType.cs" t="Include" />
@@ -63,9 +66,9 @@
       <e p="Evect.sln" t="IncludeFlat" />
       <e p="packages" t="ExcludeRecursive" />
     </e>
-    <e p="C:\Users\Xiaomi\.Rider2019.2\config\consoles\db" t="IncludeRecursive" />
-    <e p="C:\Users\Xiaomi\.Rider2019.2\config\extensions" t="IncludeRecursive" />
-    <e p="C:\Users\Xiaomi\.Rider2019.2\system\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\Xiaomi\.Rider2019.2\system\resharper-host\local\Transient\ReSharperHost\v192\SolutionCaches\_Evect.787436745.00" t="ExcludeRecursive" />
+    <e p="$USER_HOME$/Library/Caches/Rider2019.2/extResources" t="IncludeRecursive" />
+    <e p="$USER_HOME$/Library/Caches/Rider2019.2/resharper-host/local/Transient/ReSharperHost/v192/SolutionCaches/_Evect.-2016196777.00" t="ExcludeRecursive" />
+    <e p="$APPLICATION_CONFIG_DIR$/consoles/db" t="IncludeRecursive" />
+    <e p="$APPLICATION_CONFIG_DIR$/extensions" t="IncludeRecursive" />
   </component>
 </project>

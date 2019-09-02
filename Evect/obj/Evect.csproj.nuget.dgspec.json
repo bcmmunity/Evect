@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\projects\\c#\\Evect\\Evect\\Evect.csproj": {}
+    "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj": {}
   },
   "projects": {
-    "C:\\projects\\c#\\Evect\\Evect\\Evect.csproj": {
+    "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\projects\\c#\\Evect\\Evect\\Evect.csproj",
+        "projectUniqueName": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj",
         "projectName": "Evect",
-        "projectPath": "C:\\projects\\c#\\Evect\\Evect\\Evect.csproj",
-        "packagesPath": "C:\\Users\\Xiaomi\\.nuget\\packages\\",
-        "outputPath": "C:\\projects\\c#\\Evect\\Evect\\obj\\",
+        "projectPath": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj",
+        "packagesPath": "/Users/Modernwolf/.nuget/packages/",
+        "outputPath": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/obj/",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\Xiaomi\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/Modernwolf/.config/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp2.2"

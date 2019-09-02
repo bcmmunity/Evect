@@ -10,19 +10,27 @@ namespace Evect.Models
         
         DeleteOrNot,
         
-        Profile, 
+        Profile,
+
+        #region Networking mode
         
         FirstQuestion,
-        
         SecondQuestion,
-        
         ThirdQuestion,
         
         AddingParentTag,
-        
         ChoosingTags,
         
+        SearchingParentTag,
+        SearchingTags,
+        
+        NetworkingMenu,
+        
+        MyProfile,
+        ContactBook,
         Networking,
+        
+        #endregion
 
         #region private info
         WaitingForName,
