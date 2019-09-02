@@ -15,9 +15,11 @@ namespace Evect.Models
         public string Phone { get; set; }
         public bool IsAuthed { get; set; }
         public bool IsAdminAuthorized { get; set; }
+        
         public Actions CurrentAction { get; set; } = Actions.None;
         
         public int CurrentEventId { get; set; }
+        public int CurrentSurveyId { get; set; }
         public List<UserTag> UserTags { get; set; }
         public List<UserEvent> UserEvents { get; set; }
 

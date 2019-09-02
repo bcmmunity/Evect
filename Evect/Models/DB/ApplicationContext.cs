@@ -34,6 +34,7 @@ namespace Evect.Models.DB
                     LastName = "kim",
                     Email = "moranmr8@gmail.com"
                 });
+
          /*   modelBuilder.Entity<InfoAboutUsers>().HasData(new InfoAboutUsers { EventId = 1 }, new InfoAboutUsers { EventId = 2 },
                 new InfoAboutUsers { EventId = 3 },
                 new InfoAboutUsers { EventId = 4 },
@@ -115,5 +116,8 @@ namespace Evect.Models.DB
         public DbSet<Event> Events { get; set; }
         public DbSet<UserValidation> Validations { get; set; }
         public DbSet<InfoAboutUsers> InfoAboutUsers { get; set; }
+        public DbSet<Survey> Surveys { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<Answer> Answers { get; set; }
     }
 }
