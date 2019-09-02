@@ -1,13 +1,13 @@
 ﻿{
   "version": "1.0.0",
   "restore": {
-    "projectUniqueName": "C:\\projects\\c#\\Evect\\Evect\\Evect.csproj",
+    "projectUniqueName": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj",
     "projectName": "Evect",
-    "projectPath": "C:\\projects\\c#\\Evect\\Evect\\Evect.csproj",
-    "outputPath": "C:\\projects\\c#\\Evect\\Evect\\obj\\",
+    "projectPath": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj",
+    "outputPath": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/obj/",
     "projectStyle": "PackageReference",
     "fallbackFolders": [
-      "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
     ],
     "originalTargetFrameworks": [
       "netcoreapp2.2"
