@@ -56,43 +56,52 @@ namespace Evect.Controllers
             var client = new TelegramBotClient(AppSettings.Key);
             var chatId = message.Chat.Id;
             var text = message.Text;
-           
+
             User user = await UserDB.GetUserByChatId(db, chatId); //получаем айди юзера и его самого из бд
             if (user == null)
             {
-               foreach (var pair in _commands)
+                foreach (var pair in _commands)
                 {
                     if (text == "/start" && pair.Value == "/start")
                     {
                         await pair.Key(db, message, client);
-                       }
-                   }
-               return Ok();
-            }
-            if (!user.IsAuthed)
-            {
-                foreach (var pair in _commands)
-                {
-                    if ((text == "/start" || text == "Личный кабинет") && (pair.Value == "/start" || pair.Value == "Личный кабинет"))
-                    {
-                        await pair.Key(db, message, client);
-
+                        return Ok();
                     }
                 }
-                return Ok();
-            }
 
-            foreach (var pair in _actions)
+            }
+            else
             {
-                if (pair.Value == user.CurrentAction)
+                if (!user.IsAuthed)
                 {
-                    await pair.Key(db, message, client);
+                    foreach (var pair in _commands)
+                    {
+                        if ((text == "/start" || text == "Личный кабинет") &&
+                            (pair.Value == text))
+                        {
+                            await pair.Key(db, message, client);
+                            return Ok();
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var pair in _actions)
+                    {
+                        if (pair.Value == user.CurrentAction)
+                        {
+                            await pair.Key(db, message, client);
+                            return Ok();
+                        }
+                    }
                 }
             }
+
             
+
+            
+
             return Ok();
-
-
         }
     }
 }

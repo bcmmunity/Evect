@@ -65,6 +65,7 @@ namespace Evect
             });
 
             ApplicationContext c = new ApplicationContext(new DbContextOptions<ApplicationContext>());
+            c.Dispose();
             Bot.GetBotClientAsync().Wait();
         }
     }
