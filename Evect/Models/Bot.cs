@@ -17,11 +17,11 @@ namespace Evect.Models
 
         private static Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, string > _commandsList = new Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, string>();
         private static Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, Actions> _actionList =  new Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, Actions>();
-        private static Dictionary<Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>, string[]> _callbackList =  new Dictionary<Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>, string[]>();
+        private static Dictionary<Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>, string> _callbackList =  new Dictionary<Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>, string>();
         
         public static Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, string> Commands => _commandsList;
         public static Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, Actions > ActionList => _actionList;
-        public static Dictionary<Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>, string[] > CallbackList => _callbackList;
+        public static Dictionary<Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>, string > CallbackList => _callbackList;
         
 
         
@@ -81,7 +81,7 @@ namespace Evect.Models
                 Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task> a = 
                     (Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>) Delegate.CreateDelegate(typeof(Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>),inlineHandler ,methodInfo);
                 
-                string[] s = methodInfo.GetCustomAttribute<InlineCallback>().Callbacks;
+                string s = methodInfo.GetCustomAttribute<InlineCallback>().Callbacks;
                 _callbackList.Add(a, s);
             }
             

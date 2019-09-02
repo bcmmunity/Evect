@@ -34,11 +34,7 @@ namespace Evect.Models.DB
                     LastName = "kim",
                     Email = "moranmr8@gmail.com"
                 });
-         /*   modelBuilder.Entity<InfoAboutUsers>().HasData(new InfoAboutUsers { EventId = 1 }, new InfoAboutUsers { EventId = 2 },
-                new InfoAboutUsers { EventId = 3 },
-                new InfoAboutUsers { EventId = 4 },
-                new InfoAboutUsers { EventId = 5 },
-                new InfoAboutUsers { EventId = 6 });*/
+            
             modelBuilder.Entity<Event>()
                 .HasData(
                     new Event { 
@@ -129,134 +125,315 @@ namespace Evect.Models.DB
             },
             new Tag
                 {
-                    TagId = 5,
+                    TagId = 6,
                     ParentTagID = 1,
                     Name = "Дата сайенс",
                     Level = 2
                 },
             new Tag
             {
-                TagId = 6,
+                TagId = 7,
                 ParentTagID = 1,
                 Name = "Продуктовый дизайн",
                 Level = 2
             },
             new Tag
                 {
-                    TagId = 7,
+                    TagId = 8,
                     ParentTagID = 1,
                     Name = "Веб дизайн",
                     Level = 2
                 },
             new Tag
                 {
-                    TagId = 8,
+                    TagId = 9,
                     ParentTagID = 1,
                     Name = "UX/UI",
                     Level = 2
                 },
             new Tag
             {
-                TagId = 9,
+                TagId = 10,
                 ParentTagID = 1,
                 Name = "Продакт менеджер",
                 Level = 2
             },
             new Tag
             {
-                TagId = 10,
+                TagId = 11,
                 ParentTagID = 1,
                 Name = "Проджект менеджер",
                 Level = 2
             },
             new Tag
             {
-                TagId = 11,
+                TagId = 12,
                 ParentTagID = 1,
                 Name = "QA",
                 Level = 2
             },
             new Tag 
                 {
-                    TagId = 12,
+                    TagId = 13,
                     ParentTagID = 2,
                     Name = "Маркетинг",
                     Level = 2
                 },
             new Tag
             {
-                TagId = 13,
+                TagId = 14,
                 ParentTagID = 2,
                 Name = "Инвестор",
                 Level = 2
             },
             new Tag
             {
-                TagId = 14,
+                TagId = 15,
                 ParentTagID = 2,
                 Name = "Предприниматель",
                 Level = 2
             },
             new Tag
             {
-                TagId = 15,
+                TagId = 16,
                 ParentTagID = 2,
                 Name = "Финансы",
                 Level = 2
             },
             new Tag
             {
-                TagId = 16,
+                TagId = 17,
                 ParentTagID = 2,
                 Name = "Консультант",
                 Level = 2
             },
             new Tag
             {
-                TagId = 17,
+                TagId = 18,
                 ParentTagID = 2,
                 Name = "Аналитик",
                 Level = 2
             },
             new Tag
             {
-                TagId = 18,
+                TagId = 19,
                 ParentTagID = 2,
                 Name = "C-level",
                 Level = 2
             },
             new Tag
             {
-                TagId = 19,
+                TagId = 20,
                 ParentTagID = 2,
                 Name = "Продажи",
                 Level = 2
             },
             new Tag
             {
-                TagId = 20,
+                TagId = 21,
                 ParentTagID = 2,
                 Name = "Трекер",
                 Level = 2
             },
             new Tag
             {
-                TagId = 21,
+                TagId = 22,
                 ParentTagID = 2,
                 Name = "Стартап",
                 Level = 2
             }
             );
-
-
-            modelBuilder.Entity<Tag>().HasData(
-            new Tag
+            
+            modelBuilder.Entity<SearchingTag>().HasData(
+            new SearchingTag
             {
-                
+                SearchingTagId = 1,
+                ParentTagID = 0,
+                Name = "IT",
+                Level = 1
+            },
+            new SearchingTag
+                {
+                    SearchingTagId = 2,
+                    ParentTagID = 0,
+                    Name = "Бизнес",
+                    Level = 1
+                },
+            new SearchingTag
+                {
+                    SearchingTagId = 3,
+                    ParentTagID = 1,
+                    Name = "Фронтэнд",
+                    Level = 2
+                },
+            new SearchingTag
+                {
+                    SearchingTagId = 4,
+                    ParentTagID = 1,
+                    Name = "Бэкэнд",
+                    Level = 2
+                },
+            new SearchingTag
+            {
+                SearchingTagId = 5,
+                ParentTagID = 1,
+                Name = "Девопс",
+                Level = 2
+            },
+            new SearchingTag
+                {
+                    SearchingTagId = 6,
+                    ParentTagID = 1,
+                    Name = "Дата сайенс",
+                    Level = 2
+                },
+            new SearchingTag
+            {
+                SearchingTagId = 7,
+                ParentTagID = 1,
+                Name = "Продуктовый дизайн",
+                Level = 2
+            },
+            new SearchingTag
+                {
+                    SearchingTagId = 8,
+                    ParentTagID = 1,
+                    Name = "Веб дизайн",
+                    Level = 2
+                },
+            new SearchingTag
+                {
+                    SearchingTagId = 9,
+                    ParentTagID = 1,
+                    Name = "UX/UI",
+                    Level = 2
+                },
+            new SearchingTag
+            {
+                SearchingTagId = 10,
+                ParentTagID = 1,
+                Name = "Продакт менеджер",
+                Level = 2
+            },
+            new SearchingTag
+            {
+                SearchingTagId = 11,
+                ParentTagID = 1,
+                Name = "Проджект менеджер",
+                Level = 2
+            },
+            new SearchingTag
+            {
+                SearchingTagId = 12,
+                ParentTagID = 1,
+                Name = "QA",
+                Level = 2
+            },
+            new SearchingTag 
+                {
+                    SearchingTagId = 13,
+                    ParentTagID = 2,
+                    Name = "Маркетинг",
+                    Level = 2
+                },
+            new SearchingTag
+            {
+                SearchingTagId = 14,
+                ParentTagID = 2,
+                Name = "Инвестор",
+                Level = 2
+            },
+            new SearchingTag
+            {
+                SearchingTagId = 15,
+                ParentTagID = 2,
+                Name = "Предприниматель",
+                Level = 2
+            },
+            new SearchingTag
+            {
+                SearchingTagId = 16,
+                ParentTagID = 2,
+                Name = "Финансы",
+                Level = 2
+            },
+            new SearchingTag
+            {
+                SearchingTagId = 17,
+                ParentTagID = 2,
+                Name = "Консультант",
+                Level = 2
+            },
+            new SearchingTag
+            {
+                SearchingTagId = 18,
+                ParentTagID = 2,
+                Name = "Аналитик",
+                Level = 2
+            },
+            new SearchingTag
+            {
+                SearchingTagId = 19,
+                ParentTagID = 2,
+                Name = "C-level",
+                Level = 2
+            },
+            new SearchingTag
+            {
+                SearchingTagId = 20,
+                ParentTagID = 2,
+                Name = "Продажи",
+                Level = 2
+            },
+            new SearchingTag
+            {
+                SearchingTagId = 21,
+                ParentTagID = 2,
+                Name = "Трекер",
+                Level = 2
+            },
+            new SearchingTag
+            {
+                SearchingTagId = 22,
+                ParentTagID = 2,
+                Name = "Стартап",
+                Level = 2
             }
             );
+            
+
+            modelBuilder.Entity<UserTag>()
+                .HasKey(ut => new {ut.UserId, ut.TagId});
+            
+            modelBuilder.Entity<UserTag>()
+                .HasOne(us => us.Tag)
+                .WithMany(e => e.UserTags)
+                .HasForeignKey(k => k.TagId);
+                
+            
+            modelBuilder.Entity<UserTag>()
+                .HasOne(us => us.User)
+                .WithMany(e => e.UserTags)
+                .HasForeignKey(k => k.UserId);
+            
+            
+            modelBuilder.Entity<UserSearchingTag>()
+                .HasKey(ut => new {ut.UserId, ut.TagId});
+            
+            modelBuilder.Entity<UserSearchingTag>()
+                .HasOne(us => us.Tag)
+                .WithMany(e => e.Tags)
+                .HasForeignKey(k => k.TagId);
+                
+            
+            modelBuilder.Entity<UserSearchingTag>()
+                .HasOne(us => us.User)
+                .WithMany(e => e.SearchingUserTags)
+                .HasForeignKey(k => k.UserId);
+            
+            
             modelBuilder.Entity<UserEvent>()
-                .HasKey(us => new {us.EventId, us.UserEventId});
+                .HasKey(us => new {us.EventId, us.UserId});
             
             modelBuilder.Entity<UserEvent>()
                 .HasOne(us => us.Event)
@@ -267,7 +444,7 @@ namespace Evect.Models.DB
             modelBuilder.Entity<UserEvent>()
                 .HasOne(us => us.User)
                 .WithMany(e => e.UserEvents)
-                .HasForeignKey(k => k.UserEventId);
+                .HasForeignKey(k => k.UserId);
         }
 
         public DbSet<Log> Logs { get; set; }
@@ -276,5 +453,7 @@ namespace Evect.Models.DB
         public DbSet<Event> Events { get; set; }
         public DbSet<UserValidation> Validations { get; set; }
         public DbSet<InfoAboutUsers> InfoAboutUsers { get; set; }
+        public DbSet<UserTag> UserTags { get; set; }
+        public DbSet<UserSearchingTag> UserSearchingTags { get; set; }
     }
 }

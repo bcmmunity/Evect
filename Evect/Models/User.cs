@@ -19,9 +19,10 @@ namespace Evect.Models
         public Actions CurrentAction { get; set; } = Actions.None;
         
         public int CurrentEventId { get; set; }
+        public List<UserTag> UserTags { get; set; } = new List<UserTag>();
+        public List<UserSearchingTag> SearchingUserTags { get; set; } = new List<UserSearchingTag>();
+        public List<UserEvent> UserEvents { get; set; } = new List<UserEvent>();
         public int CurrentSurveyId { get; set; }
-        public List<UserTag> UserTags { get; set; }
-        public List<UserEvent> UserEvents { get; set; }
 
         public List<ContactsBook> Contacts { get; set; }
         

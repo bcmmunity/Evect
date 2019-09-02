@@ -139,23 +139,27 @@ namespace Evect.Models.DB
             int eventId = user.CurrentEventId;
             Event eventt = await Context.Events.FirstOrDefaultAsync(n => n.EventId == eventId);
             InfoAboutUsers info = await Context.InfoAboutUsers.FirstOrDefaultAsync(m => m.EventId == eventId);
-            switch (type)
-            {   case "Количество активаций режима общения":
+            if (info != null)
+            {
+                switch (type)
+                {   case "Количество активаций режима общения":
                     {
                         info.AmountOfActivationsOfNetworking++;
                     }
-                    break;
-                case "Число запросов контактов":
+                        break;
+                    case "Число запросов контактов":
                     {
                         info.AmountOfRequestsOfContacts++;
                     }
-                    break;
-                case "Число запросов встреч":
+                        break;
+                    case "Число запросов встреч":
                     {
                         info.AmountOfRequestsOfMettings++;
                     }
-                    break;
+                        break;
+                }
             }
+            
         }
         
     }

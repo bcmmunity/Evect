@@ -28,12 +28,13 @@ namespace Evect.Models.Commands
     [AttributeUsage(AttributeTargets.Method)]
     public class InlineCallback : Attribute
     {
-        public string[] Callbacks { get; set; }
+        public string Callbacks { get; set; }
 
-        public InlineCallback(params string[] callbacks)
+        public InlineCallback(string callbacks)
         {
             Callbacks = callbacks;
         }
+        
         
     }
     

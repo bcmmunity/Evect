@@ -74,6 +74,10 @@ namespace Evect.Models.DB
         {
             return await context.Users
                 .Include(u => u.UserEvents)
+                .Include(u => u.UserTags)
+                .ThenInclude(u => u.Tag)
+                .Include(u => u.SearchingUserTags)
+                .ThenInclude(u => u.Tag)
                 .FirstOrDefaultAsync(u => u.TelegramId == tgId);
         }
 

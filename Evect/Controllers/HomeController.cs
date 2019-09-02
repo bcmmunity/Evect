@@ -9,6 +9,7 @@ using Evect.Models;
 using Evect.Models.Commands;
 using Evect.Models.DB;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -27,6 +28,7 @@ namespace Evect.Controllers
 
         private Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, string> _commands;
         private Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, Actions> _actions;
+        private Dictionary<Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>, string> _callbacks;
 
         public HomeController(ApplicationContext db)
         {
@@ -37,6 +39,7 @@ namespace Evect.Controllers
 
             _commands = Bot.Commands;
             _actions = Bot.ActionList;
+            _callbacks = Bot.CallbackList;
         }
 
         public IActionResult Index()
@@ -48,54 +51,72 @@ namespace Evect.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Update update)
         {
-            ApplicationContext db = new ApplicationContext(new DbContextOptions<ApplicationContext>());
 
             if (update == null)
                 return Ok();
-            var message = update.Message;
-            var client = new TelegramBotClient(AppSettings.Key);
-            var chatId = message.Chat.Id;
-            var text = message.Text;
 
-            User user = await UserDB.GetUserByChatId(db, chatId); //получаем айди юзера и его самого из бд
-            if (user == null)
+            using (ApplicationContext db = new ApplicationContext(new DbContextOptions<ApplicationContext>()))
             {
-                foreach (var pair in _commands)
+                var client = new TelegramBotClient(AppSettings.Key);
+                if (update.Type == UpdateType.CallbackQuery)
                 {
-                    if (text == "/start" && pair.Value == "/start")
+                    foreach (var pair in _callbacks)
                     {
-                        await pair.Key(db, message, client);
-                        return Ok();
-                    }
-                }
-
-            }
-            else
-            {
-                if (!user.IsAuthed)
-                {
-                    foreach (var pair in _commands)
-                    {
-                        if ((text == "/start" || text == "Личный кабинет") &&
-                            (pair.Value == text))
+                        if (update.CallbackQuery.Data.StartsWith(pair.Value))
                         {
-                            await pair.Key(db, message, client);
+                            await pair.Key(db, update.CallbackQuery, client);
                             return Ok();
                         }
                     }
-                }
-                else
+                } else if (update.Type == UpdateType.Message)
                 {
-                    foreach (var pair in _actions)
+                    var message = update.Message;
+                    var chatId = message.Chat.Id;
+                    var text = message.Text;
+
+                    User user = await UserDB.GetUserByChatId(db, chatId); //получаем айди юзера и его самого из бд
+                    if (user == null)
                     {
-                        if (pair.Value == user.CurrentAction)
+                        foreach (var pair in _commands)
                         {
-                            await pair.Key(db, message, client);
-                            return Ok();
+                            if (text == "/start" && pair.Value == "/start")
+                            {
+                                await pair.Key(db, message, client);
+                                return Ok();
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        if (!user.IsAuthed)
+                        {
+                            foreach (var pair in _commands)
+                            {
+                                if ((text == "/start" || text == "Личный кабинет") &&
+                                    (pair.Value == text))
+                                {
+                                    await pair.Key(db, message, client);
+                                    return Ok();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foreach (var pair in _actions)
+                            {
+                                if (pair.Value == user.CurrentAction)
+                                {
+                                    await pair.Key(db, message, client);
+                                    return Ok();
+                                }
+                            }
                         }
                     }
                 }
             }
+            
+            
 
             
 
