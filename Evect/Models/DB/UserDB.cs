@@ -22,8 +22,66 @@ namespace Evect.Models.DB
             await context.Users.AddAsync(new User { TelegramId = tgId, IsAuthed = true});
             context.SaveChanges();
         }
+
+        public static async Task<bool> AddDeleteTag(ApplicationContext context, long tgId, int tagId)
+        {
+            User user = await GetUserByChatId(context, tgId);
+
+            UserTag tg = user.UserTags.FirstOrDefault(e => e.TagId == tagId);
+            
+            bool ex = tg != null;
+
+            if (ex)
+            {
+                context.UserTags.Remove(tg);
+                context.SaveChanges();
+                return false;
+            }
+            else
+            {
+                UserTag tag = new UserTag()
+                {
+                    UserId = user.UserId,
+                    TagId = tagId
+                };
+                
+                user.UserTags.Add(tag);
+                context.Update(user);
+                context.SaveChanges();
+                return true;
+            }
+
+        }
         
-        
+        public static async Task<bool> AddDeleteSearchTag(ApplicationContext context, long tgId, int tagId)
+        {
+            User user = await GetUserByChatId(context, tgId);
+
+            UserSearchingTag tg = user.SearchingUserTags.FirstOrDefault(e => e.TagId == tagId);
+            
+            bool ex = tg != null;
+
+            if (ex)
+            {
+                context.UserSearchingTags.Remove(tg);
+                context.SaveChanges();
+                return false;
+            }
+            else
+            {
+                UserSearchingTag tag = new UserSearchingTag()
+                {
+                    UserId = user.UserId,
+                    TagId = tagId
+                };
+                
+                user.SearchingUserTags.Add(tag);
+                context.Update(user);
+                context.SaveChanges();
+                return true;
+            }
+
+        }
     
         public static async Task UserLogin(ApplicationContext context, long tgId)
         {

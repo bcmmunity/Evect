@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Evect.Models.DB;
 using Telegram.Bot;
@@ -30,8 +31,8 @@ namespace Evect.Models.Commands
             await UserDB.ChangeUserAction(context, chatId, Actions.AnswerToSurvey);
            await UserDB.ChangeUserAction(context, Actions.AnswerToSurvey);
            
-            await client.SendTextMessageAsync(chatId, "Íàïèøèòå,ïîæàëóéñòà,ñâîé îòâåò íà ýòîò âîïðîñ");
-          //  await client.EditMessageTextAsync(chatId, query.Message.MessageId, "Íàïèøèòå,ïîæàëóéñòà,ñâîé îòâåò íà ýòîò âîïðîñ");
+            await client.SendTextMessageAsync(chatId, "ÐÐ°Ð¿Ð¸ÑˆÐ¸Ñ‚Ðµ,Ð¿Ð¾Ð¶Ð°Ð»ÑƒÐ¹ÑÑ‚Ð°,ÑÐ²Ð¾Ð¹ Ð¾Ñ‚Ð²ÐµÑ‚ Ð½Ð° ÑÑ‚Ð¾Ñ‚ Ð²Ð¾Ð¿Ñ€Ð¾Ñ");
+          //  await client.EditMessageTextAsync(chatId, query.Message.MessageId, "ÐÐ°Ð¿Ð¸ÑˆÐ¸Ñ‚Ðµ,Ð¿Ð¾Ð¶Ð°Ð»ÑƒÐ¹ÑÑ‚Ð°,ÑÐ²Ð¾Ð¹ Ð¾Ñ‚Ð²ÐµÑ‚ Ð½Ð° ÑÑ‚Ð¾Ñ‚ Ð²Ð¾Ð¿Ñ€Ð¾Ñ");
          }*/
          [InlineCallback("990-")]
          public async Task OnAnsweringOnSurvey(ApplicationContext context,CallbackQuery query,TelegramBotClient client)
@@ -46,7 +47,7 @@ namespace Evect.Models.Commands
             context.Answers.Add(answer);
             context.SaveChanges();
             TelegramInlineKeyboard inlineKeyboard = new TelegramInlineKeyboard();
-            await client.EditMessageTextAsync(chatID, query.Message.MessageId, "Ñïàñèáî çà âàø îòâåò!");
+            await client.EditMessageTextAsync(chatID, query.Message.MessageId, "Ð¡Ð¿Ð°ÑÐ¸Ð±Ð¾ Ð·Ð° Ð²Ð°Ñˆ Ð¾Ñ‚Ð²ÐµÑ‚!");
             
 
         }
@@ -58,7 +59,7 @@ namespace Evect.Models.Commands
             int parentTagId = context.Tags.Where(t => t.TagId == tagId).Select(e => e.ParentTagID).First();
             List<Tag> childTags = context.Tags.Where(x => x.Level == 2 && x.ParentTagID == parentTagId).ToList();
             User user = await UserDB.GetUserByChatId(context, query.From.Id);
-            
+
             TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
 
             bool added = await UserDB.AddDeleteTag(context, query.From.Id, tagId);
@@ -84,14 +85,16 @@ namespace Evect.Models.Commands
                 {
                     ch = "";
                 }
+
                 inline.AddTextRow($"{tag.Name} {ch}").AddCallbackRow($"tag-{tag.TagId}");
             }
 
-            
+
 //            await client.EditMessageTextAsync(query.From.Id, query.Message.MessageId, "meow");
-            await client.EditMessageReplyMarkupAsync(query.From.Id, query.Message.MessageId, replyMarkup: inline.Markup);
+            await client.EditMessageReplyMarkupAsync(query.From.Id, query.Message.MessageId,
+                replyMarkup: inline.Markup);
         }
-        
+
         [InlineCallback("searchtag-")]
         public async Task OnAddingSearchTag(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
         {
@@ -99,7 +102,7 @@ namespace Evect.Models.Commands
             int parentTagId = context.Tags.Where(t => t.TagId == tagId).Select(e => e.ParentTagID).First();
             List<Tag> childTags = context.Tags.Where(x => x.Level == 2 && x.ParentTagID == parentTagId).ToList();
             User user = await UserDB.GetUserByChatId(context, query.From.Id);
-            
+
             TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
 
             bool added = await UserDB.AddDeleteSearchTag(context, query.From.Id, tagId);
@@ -125,13 +128,14 @@ namespace Evect.Models.Commands
                 {
                     ch = "";
                 }
+
                 inline.AddTextRow($"{tag.Name} {ch}").AddCallbackRow($"searchtag-{tag.TagId}");
             }
 
-            
+
 //            await client.EditMessageTextAsync(query.From.Id, query.Message.MessageId, "meow");
             await client.EditMessageReplyMarkupAsync(query.From.Id, query.Message.MessageId, replyMarkup: inline.Markup);
-        }*/
+        }
         
     }
 }
