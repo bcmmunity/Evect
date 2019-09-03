@@ -495,7 +495,7 @@ namespace Evect.Models.Commands
             }
         }
       [UserAction(Actions.QuestionForSurveyWithMarks)]//с выбором ответа
-      public async void AQuestionForSurveyWithMarks(ApplicationContext context,Message message,TelegramBotClient client)
+      public async Task AQuestionForSurveyWithMarks(ApplicationContext context,Message message,TelegramBotClient client)
         {
            
             var chatId = message.Chat.Id;

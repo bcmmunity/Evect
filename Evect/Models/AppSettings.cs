@@ -35,7 +35,7 @@ namespace Evect.Models
               "Server=localhost;Database=u0707180_evect3;User Id=u0707180_evect3;Password=pVmbs2at";//Лиза
 
 #endif
-        #endregion
+        //#endregion
 
     }
 }
