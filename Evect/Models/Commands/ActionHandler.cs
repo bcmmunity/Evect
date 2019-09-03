@@ -1204,6 +1204,7 @@ namespace Evect.Models.Commands
                         }
                         else
                         {
+                            keyboard = new TelegramKeyboard();
                             keyboard.AddRow("Редактировать профиль");
                             keyboard.AddRow("Изменить теги");
                             keyboard.AddRow("Вернуться в режим общения");
@@ -1342,11 +1343,6 @@ namespace Evect.Models.Commands
                         keyboard.AddRow("Общение");
                         keyboard.AddRow("Вернуться на главную");
 
-                        foreach (var parentTag in parentTags)
-                        {
-                            keyboard.AddRow(parentTag.Name);
-                        }
-
                         await client.SendTextMessageAsync(
                             chatId, "Теги нужных людей:\n" + chosenTags,
                             ParseMode.Markdown);
@@ -1444,6 +1440,42 @@ namespace Evect.Models.Commands
                     break;
 
                 case "Общение":
+
+//                    List<User> usersWithTags = context.Users.Where(e =>
+//                        e.UserTags.Any(ut => 
+//                            user.UserTags.FirstOrDefault(t => t.TagId == ut.TagId) != null) && e.CurrentEventId == user.CurrentEventId).ToList();
+                    
+//                    List<User> usersWithoutTags = context.Users.Where(e =>
+//                        e.UserTags.Any(ut => 
+//                            user.UserTags.FirstOrDefault(t => t.TagId == ut.TagId) == null) && e.CurrentEventId == user.CurrentEventId).ToList();
+
+                    User us = context.Users.FirstOrDefault(e => 
+                        e.UserTags.Any(ut => 
+                            user.UserTags.FirstOrDefault(t => t.TagId == ut.TagId) != null) && e.CurrentEventId == user.CurrentEventId);
+
+                    if (us == null)
+                    {
+                        us = context.Users.FirstOrDefault(e => 
+                            e.UserTags.Any(ut => 
+                                user.UserTags.FirstOrDefault(t => t.TagId == ut.TagId) == null) && e.CurrentEventId == user.CurrentEventId);
+                    }
+                    
+                    builder.AppendLine($"{us.FirstName} {us.LastName}");
+                    builder.AppendLine(us.CompanyAndPosition);
+                    builder.AppendLine();
+                    builder.AppendLine("Чем полезен");
+                    builder.AppendLine(us.Utility);
+                    builder.AppendLine();
+                    builder.AppendLine("О чем можно пообщаться");
+                    builder.AppendLine(us.Communication);
+                    
+                    TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
+                    inline
+                        .AddTextRow("Назад","В книжку","Встреча", "Вперед")
+                        .AddCallbackRow($"change-0",$"contact-{us.UserId}",$"meet-{us.UserId}",$"change-2");
+
+                    await client.SendTextMessageAsync(chatId, builder.ToString(), replyMarkup: inline.Markup);
+                    
                     break;
 
                 case "Вернуться на главную":
