@@ -1516,7 +1516,7 @@ namespace Evect.Models.Commands
                     TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
                     inline
                         .AddTextRow("Назад","В книжку","Встреча", "Вперед")
-                        .AddCallbackRow($"change-0",$"contact-{us.UserId}",$"meet-{us.UserId}",$"change-2");
+                        .AddCallbackRow($"change-0",$"contact-{us.TelegramId}",$"meet-{us.TelegramId}",$"change-2");
 
                     await client.SendTextMessageAsync(chatId, builder.ToString(), replyMarkup: inline.Markup);
                     

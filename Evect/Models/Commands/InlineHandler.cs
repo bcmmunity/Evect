@@ -52,7 +52,7 @@ namespace Evect.Models.Commands
 
         }
 
-       /* [InlineCallback("tag-")]
+        [InlineCallback("tag-")]
         public async Task OnAddingTag(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
         {
             int tagId = Convert.ToInt32(query.Data.Split('-')[1]);
@@ -136,6 +136,101 @@ namespace Evect.Models.Commands
 //            await client.EditMessageTextAsync(query.From.Id, query.Message.MessageId, "meow");
             await client.EditMessageReplyMarkupAsync(query.From.Id, query.Message.MessageId, replyMarkup: inline.Markup);
         }
+
+        [InlineCallback("change-")]
+        public async Task OnChange(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
+        {
+            int changeId = Convert.ToInt32(query.Data.Split('-')[1]);
+            User user = await UserDB.GetUserByChatId(context, query.From.Id);
+            StringBuilder builder = new StringBuilder();
+            TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
+            List<User> usersWithTags = context.Users.Where(e =>
+                e.UserTags.Any(ut =>
+                    user.UserTags.FirstOrDefault(t => t.TagId == ut.TagId) != null) &&
+                e.CurrentEventId == user.CurrentEventId).ToList();
+
+            List<User> usersWithoutTags = context.Users.Where(e =>
+                e.UserTags.Any(ut =>
+                    user.UserTags.FirstOrDefault(t => t.TagId == ut.TagId) == null) &&
+                e.CurrentEventId == user.CurrentEventId).ToList();
+            
+            usersWithTags.AddRange(usersWithoutTags);
+            
+            
+            
+            if (changeId > 0 && changeId <= usersWithTags.Count)
+            {
+                User us = usersWithTags[changeId - 1];
+                builder.AppendLine($"{us.FirstName} {us.LastName}");
+                builder.AppendLine(us.CompanyAndPosition);
+                builder.AppendLine();
+                builder.AppendLine("Чем полезен");
+                builder.AppendLine(us.Utility);
+                builder.AppendLine();
+                builder.AppendLine("О чем можно пообщаться");
+                builder.AppendLine(us.Communication);
+                    
+                inline
+                    .AddTextRow("Назад","В книжку","Встреча", "Вперед")
+                    .AddCallbackRow($"change-{changeId - 1}",$"contact-{us.TelegramId}",$"meet-{us.TelegramId}",$"change-{changeId + 1}");
+
+                await client.EditMessageTextAsync(query.From.Id, query.Message.MessageId, builder.ToString());
+                await client.EditMessageReplyMarkupAsync(query.From.Id, query.Message.MessageId, inline.Markup);
+            }
+            
+            
+        }
+        
+        [InlineCallback("meet-")]
+        public async Task OnMeet(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
+        {
+            long userId = Convert.ToInt32(query.Data.Split('-')[1]);
+            
+            User user = await UserDB.GetUserByChatId(context, query.From.Id);
+            StringBuilder builder = new StringBuilder();
+            TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
+
+            inline
+                .AddTextRow("Отклонить", "Принять")
+                .AddCallbackRow($"decline-{query.From.Id}", $"accept-{query.From.Id}");
+
+            builder.AppendLine("Вам назначена встреча от:");
+            builder.AppendLine($"{user.FirstName} {user.LastName}");
+
+            await client.SendTextMessageAsync(userId, builder.ToString(), replyMarkup: inline.Markup);
+
+
+        }
+        
+        [InlineCallback("accept-")]
+        public async Task OnAccept(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
+        {
+            long userId = Convert.ToInt32(query.Data.Split('-')[1]); // roma
+            
+            User user = await UserDB.GetUserByChatId(context, query.From.Id); // kim
+
+            User from = await UserDB.GetUserByChatId(context, userId);
+            
+            await client.SendTextMessageAsync(user.TelegramId, $"Встреча с {from.FirstName} {from.LastName} согласована");
+            await client.SendTextMessageAsync(from.TelegramId, $"Встреча с {user.FirstName} {user.LastName} согласована");
+
+        }
+        
+        [InlineCallback("decline-")]
+        public async Task OnDecline(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
+        {
+            long userId = Convert.ToInt32(query.Data.Split('-')[1]); // roma
+            
+            User user = await UserDB.GetUserByChatId(context, query.From.Id); // kim
+
+            User from = await UserDB.GetUserByChatId(context, userId);
+            
+            await client.SendTextMessageAsync(user.TelegramId, $"Вы отменили встречу с {from.FirstName} {from.LastName}");
+            await client.SendTextMessageAsync(from.TelegramId, $"К сожалению, {user.FirstName} {user.LastName} отказался от встречи");
+
+        }
+        
+        
         
     }
 }
