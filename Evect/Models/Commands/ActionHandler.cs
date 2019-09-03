@@ -458,6 +458,30 @@ namespace Evect.Models.Commands
                await UserDB.ChangeUserAction(context,chatId, Actions.QuestionForSurveyWithMessage);
             }
         }
+        [UserAction(Actions.SurveyWithMarks)]
+        public async Task OnCreatingSurveyWithMarks(ApplicationContext context, Message message, TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            if (message.Text == "Назад")
+            {
+                TelegramKeyboard keyboard = new TelegramKeyboard();
+                keyboard.AddRow("Назад");
+                keyboard.AddRow("Опрос с развернутой обратной связью");
+                keyboard.AddRow("Опрос с оценкой");
+                await UserDB.ChangeUserAction(context, chatId, Actions.CreateSurvey);
+                await client.SendTextMessageAsync(chatId, "Я вернулся к выбору типа опроса", replyMarkup: keyboard.Markup);
+            }
+            else
+            {
+                UserDB.AddSurvey(context, "Название опроса", message.Text, chatId);
+                TelegramKeyboard keyboard = new TelegramKeyboard();
+                keyboard.AddRow("Назад");
+                await UserDB.ChangeUserAction(context, chatId, Actions.QuestionForSurveyWithMarks);
+                await client.SendTextMessageAsync(chatId, "Напишите вопрос,он будет отправлен всем участникам мероприятия", replyMarkup: keyboard.Markup);
+                
+
+            }
+        }
         [UserAction(Actions.QuestionForSurveyWithMessage)]
         public async Task AQuestionForSurveyWithMessage(ApplicationContext context,Message message,TelegramBotClient client)
         {
@@ -494,6 +518,7 @@ namespace Evect.Models.Commands
                      await client.SendTextMessageAsync(chatId, "Ваш вопрос успешно отослан всем участникам мероприятия", replyMarkup: keyboard.Markup);
             }
         }
+      
       [UserAction(Actions.QuestionForSurveyWithMarks)]//с выбором ответа
       public async Task AQuestionForSurveyWithMarks(ApplicationContext context,Message message,TelegramBotClient client)
         {

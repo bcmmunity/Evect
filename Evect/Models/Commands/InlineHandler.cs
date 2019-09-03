@@ -48,12 +48,16 @@ namespace Evect.Models.Commands
             context.Answers.Add(answer);
             context.SaveChanges();
             TelegramInlineKeyboard inlineKeyboard = new TelegramInlineKeyboard();
-            await client.EditMessageTextAsync(chatID, query.Message.MessageId, "Спасибо за ваш ответ!");
+            await client.EditMessageTextAsync(chatID, query.Message.MessageId, "Спасибо за ваш ответ!\nВы можете продолжить ваши действия");
+            User user = context.Users.FirstOrDefault(n => n.TelegramId == chatID);
+            Actions action = user.PreviousAction;
+            await UserDB.ChangeUserAction(context, chatID, action);
+            
 
 
         }
 
-       /* [InlineCallback("tag-")]
+        [InlineCallback("tag-")]
         public async Task OnAddingTag(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
         {
             int tagId = Convert.ToInt32(query.Data.Split('-')[1]);
@@ -197,8 +201,9 @@ namespace Evect.Models.Commands
         public async Task OnMeet(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
         {
             long userId = Convert.ToInt32(query.Data.Split('-')[1]);
-            
-            User user = await UserDB.GetUserByChatId(context, query.From.Id);
+             User user = await UserDB.GetUserByChatId(context, query.From.Id);
+            InfoAboutUsers info = context.InfoAboutUsers.FirstOrDefault(N => N.EventId == user.CurrentEventId);//Liza
+            info.AmountOfRequestsOfMettings++;//liza
             StringBuilder builder = new StringBuilder();
             TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
 
@@ -220,7 +225,8 @@ namespace Evect.Models.Commands
             long userId = Convert.ToInt32(query.Data.Split('-')[1]);
             
             User user = await UserDB.GetUserByChatId(context, query.From.Id); // kim
-
+            InfoAboutUsers info = context.InfoAboutUsers.FirstOrDefault(N => N.EventId == user.CurrentEventId);//Liza
+            info.AmountOfRequestsOfContacts++;
             User toAdd = await UserDB.GetUserByChatId(context, userId); // roma
             
             StringBuilder builder = new StringBuilder();
