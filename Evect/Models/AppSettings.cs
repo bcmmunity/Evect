@@ -12,16 +12,16 @@ namespace Evect.Models
         #endregion */
         
         
-        /*#region Kim
+        #region Kim
 
 #if  LOCAL
         public static string Url { get; set; } = "https://0d2d647d.ngrok.io:443/{0}"; // Перед ":" указать URL бота
 
-#else*/
+#else
 
         public static string Url { get; set; } = "https://evect.vrrk.ru:443/{0}"; // Перед ":" указать URL бота
 
-//#endif
+#endif
 
           public static string Name { get; set; } = "evect_bot"; // Здесь имя бота (без @)
 

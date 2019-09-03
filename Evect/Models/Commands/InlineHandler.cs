@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Evect.Models.DB;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Evect.Models.Commands
 {
@@ -170,8 +171,19 @@ namespace Evect.Models.Commands
                 builder.AppendLine("О чем можно пообщаться");
                 builder.AppendLine(us.Communication);
                     
+                string ch;
+
+                if (user.Contacts.Any(e => e.AnotherUserId == us.TelegramId))
+                {
+                    ch = Utils.GetCheckmark();
+                }
+                else
+                {
+                    ch = "В книжку";
+                }
+                
                 inline
-                    .AddTextRow("Назад","В книжку","Встреча", "Вперед")
+                    .AddTextRow("Назад",ch,"Встреча", "Вперед")
                     .AddCallbackRow($"change-{changeId - 1}",$"contact-{us.TelegramId}",$"meet-{us.TelegramId}",$"change-{changeId + 1}");
 
                 await client.EditMessageTextAsync(query.From.Id, query.Message.MessageId, builder.ToString());
@@ -201,6 +213,41 @@ namespace Evect.Models.Commands
 
 
         }
+        
+        [InlineCallback("contact-")]
+        public async Task OnBook(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
+        {
+            long userId = Convert.ToInt32(query.Data.Split('-')[1]);
+            
+            User user = await UserDB.GetUserByChatId(context, query.From.Id); // kim
+
+            User toAdd = await UserDB.GetUserByChatId(context, userId); // roma
+            
+            StringBuilder builder = new StringBuilder();
+
+
+            List<ContactsBook> contacts = user.Contacts;
+
+            if (contacts.Any(e => e.AnotherUserId == toAdd.TelegramId))
+            {
+                ContactsBook book = new ContactsBook()
+                {
+                    OwnerId = user.TelegramId,
+                    AnotherUserId = toAdd.TelegramId
+                }; 
+                user.Contacts.Add(book);
+                context.Update(user);
+                context.SaveChanges();
+            }
+            
+
+            builder.AppendLine($"Пользователь {toAdd.FirstName} {toAdd.LastName} добавлен в записную книжку");
+            
+            await client.SendTextMessageAsync(user.TelegramId, builder.ToString());
+
+
+        }
+        
         
         [InlineCallback("accept-")]
         public async Task OnAccept(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
