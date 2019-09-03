@@ -26,7 +26,9 @@ namespace Evect.Models
         
         NetworkingMenu,
         
-        MyProfile,
+        MyProfileMenu,
+        MyProfileEditing,
+        TagsEditing,
         ContactBook,
         Networking,
         

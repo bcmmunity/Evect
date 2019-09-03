@@ -450,10 +450,15 @@ namespace Evect.Models.DB
         public DbSet<Log> Logs { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<SearchingTag> SearchingTags { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<UserValidation> Validations { get; set; }
         public DbSet<InfoAboutUsers> InfoAboutUsers { get; set; }
         public DbSet<UserTag> UserTags { get; set; }
         public DbSet<UserSearchingTag> UserSearchingTags { get; set; }
+        
+        public DbSet<Survey> Surveys { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<Answer> Answers { get; set; }
     }
 }

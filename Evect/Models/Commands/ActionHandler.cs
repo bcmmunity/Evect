@@ -459,7 +459,7 @@ namespace Evect.Models.Commands
             }
         }
         [UserAction(Actions.QuestionForSurveyWithMessage)]
-        public async void AQuestionForSurveyWithMessage(ApplicationContext context,Message message,TelegramBotClient client)
+        public async Task AQuestionForSurveyWithMessage(ApplicationContext context,Message message,TelegramBotClient client)
         {
             TelegramKeyboard keyboard = new TelegramKeyboard();
             keyboard.AddRow("Назад");
@@ -506,25 +506,51 @@ namespace Evect.Models.Commands
             var names = text.Split(' ');
             if (names.Length == 2)
             {
-                user.FirstName = names[0];
-                user.LastName = names[1];
-                context.Update(user);
-                context.SaveChanges();
-                StringBuilder builder = new StringBuilder();
-
-                if (string.IsNullOrEmpty(user.Email))
+                if (user.FirstName == null && user.LastName == null)
                 {
-                    builder.AppendLine(@"Вот мы и познакомились✌️");
-                    builder.AppendLine("А теперь введите адрес *электронной почты*");
-                    builder.AppendLine();
-                    builder.AppendLine(
-                        "🤖 Он нужен для создания вашего *личного кабинета*, он упростит вход в случае отключения бота, а также это необходимо для проверки регистрации");
-                    await client.SendTextMessageAsync(
-                        chatId,
-                        builder.ToString(),
-                        ParseMode.Markdown);
-                    await UserDB.ChangeUserAction(context, chatId, Actions.WainingForEmail);
+                    user.FirstName = names[0];
+                    user.LastName = names[1];
+                    context.Update(user);
+                    context.SaveChanges();
+                    StringBuilder builder = new StringBuilder();
+
+                    if (string.IsNullOrEmpty(user.Email))
+                    {
+                        builder.AppendLine(@"Вот мы и познакомились✌️");
+                        builder.AppendLine("А теперь введите адрес *электронной почты*");
+                        builder.AppendLine();
+                        builder.AppendLine(
+                            "🤖 Он нужен для создания вашего *личного кабинета*, он упростит вход в случае отключения бота, а также это необходимо для проверки регистрации");
+                        await client.SendTextMessageAsync(
+                            chatId,
+                            builder.ToString(),
+                            ParseMode.Markdown);
+                        await UserDB.ChangeUserAction(context, chatId, Actions.WainingForEmail);
+                    }
                 }
+                else
+                {
+                    user.FirstName = names[0];
+                    user.LastName = names[1];
+                    context.Update(user);
+                    context.SaveChanges();
+
+                    await client.SendTextMessageAsync(chatId, "Данные сохранены");
+                    
+                    TelegramKeyboard keyboard = new TelegramKeyboard();
+                    
+                    keyboard.AddRow("Имя и фамилия");
+                    keyboard.AddRow("Почта");
+                    keyboard.AddRow("Работа и должность");
+                    keyboard.AddRow("Полезность");
+                    keyboard.AddRow("О чем пообщаться");
+                    keyboard.AddRow("Вернуться в мой профиль");
+                
+                    await client.SendTextMessageAsync(chatId, "Выберите пункты для редактирования", replyMarkup: keyboard.Markup);
+                    await UserDB.ChangeUserAction(context, chatId, Actions.MyProfileEditing);
+                }
+                
+                
             }
             else
             {
@@ -543,7 +569,7 @@ namespace Evect.Models.Commands
 
 
             User user = await UserDB.GetUserByChatId(context, chatId);
-
+            TelegramKeyboard keyboard;
             if (Utils.IsEmailValid(text))
             {
                 if (await UserDB.CheckEmailInDB(context, text))
@@ -566,22 +592,47 @@ namespace Evect.Models.Commands
                 }
                 else
                 {
-                    user.Email = text;
-                    context.Update(user);
-                    context.SaveChanges();
+                    if (user.Email == null)
+                    {
+                        user.Email = text;
+                        context.Update(user);
+                        context.SaveChanges();
 
-                    TelegramKeyboard keyboard = new TelegramKeyboard();
-                    keyboard.AddRow("О мероприятии", "Присоединиться к мероприятию");
-                    keyboard.AddRow("Режим нетворкинга");
-                    keyboard.AddRow("Записная книжка");
-                    keyboard.AddRow("Все мероприятия");
+                        keyboard = new TelegramKeyboard();
+                        keyboard.AddRow("О мероприятии", "Присоединиться к мероприятию");
+                        keyboard.AddRow("Режим нетворкинга");
+                        keyboard.AddRow("Записная книжка");
+                        keyboard.AddRow("Все мероприятия");
 
-                    await client.SendTextMessageAsync(
-                        chatId,
-                        "Прекрасно, вам доступен весь мой функционал",
-                        ParseMode.Markdown,
-                        replyMarkup: keyboard.Markup);
-                    await UserDB.ChangeUserAction(context, chatId, Actions.Profile);
+                        await client.SendTextMessageAsync(
+                            chatId,
+                            "Прекрасно, вам доступен весь мой функционал",
+                            ParseMode.Markdown,
+                            replyMarkup: keyboard.Markup);
+                        await UserDB.ChangeUserAction(context, chatId, Actions.Profile);
+                    }
+                    else
+                    {
+                        user.Email = text;
+                        context.Update(user);
+                        context.SaveChanges();
+
+                        
+                        keyboard = new TelegramKeyboard();
+
+                        await client.SendTextMessageAsync(chatId, "Данные сохранены");
+                        keyboard.AddRow("Имя и фамилия");
+                        keyboard.AddRow("Почта");
+                        keyboard.AddRow("Работа и должность");
+                        keyboard.AddRow("Полезность");
+                        keyboard.AddRow("О чем пообщаться");
+                        keyboard.AddRow("Вернуться в мой профиль");
+                
+                        await client.SendTextMessageAsync(chatId, "Выберите пункты для редактирования", replyMarkup: keyboard.Markup);
+                        await UserDB.ChangeUserAction(context, chatId, Actions.MyProfileEditing);
+                    }
+                    
+                   
                 }
             }
             else
@@ -797,7 +848,15 @@ namespace Evect.Models.Commands
                     }
                     else
                     {
-                        await UserDB.ChangeUserAction(context, chatId, Actions.Networking);
+                        keyboard = new TelegramKeyboard();
+                        
+                        keyboard.AddRow("Мой профиль");
+                        keyboard.AddRow("Записная книжка");
+                        keyboard.AddRow("Общение");
+                        keyboard.AddRow("Вернуться на главную");
+                        
+                        await UserDB.ChangeUserAction(context, chatId, Actions.NetworkingMenu);
+                        await client.SendTextMessageAsync(chatId, "Вы вошли в режим нетворкинга", replyMarkup: keyboard.Markup);
                     }
 
                     break;
@@ -927,11 +986,37 @@ namespace Evect.Models.Commands
 
             User user = await UserDB.GetUserByChatId(context, chatId);
 
-            user.CompanyAndPosition = text;
+            if (user.CompanyAndPosition == null)
+            {
+                user.CompanyAndPosition = text;
 
-            await UserDB.ChangeUserAction(context, chatId, Actions.SecondQuestion);
-            await client.SendTextMessageAsync(
-                chatId, "Теперь интересные вопросы😜 \n**Чем вы можете быть полезны? [2/3]**", ParseMode.Markdown);
+                await UserDB.ChangeUserAction(context, chatId, Actions.SecondQuestion);
+                await client.SendTextMessageAsync(
+                    chatId, "Теперь интересные вопросы😜 \n**Чем вы можете быть полезны? [2/3]**", ParseMode.Markdown);
+            }
+            else
+            {
+                user.CompanyAndPosition = text;
+
+                context.Update(user);
+                context.SaveChanges();
+                
+                await client.SendTextMessageAsync(chatId, "Данные сохранены");
+                
+                TelegramKeyboard keyboard = new TelegramKeyboard();
+                keyboard.AddRow("Имя и фамилия");
+                keyboard.AddRow("Почта");
+                keyboard.AddRow("Работа и должность");
+                keyboard.AddRow("Полезность");
+                keyboard.AddRow("О чем пообщаться");
+                keyboard.AddRow("Вернуться в мой профиль");
+                
+                await client.SendTextMessageAsync(chatId, "Выберите пункты для редактирования", replyMarkup: keyboard.Markup);
+                await UserDB.ChangeUserAction(context, chatId, Actions.MyProfileEditing);
+
+            }
+            
+            
         }
 
         [UserAction(Actions.SecondQuestion)]
@@ -943,12 +1028,34 @@ namespace Evect.Models.Commands
 
             User user = await UserDB.GetUserByChatId(context, chatId);
 
-            user.Utility = text;
+            if (user.Utility == null)
+            {
+                user.Utility = text;
+                await UserDB.ChangeUserAction(context, chatId, Actions.ThirdQuestion);
+                await client.SendTextMessageAsync(
+                    chatId, "Более отвлечённый вопрос🤗\n**О чем бы вы хотели пообщаться? [3/3]**\nТемы рабочие и не очень",
+                    ParseMode.Markdown);
+            }
+            else
+            {
+                user.Utility = text;
+                context.Update(user);
+                context.SaveChanges();
+                
+                TelegramKeyboard keyboard = new TelegramKeyboard();
+                keyboard.AddRow("Имя и фамилия");
+                keyboard.AddRow("Почта");
+                keyboard.AddRow("Работа и должность");
+                keyboard.AddRow("Полезность");
+                keyboard.AddRow("О чем пообщаться");
+                keyboard.AddRow("Вернуться в мой профиль");
+                
+                await client.SendTextMessageAsync(chatId, "Выберите пункты для редактирования", replyMarkup: keyboard.Markup);
+                await UserDB.ChangeUserAction(context, chatId, Actions.MyProfileEditing);
+            }
+            
 
-            await UserDB.ChangeUserAction(context, chatId, Actions.ThirdQuestion);
-            await client.SendTextMessageAsync(
-                chatId, "Более отвлечённый вопрос🤗\n**О чем бы вы хотели пообщаться? [3/3]**\nТемы рабочие и не очень",
-                ParseMode.Markdown);
+            
         }
 
         [UserAction(Actions.ThirdQuestion)]
@@ -961,25 +1068,44 @@ namespace Evect.Models.Commands
 
             TelegramKeyboard keyboard = new TelegramKeyboard(true);
 
-            user.Communication = text;
-
-            // For answer
-
-            List<Tag> parentTags = context.Tags.Where(x => x.Level == 1).ToList();
-
-            foreach (var parentTag in parentTags)
+            if (user.Communication == null)
             {
-                keyboard.AddRow(parentTag.Name);
+                user.Communication = text;
+                List<Tag> parentTags = context.Tags.Where(x => x.Level == 1).ToList();
+
+                foreach (var parentTag in parentTags)
+                {
+                    keyboard.AddRow(parentTag.Name);
+                }
+
+                await client.SendTextMessageAsync(
+                    chatId, "😋 Хорошо, перейдём к **тегам**." +
+                            "\n\nПо тегам можно легко и удобно __сортировать__ нужных вам людей. Сначала выбираются группы тегов, но с помощью кнопки **добавить тег** можно не ограничиваться одной группой" +
+                            "\n\nВы можете их менять по кнопке мой профиль" +
+                            "\n\nА сейчас выберите ВАШИ теги (подходят лично **ВАМ**) **[1/2]**",
+                    ParseMode.Markdown, replyMarkup: keyboard.Markup);
+
+                await UserDB.ChangeUserAction(context, chatId, Actions.AddingParentTag);
             }
+            else
+            {
+                user.Communication = text;
 
-            await client.SendTextMessageAsync(
-                chatId, "😋 Хорошо, перейдём к **тегам**." +
-                        "\n\nПо тегам можно легко и удобно __сортировать__ нужных вам людей. Сначала выбираются группы тегов, но с помощью кнопки **добавить тег** можно не ограничиваться одной группой" +
-                        "\n\nВы можете их менять по кнопке мой профиль" +
-                        "\n\nА сейчас выберите ВАШИ теги (подходят лично **ВАМ**) **[1/2]**",
-                ParseMode.Markdown, replyMarkup: keyboard.Markup);
-
-            await UserDB.ChangeUserAction(context, chatId, Actions.AddingParentTag);
+                context.Update(user);
+                context.SaveChanges();
+                
+                keyboard.AddRow("Имя и фамилия");
+                keyboard.AddRow("Почта");
+                keyboard.AddRow("Работа и должность");
+                keyboard.AddRow("Полезность");
+                keyboard.AddRow("О чем пообщаться");
+                keyboard.AddRow("Вернуться в мой профиль");
+                
+                await client.SendTextMessageAsync(chatId, "Выберите пункты для редактирования", replyMarkup: keyboard.Markup);
+                await UserDB.ChangeUserAction(context, chatId, Actions.MyProfileEditing);
+            }
+            
+            
         }
 
         #region Editing user
@@ -1019,20 +1145,7 @@ namespace Evect.Models.Commands
             keyboard.AddRow("Ок"); // Variants of actions
             keyboard.AddRow("Добавить тег");
             keyboard.AddRow("Выбрать заново");
-
-            // For My profile 
-//            string chosenTags = "";
-//
-//            if (user.UserTags.Where(x => x.UserId == user.UserId) != null)
-//            {
-//                foreach (var tag in user.UserTags.Where(x => x.UserId == user.UserId))
-//                {
-//                    chosenTags = context.Tags.FirstOrDefault(x => x.TagId == tag.TagId && x.ParentTag == null).Name + " "; 
-//                }
-//
-//                await client.SendTextMessageAsync(
-//                    chatId, "Сейчас вы выбрали: " + chosenTags, ParseMode.Markdown);
-//            }
+            
 
             await client.SendTextMessageAsync(
                 chatId, "Выберите теги:", ParseMode.Markdown, // Editing while choosing tags?
@@ -1063,7 +1176,7 @@ namespace Evect.Models.Commands
             // Gets users callbacks from inline keyboard and receiving answers from normal keyboard
             switch (text)
             {
-                case "ОК": // Shows all Networking buttons 
+                case "Ок": // Shows all Networking buttons 
                     if (userTags != null && userTags.Count > 0)
                     {
                         foreach (var userTag in userTags)
@@ -1080,12 +1193,24 @@ namespace Evect.Models.Commands
                             chatId, "Ваши теги:\n" + chosenTags,
                             ParseMode.Markdown);
 
-                        await client.SendTextMessageAsync(
-                            chatId,
-                            "😎 Последний шаг\n\nВыберите **теги** нужных ВАМ людей (**ВЫ** их ищете) – _теги поиска_",
-                            ParseMode.Markdown, replyMarkup: keyboard.Markup);
+                        if (user.SearchingUserTags.Count == 0)
+                        {
+                            await client.SendTextMessageAsync(
+                                chatId,
+                                "😎 Последний шаг\n\nВыберите **теги** нужных ВАМ людей (**ВЫ** их ищете) – _теги поиска_",
+                                ParseMode.Markdown, replyMarkup: keyboard.Markup);
 
-                        await UserDB.ChangeUserAction(context, chatId, Actions.SearchingParentTag);
+                            await UserDB.ChangeUserAction(context, chatId, Actions.SearchingParentTag);
+                        }
+                        else
+                        {
+                            keyboard.AddRow("Редактировать профиль");
+                            keyboard.AddRow("Изменить теги");
+                            keyboard.AddRow("Вернуться в режим общения");
+                            await client.SendTextMessageAsync(chatId, "Вы вернулись в мой профиль",
+                                replyMarkup: keyboard.Markup);
+                        }
+                        
                     }
                     else
                     {
@@ -1151,12 +1276,25 @@ namespace Evect.Models.Commands
             TelegramInlineKeyboard inlineKeyboard = new TelegramInlineKeyboard();
 
             // Listing tags of this parent tag to user
-            List<Tag> childTags = context.Tags.Where(x => x.Level == 2 && x.ParentTagID == parentTag.TagId).ToList();
+            List<SearchingTag> childTags = context.SearchingTags.Where(x => x.Level == 2 && x.ParentTagID == parentTag.TagId).ToList();
 
+            bool ex;
+            string ch;
             foreach (var tag in childTags)
             {
-                inlineKeyboard.AddTextRow(tag.Name).AddCallbackRow($"searchtag-{tag.TagId}");
+                ex = user.SearchingUserTags.FirstOrDefault(e => e.TagId == tag.SearchingTagId) != null;
+                if (ex)
+                {
+                    ch = Utils.GetCheckmark();
+                }
+                else
+                {
+                    ch = "";
+                }
+                
+                inlineKeyboard.AddTextRow($"{tag.Name} {ch}").AddCallbackRow($"searchtag-{tag.SearchingTagId}");
             }
+            
 
             keyboard.AddRow("Ок"); // Variants of actions
             keyboard.AddRow("Добавить тег");
@@ -1191,7 +1329,7 @@ namespace Evect.Models.Commands
             // Gets users callbacks from inline keyboard and receiving answers from normal keyboard
             switch (text)
             {
-                case "ОК": // Shows all Networking buttons 
+                case "Ок": // Shows all Networking buttons 
                     if (userTags.Count > 0)
                     {
                         foreach (var userTag in userTags)
@@ -1220,8 +1358,8 @@ namespace Evect.Models.Commands
                                     "\n\n☕️ **Общение** запустит основную функцию. В ней вы можете добавлять людей в **книжку** или приглашать их на **встречу**",
                             ParseMode.Markdown, replyMarkup: keyboard.Markup);
 
-//                        await UserDB.ChangeUserAction(context, chatId, Actions.Networking);
-                        await UserDB.ChangeUserAction(context, chatId, Actions.Profile);
+                        await UserDB.ChangeUserAction(context, chatId, Actions.NetworkingMenu);
+//                        await UserDB.ChangeUserAction(context, chatId, Actions.Profile);
                     }
                     else
                     {
@@ -1262,7 +1400,7 @@ namespace Evect.Models.Commands
                     await UserDB.ChangeUserAction(context, chatId, Actions.SearchingParentTag);
 
                     break;
-                
+
             }
         }
 
@@ -1275,10 +1413,30 @@ namespace Evect.Models.Commands
             User user = await UserDB.GetUserByChatId(context, chatId);
 
             TelegramKeyboard keyboard = new TelegramKeyboard(true);
+            StringBuilder builder = new StringBuilder();
 
             switch (text)
             {
                 case "Мой профиль":
+                    
+                    keyboard.AddRow("Редактировать профиль");
+                    keyboard.AddRow("Изменить теги");
+                    keyboard.AddRow("Вернуться в режим общения");
+
+                    List<string> myTags = user.UserTags.Select(u => context.Tags.FirstOrDefault(t => t.TagId == u.TagId)?.Name).ToList();
+                    List<string> searchTags = user.SearchingUserTags.Select(u => context.SearchingTags.FirstOrDefault(t => t.SearchingTagId == u.TagId)?.Name).ToList();
+                    
+                    
+                    builder.AppendLine($"{user.FirstName} {user.LastName}");
+                    builder.AppendLine(user.CompanyAndPosition);
+                    builder.AppendLine(user.Utility);
+                    builder.AppendLine(user.Communication);
+                    builder.AppendLine($"Личные теги: {string.Join(", ", myTags)}");
+                    builder.AppendLine($"Теги для поиска: {string.Join(", ", searchTags)}");
+
+                    await client.SendTextMessageAsync(chatId, builder.ToString(), replyMarkup: keyboard.Markup);
+                    await UserDB.ChangeUserAction(context, chatId, Actions.MyProfileMenu);
+                    
                     break;
 
                 case "Записная книжка":
@@ -1291,6 +1449,136 @@ namespace Evect.Models.Commands
                 case "Вернуться на главную":
                     break;
             }
+        }
+
+        [UserAction(Actions.MyProfileMenu)]
+        public async Task OnMyProfileMenu(ApplicationContext context, Message message, TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+            TelegramKeyboard keyboard = new TelegramKeyboard();
+
+            switch (text)
+            {
+                case "Редактировать профиль":
+                    keyboard.AddRow("Имя и фамилия");
+                    keyboard.AddRow("Почта");
+                    keyboard.AddRow("Работа и должность");
+                    keyboard.AddRow("Полезность");
+                    keyboard.AddRow("О чем пообщаться");
+                    keyboard.AddRow("Вернуться в мой профиль");
+                    await client.SendTextMessageAsync(chatId, "Выберите пункты для редактирования", replyMarkup: keyboard.Markup);
+                    await UserDB.ChangeUserAction(context, chatId, Actions.MyProfileEditing);
+
+                    break;
+                
+                case "Изменить теги":
+                    keyboard.AddRow("Теги поиска");
+                    keyboard.AddRow("Личные теги");
+                    keyboard.AddRow("Вернуться в мой профиль");
+                    await client.SendTextMessageAsync(chatId, "Выберите пункты для редактирования", replyMarkup: keyboard.Markup);
+                    await UserDB.ChangeUserAction(context, chatId, Actions.TagsEditing);
+                    break;
+                
+                case "Вернуться в режим общения":
+                    keyboard.AddRow("Мой профиль");
+                    keyboard.AddRow("Записная книжка");
+                    keyboard.AddRow("Общение");
+                    keyboard.AddRow("Вернуться на главную");
+
+                    await client.SendTextMessageAsync(chatId, "Вы вернулись в режим общения", replyMarkup: keyboard.Markup);
+                    await UserDB.ChangeUserAction(context, chatId, Actions.NetworkingMenu);
+                    
+                    break;
+            }
+                
+            
+            
+        }
+
+        [UserAction(Actions.TagsEditing)]
+        public async Task OnTagsEditing(ApplicationContext context, Message message, TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+            TelegramKeyboard keyboard = new TelegramKeyboard();
+
+            List<Tag> parentTags = context.Tags.Where(x => x.Level == 1).ToList();
+
+            foreach (var parentTag in parentTags)
+            {
+                keyboard.AddRow(parentTag.Name);
+            }
+            
+            switch (text)
+            {
+                case "Теги поиска":
+                    await client.SendTextMessageAsync(chatId, "Выберите тему", replyMarkup: keyboard.Markup);
+                    await UserDB.ChangeUserAction(context, chatId, Actions.SearchingParentTag);
+                    break;
+                
+                case "Личные теги":
+                    await client.SendTextMessageAsync(chatId, "Выберите тему", replyMarkup: keyboard.Markup);
+                    await UserDB.ChangeUserAction(context, chatId, Actions.AddingParentTag);
+                    break;
+                
+                case "Вернуться в мой профиль":
+                    keyboard.AddRow("Мой профиль");
+                    keyboard.AddRow("Записная книжка");
+                    keyboard.AddRow("Общение");
+                    keyboard.AddRow("Вернуться на главную");
+
+                    await client.SendTextMessageAsync(chatId, "Вы вернулись в профиль", replyMarkup: keyboard.Markup);
+                    await UserDB.ChangeUserAction(context, chatId, Actions.NetworkingMenu);
+                    break;
+            }
+        }
+
+        [UserAction(Actions.MyProfileEditing)]
+        public async Task OnMyProfileEditing(ApplicationContext context, Message message, TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            var text = message.Text;
+            TelegramKeyboard keyboard = new TelegramKeyboard();
+
+            switch (text)
+            {
+                case "Имя и фамилия":
+                    await client.SendTextMessageAsync(chatId, "Введите новые данные:");
+                    await UserDB.ChangeUserAction(context, chatId, Actions.WaitingForName);
+                    break;
+                
+                case "Почта":
+                    await client.SendTextMessageAsync(chatId, "Введите новые данные:");
+                    await UserDB.ChangeUserAction(context, chatId, Actions.WainingForEmail);
+                    break;
+                
+                case "Работа и должность":
+                    await client.SendTextMessageAsync(chatId, "Введите новые данные:");
+                    await UserDB.ChangeUserAction(context, chatId, Actions.FirstQuestion);
+                    break;
+                
+                case "Полезность":
+                    await client.SendTextMessageAsync(chatId, "Введите новые данные:");
+                    await UserDB.ChangeUserAction(context, chatId, Actions.SecondQuestion);
+                    break;
+                
+                case "О чем пообщаться":
+                    await client.SendTextMessageAsync(chatId, "Введите новые данные:");
+                    await UserDB.ChangeUserAction(context, chatId, Actions.ThirdQuestion);
+                    break;
+                
+                case "Вернуться в мой профиль":
+                    keyboard.AddRow("Мой профиль");
+                    keyboard.AddRow("Записная книжка");
+                    keyboard.AddRow("Общение");
+                    keyboard.AddRow("Вернуться на главную");
+
+                    await client.SendTextMessageAsync(chatId, "Вы вернулись в профиль", replyMarkup: keyboard.Markup);
+                    await UserDB.ChangeUserAction(context, chatId, Actions.NetworkingMenu);
+                    break;
+            }
+            
         }
 
         #endregion

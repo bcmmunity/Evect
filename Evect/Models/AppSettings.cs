@@ -3,16 +3,16 @@ namespace Evect.Models
 {
     public static class AppSettings
     {
-        #region Liza
+       /* #region Liza
         public static string Url { get; set; } = "https://bot.diffind.com:443/{0}";
         public static string Name { get; set; } = "evect_bot";
         //  public static string Name { get; set; } = "evect_bot";
         public static string Key { get; set; } = "913092744:AAGfI54AotPc_7P4l7abF-ZAuwji0b1Nfu0";
         public static string DatabaseConnectionString { get; set; } = "Server=localhost;Database=u0641156_bot;User Id=u0641156_bot;Password=ReportBot123!";//Лиза
-        #endregion 
+        #endregion */
         
         
-        /*#region Kim
+        #region Kim
 
 #if  LOCAL
         public static string Url { get; set; } = "https://0d2d647d.ngrok.io:443/{0}"; // Перед ":" указать URL бота
@@ -29,13 +29,13 @@ namespace Evect.Models
 
 #if LOCAL  
           public static string DatabaseConnectionString { get; set; } =
-             "Server=localhost\\SQLEXPRESS;Database=evect31;Trusted_Connection=True;";
+             "Server=localhost\\SQLEXPRESS;Database=evect46;Trusted_Connection=True;";
 #else
           public static string DatabaseConnectionString { get; set; } = 
               "Server=localhost;Database=u0707180_evect3;User Id=u0707180_evect3;Password=pVmbs2at";//Лиза
 
 #endif
-        #endregion*/
+        #endregion
 
     }
 }
