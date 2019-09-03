@@ -1481,6 +1481,25 @@ namespace Evect.Models.Commands
 
                 case "Записная книжка":
                     // Переходит Contactbook
+
+                    List<ContactsBook> contacts = user.Contacts.Take(4).ToList();
+
+                    Console.WriteLine("\n\n\n\n\n\n\n");
+                    Console.WriteLine(user.Contacts.Count);
+                    Console.WriteLine(contacts.Count);
+                    Console.WriteLine("\n\n\n\n\n\n\n");
+                    
+                    foreach (var contactsBook in contacts)
+                    {
+                        builder.Clear();
+                        User another = await UserDB.GetUserByChatId(context, contactsBook.AnotherUserId);
+                        builder.AppendLine($"{another.FirstName} {another.LastName} {another.CompanyAndPosition}");
+                        builder.AppendLine($"Чем полезен: {another.Utility}");
+                        builder.AppendLine($"Контакт: ");
+
+                        await client.SendTextMessageAsync(chatId, builder.ToString());
+
+                    }
                     break;
 
                 case "Общение":
@@ -1512,11 +1531,22 @@ namespace Evect.Models.Commands
                     builder.AppendLine();
                     builder.AppendLine("О чем можно пообщаться");
                     builder.AppendLine(us.Communication);
+
+                    string ch;
+
+                    if (user.Contacts.Any(e => e.AnotherUserId == us.TelegramId))
+                    {
+                        ch = Utils.GetCheckmark();
+                    }
+                    else
+                    {
+                        ch = "В книжку";
+                    }
                     
                     TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
                     inline
-                        .AddTextRow("Назад","В книжку","Встреча", "Вперед")
-                        .AddCallbackRow($"change-0",$"contact-{us.UserId}",$"meet-{us.UserId}",$"change-2");
+                        .AddTextRow("Назад",ch,"Встреча", "Вперед")
+                        .AddCallbackRow($"change-0",$"contact-{us.TelegramId}",$"meet-{us.TelegramId}",$"change-2");
 
                     await client.SendTextMessageAsync(chatId, builder.ToString(), replyMarkup: inline.Markup);
                     

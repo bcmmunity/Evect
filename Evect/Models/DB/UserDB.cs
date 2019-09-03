@@ -132,6 +132,7 @@ namespace Evect.Models.DB
         {
             return await context.Users
                 .Include(u => u.UserEvents)
+                .Include(u => u.Contacts)
                 .Include(u => u.UserTags)
                 .ThenInclude(u => u.Tag)
                 .Include(u => u.SearchingUserTags)
