@@ -48,7 +48,8 @@ namespace Evect.Models
         SurveyWithMessage,
         SurveyWithMarks,
         QuestionForSurveyWithMessage,
-        QuestionForSurveyWithMarks
+        QuestionForSurveyWithMarks,
+        AnswerToSurvey
 
         #endregion
 

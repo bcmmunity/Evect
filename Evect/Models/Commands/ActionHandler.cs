@@ -430,7 +430,7 @@ namespace Evect.Models.Commands
             {
                 TelegramKeyboard keyboard = new TelegramKeyboard();
                 keyboard.AddRow("Назад");
-                await UserDB.ChangeUserAction(context, chatId, Actions.SurveyWithMessage);
+                await UserDB.ChangeUserAction(context, chatId, Actions.SurveyWithMarks);
                 await client.SendTextMessageAsync(chatId, "Напишите название опроса", replyMarkup: keyboard.Markup);
             }
 
@@ -461,13 +461,14 @@ namespace Evect.Models.Commands
         [UserAction(Actions.QuestionForSurveyWithMessage)]
         public async void AQuestionForSurveyWithMessage(ApplicationContext context,Message message,TelegramBotClient client)
         {
-            TelegramKeyboard keyboard = new TelegramKeyboard();
-            keyboard.AddRow("Назад");
-            keyboard.AddRow("Опрос с развернутой обратной связью");
-            keyboard.AddRow("Опрос с оценкой");
+            
             var chatId = message.Chat.Id;
             if (message.Text=="Назад")
             {
+                TelegramKeyboard keyboard = new TelegramKeyboard();
+                keyboard.AddRow("Назад");
+                keyboard.AddRow("Опрос с развернутой обратной связью");
+                keyboard.AddRow("Опрос с оценкой");
                 await UserDB.ChangeUserAction(context,chatId, Actions.CreateSurvey);
                 await client.SendTextMessageAsync(chatId, "Я вернулся к выбору типа опроса", replyMarkup: keyboard.Markup);
             }
@@ -479,18 +480,61 @@ namespace Evect.Models.Commands
                 string text = message.Text;
                 int QuestionId = UserDB.GetQuestionId(context,message.Text);
                 TelegramInlineKeyboard inlineKeyboard = new TelegramInlineKeyboard();
-                inlineKeyboard.AddTextRow("Ответить").AddCallbackRow("9-"+QuestionId.ToString());
-                
+                inlineKeyboard.AddTextRow("Ответить").AddCallbackRow("999-"+QuestionId.ToString());
+                await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
+                TelegramKeyboard keyboard = new TelegramKeyboard();
+                keyboard.AddRow("Об ивенте");
+                keyboard.AddRow("Инвормация о пользователях");
+                keyboard.AddRow("Создать опрос");
+                keyboard.AddRow("Создать оповещение");
                 foreach (var participant in participants)
                 {
                     await client.SendTextMessageAsync(participant, text,replyMarkup: inlineKeyboard.Markup);
                 }
-                await UserDB.ChangeUserAction(context, chatId, Actions.CreateSurvey);
-                await client.SendTextMessageAsync(chatId, "Ваш вопрос успешно отослан всем участникам мероприятия", replyMarkup: keyboard.Markup);
+                     await client.SendTextMessageAsync(chatId, "Ваш вопрос успешно отослан всем участникам мероприятия", replyMarkup: keyboard.Markup);
             }
         }
-      //  [InlineCallback("Ответить","9-")]//ТАК ЭТО ДЕЛАЕТСЯ?????
-      //  [UserAction(Actions.SurveyWithMarks)]
+      [UserAction(Actions.QuestionForSurveyWithMarks)]//с выбором ответа
+      public async void AQuestionForSurveyWithMarks(ApplicationContext context,Message message,TelegramBotClient client)
+        {
+           
+            var chatId = message.Chat.Id;
+            if(message.Text=="Назад")
+            {
+                TelegramKeyboard keyboard = new TelegramKeyboard();
+                keyboard.AddRow("Назад");
+                keyboard.AddRow("Опрос с развернутой обратной связью");
+                keyboard.AddRow("Опрос с оценкой");
+                await UserDB.ChangeUserAction(context, chatId, Actions.CreateSurvey);
+                await client.SendTextMessageAsync(chatId, "Я вернулся к выбору типа опроса", replyMarkup: keyboard.Markup);
+            }
+            else
+            {
+                await UserDB.ChangeUserAction(context, chatId, Actions.QuestionForSurveyWithMarks);
+                EventDB eventDb = new EventDB();
+                List<long> participants = await eventDb.GetAllParticipantsOfEvent(chatId);
+                string text = message.Text;
+                int QuestionId = UserDB.GetQuestionId(context, message.Text);
+                TelegramInlineKeyboard inlineKeyboard = new TelegramInlineKeyboard();
+                inlineKeyboard.AddTextRow("🔥".ToString()).AddCallbackRow("990-"+"1-"+QuestionId.ToString());
+                inlineKeyboard.AddTextRow("👍".ToString()).AddCallbackRow("990-" +"2-"+ QuestionId.ToString());
+                inlineKeyboard.AddTextRow("👌".ToString()).AddCallbackRow("990-" +"3-"+ QuestionId.ToString());
+                inlineKeyboard.AddTextRow("👎".ToString()).AddCallbackRow("990-" +"4-"+QuestionId.ToString());
+                inlineKeyboard.AddTextRow("🤢".ToString()).AddCallbackRow("990-" +"5-"+ QuestionId.ToString());
+                await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
+                TelegramKeyboard keyboard = new TelegramKeyboard();
+                keyboard.AddRow("Об ивенте");
+                keyboard.AddRow("Инвормация о пользователях");
+                keyboard.AddRow("Создать опрос");
+                keyboard.AddRow("Создать оповещение");
+                //change user action!!!!
+                foreach (var participant in participants)
+                {
+                   await client.SendTextMessageAsync(participant, text, replyMarkup: keyboard.Markup);
+                }
+              await  client.SendTextMessageAsync(chatId, "Ваше вопрос успешно разослан", replyMarkup: keyboard.Markup);
+            }
+        }
 
         #endregion
 
