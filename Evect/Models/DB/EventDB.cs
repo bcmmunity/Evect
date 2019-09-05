@@ -75,9 +75,13 @@ namespace Evect.Models.DB
             {
                 if(item.EventId==EventId)
                 {
+                    if(item.Info!=null)
                     temp = temp + item.Info;
+                    if (item.TelegraphLink != null)
+                        temp = temp + item.TelegraphLink;
                 }
             }
+            
             return temp;
         }
         public async void AddInformationAboutEvent(long chatid,string information)
