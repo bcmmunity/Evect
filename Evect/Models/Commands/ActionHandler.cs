@@ -52,7 +52,7 @@ namespace Evect.Models.Commands
 
             User user = await UserDB.GetUserByChatId(context, chatId);
 
-
+           
             bool isValid = await eventDb.IsEventCodeValid(text);
             if (isValid)
             {
@@ -66,39 +66,48 @@ namespace Evect.Models.Commands
 
                 if (isAdminCode)
                 {
-                    TelegramKeyboard keyboard = new TelegramKeyboard();
-                    keyboard.AddRow("Об ивенте");
-                    keyboard.AddRow("Инвормация о пользователях");
-                    keyboard.AddRow("Создать опрос");
-                    keyboard.AddRow("Создать оповещение");
-
-                    await UserDB.AdminAuthorized(context, chatId);
-                    await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
-                    if (!have)
+                  /*  if (user.Email == null)
                     {
-                        UserEvent userEvent = new UserEvent() {UserId = user.UserId, EventId = ev.EventId};
-                        user.UserEvents.Add(userEvent);
-                        user.CurrentEventId = ev.EventId;
-                        //почему не работает,когда это раскоменчено?
-                        context.Users.Update(user);
-                        context.SaveChanges();
+                        await UserDB.ChangeUserAction(context, chatId, Actions.WainingForEmail);
+                        await client.SendTextMessageAsync(chatId, "Введите, пожалуйста, свою почту");
+                        await UserDB.AdminAuthorized(context, chatId);
                     }
+                    else
+                    {*/
+                        TelegramKeyboard keyboard = new TelegramKeyboard();
+                        keyboard.AddRow("Об ивенте");
+                        keyboard.AddRow("Инвормация о пользователях");
+                        keyboard.AddRow("Создать опрос");
+                        keyboard.AddRow("Создать оповещение");
 
-                    StringBuilder builder = new StringBuilder();
-                    builder.AppendLine($"Включён режим организатора на мероприятии \"{ev.Name}\"");
-//                    builder.AppendLine(@"😇" + "\n" + "Вам доступен расширенный функционал:");
-//                    builder.AppendLine("0");
-//                    builder.AppendLine("<b>Об ивенте</b>- внести изменение в информацию о мероприятии");
-//                    builder.AppendLine("1");
-//                    builder.AppendLine("Можно получить <b>информацию по всем участникам</b");
-//                    builder.AppendLine("2" );
-//                    builder.AppendLine("<b>Создать опрос</b>- опрос рассылается всем участникам, тип опроса- оценка от 1 до 5");
-//                    builder.AppendLine("3");
-//                    builder.AppendLine("<b>Создать оповещение</b>- сообщение отправляется всем участникам");
 
-                    await client.SendTextMessageAsync(chatId,
-                        builder.ToString(),
-                        ParseMode.Html, replyMarkup: keyboard.Markup);
+                        await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
+                        if (!have)
+                        {
+                            UserEvent userEvent = new UserEvent() { UserId = user.UserId, EventId = ev.EventId };
+                            user.UserEvents.Add(userEvent);
+                            user.CurrentEventId = ev.EventId;
+                            //почему не работает,когда это раскоменчено?
+                            context.Users.Update(user);
+                            context.SaveChanges();
+                        }
+
+                        StringBuilder builder = new StringBuilder();
+                        builder.AppendLine($"Включён режим организатора на мероприятии \"{ev.Name}\"");
+                        //                    builder.AppendLine(@"😇" + "\n" + "Вам доступен расширенный функционал:");
+                        //                    builder.AppendLine("0");
+                        //                    builder.AppendLine("<b>Об ивенте</b>- внести изменение в информацию о мероприятии");
+                        //                    builder.AppendLine("1");
+                        //                    builder.AppendLine("Можно получить <b>информацию по всем участникам</b");
+                        //                    builder.AppendLine("2" );
+                        //                    builder.AppendLine("<b>Создать опрос</b>- опрос рассылается всем участникам, тип опроса- оценка от 1 до 5");
+                        //                    builder.AppendLine("3");
+                        //                    builder.AppendLine("<b>Создать оповещение</b>- сообщение отправляется всем участникам");
+
+                        await client.SendTextMessageAsync(chatId,
+                            builder.ToString(),
+                            ParseMode.Html, replyMarkup: keyboard.Markup);
+                    
                 }
                 else
                 {
@@ -560,7 +569,36 @@ namespace Evect.Models.Commands
               await  client.SendTextMessageAsync(chatId, "Ваше вопрос успешно разослан", replyMarkup: keyboard.Markup);
             }
         }
-
+        [UserAction(Actions.AnswerToSurvey)]
+        public async Task onAnsweringToSurvey(ApplicationContext context,Message message,TelegramBotClient client)
+        {
+            var chatId = message.Chat.Id;
+            User user = context.Users.FirstOrDefault(n => n.TelegramId == chatId);
+            if (message.Text == "Продолжить предыдущие действия")
+            {
+                Actions action = user.PreviousAction;
+                user.PreviousAction = new Actions();
+                await UserDB.ChangeUserAction(context, chatId, user.CurrentAction);
+                await client.SendTextMessageAsync(chatId, "Теперь вы можете продолжать работу");
+            }
+            else if (message.Text == "Написать еще один ответ")
+            {
+                await client.SendTextMessageAsync(chatId, "Отправьте сообщение,оно будет записано как ответ на вопрос");
+            }
+            else
+            {
+                Answer answer = new Answer();
+                answer.AnswerMessage = message.Text;
+                answer.QuestionId = user.CurrentQuestionId;
+                answer.TelegramId = chatId;
+                context.Answers.Add(answer);
+                context.SaveChanges();
+                TelegramKeyboard keyboard = new TelegramKeyboard(true);
+                keyboard.AddRow("Продолжить предыдущие действия");
+                keyboard.AddRow("Написать еще один ответ");
+                await client.SendTextMessageAsync(chatId, "Спасибо, Ваш ответ сохранён\nВыберите, что делать дальше", replyMarkup: keyboard.Markup);
+            }
+        }
         #endregion
 
         [UserAction(Actions.WaitingForName)]
@@ -630,6 +668,7 @@ namespace Evect.Models.Commands
             }
         }
 
+
         [UserAction(Actions.WainingForEmail)]
         public async Task OnWaitingForEmail(ApplicationContext context, Message message, TelegramBotClient client)
         {
@@ -666,19 +705,25 @@ namespace Evect.Models.Commands
                         user.Email = text;
                         context.Update(user);
                         context.SaveChanges();
+                       /* if (user.IsAdminAuthorized)
+                        {
 
-                        keyboard = new TelegramKeyboard();
-                        keyboard.AddRow("О мероприятии", "Присоединиться к мероприятию");
-                        keyboard.AddRow("Режим нетворкинга");
-                        keyboard.AddRow("Записная книжка");
-                        keyboard.AddRow("Все мероприятия");
+                        }
+                        else
+                        {*/
+                            keyboard = new TelegramKeyboard();
+                            keyboard.AddRow("О мероприятии", "Присоединиться к мероприятию");
+                            keyboard.AddRow("Режим нетворкинга");
+                            keyboard.AddRow("Записная книжка");
+                            keyboard.AddRow("Все мероприятия");
 
-                        await client.SendTextMessageAsync(
-                            chatId,
-                            "Прекрасно, вам доступен весь мой функционал",
-                            ParseMode.Markdown,
-                            replyMarkup: keyboard.Markup);
-                        await UserDB.ChangeUserAction(context, chatId, Actions.Profile);
+                            await client.SendTextMessageAsync(
+                                chatId,
+                                "Прекрасно, вам доступен весь мой функционал",
+                                ParseMode.Markdown,
+                                replyMarkup: keyboard.Markup);
+                            await UserDB.ChangeUserAction(context, chatId, Actions.Profile);
+                        
                     }
                     else
                     {

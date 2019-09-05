@@ -19,12 +19,12 @@ namespace Evect.Models.DB
         {
             optionsBuilder.UseSqlServer(AppSettings.DatabaseConnectionString);
         }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
                 .HasIndex(b => b.TelegramId);
-            
+
             modelBuilder.Entity<User>()
                 .HasData(new User
                 {
@@ -34,7 +34,12 @@ namespace Evect.Models.DB
                     LastName = "kim",
                     Email = "moranmr8@gmail.com"
                 });
-            
+            modelBuilder.Entity<InfoAboutUsers>().HasData(new InfoAboutUsers { InfoAboutUsersId = 1, EventId = 1, },
+                new InfoAboutUsers { InfoAboutUsersId = 2, EventId = 2, },
+                new InfoAboutUsers { InfoAboutUsersId = 3, EventId = 3, },
+                new InfoAboutUsers { InfoAboutUsersId = 4, EventId = 4, },
+                new InfoAboutUsers { InfoAboutUsersId = 5, EventId = 5, },
+                new InfoAboutUsers { InfoAboutUsersId = 6, EventId = 6, });
             modelBuilder.Entity<Event>()
                 .HasData(
                     new Event { 

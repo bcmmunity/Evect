@@ -22,19 +22,18 @@ namespace Evect.Models.Commands
         //            await client.EditMessageTextAsync(query.From.Id, query.Message.MessageId, "meow");
         //            await client.EditMessageReplyMarkupAsync(query.From.Id, query.Message.MessageId, replyMarkup: inline.Markup);
         //        }
-        /* [InlineCallback("999-")]
+         [InlineCallback("999-")]
          public async Task OnAnsweringOnQuestion(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
          {
              int questionId=Convert.ToInt32(query.Data.Split('-')[1]);
              var chatId = query.From.Id;
              User user = context.Users.FirstOrDefault(n => n.TelegramId == chatId);
              user.PreviousAction = user.CurrentAction;
+            user.CurrentQuestionId = questionId;
              await UserDB.ChangeUserAction(context, chatId, Actions.AnswerToSurvey);
-            await UserDB.ChangeUserAction(context, Actions.AnswerToSurvey);
-
-             await client.SendTextMessageAsync(chatId, "Напишите,пожалуйста,свой ответ на этот вопрос");
+              await client.SendTextMessageAsync(chatId, "Напишите,пожалуйста,свой ответ на этот вопрос");
            //  await client.EditMessageTextAsync(chatId, query.Message.MessageId, "Напишите,пожалуйста,свой ответ на этот вопрос");
-          }*/
+          }
         [InlineCallback("990-")]
         public async Task OnAnsweringOnSurvey(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
         {
