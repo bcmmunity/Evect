@@ -682,6 +682,8 @@ namespace Evect.Models.Commands
             {
                 if (await UserDB.CheckEmailInDB(context, text))
                 {
+                    await UserDB.ChangeUserAction(context, chatId, Actions.WaitingForValidationCode);
+                    
                     await client.SendTextMessageAsync(
                         chatId,
                         "Пользователь с этой почтой ранее использовал другой аккаунт телеграм. На эту почту отпарвлен код идентификации. Пожалуйста введите код",
@@ -689,7 +691,6 @@ namespace Evect.Models.Commands
 
                     string code = Utils.GenerateRandomCode();
                     await Utils.SendEmailAsync(text, "Потверждение почты", $"Ваш кода для потверждения почты: {code}");
-                    await UserDB.ChangeUserAction(context, chatId, Actions.WaitingForValidationCode);
                     context.Validations.Add(new UserValidation
                     {
                         UserTelegramId = chatId,
@@ -781,7 +782,6 @@ namespace Evect.Models.Commands
 
                     user.Email = val.Email;
                     context.Users.Update(user);
-
                     context.SaveChanges();
 
                     await client.SendTextMessageAsync(
@@ -1537,14 +1537,19 @@ namespace Evect.Models.Commands
                     List<string> searchTags = user.SearchingUserTags.Select(u => context.SearchingTags.FirstOrDefault(t => t.SearchingTagId == u.TagId)?.Name).ToList();
                     
                     
-                    builder.AppendLine($"{user.FirstName} {user.LastName}");
-                    builder.AppendLine(user.CompanyAndPosition);
-                    builder.AppendLine(user.Utility);
-                    builder.AppendLine(user.Communication);
-                    builder.AppendLine($"Личные теги: {string.Join(", ", myTags)}");
-                    builder.AppendLine($"Теги для поиска: {string.Join(", ", searchTags)}");
+                    builder.AppendLine($"_Имя и фамилия_: {user.FirstName} {user.LastName}");
+                    builder.AppendLine($"_Компания и позиция_: {user.CompanyAndPosition}");
+                    builder.AppendLine();
+                    builder.AppendLine($"_Чем полезен_: {user.Utility}");
+                    builder.AppendLine($"О чем можете пообщаться: {user.Communication}");
+                    builder.AppendLine();
+                    builder.AppendLine("Личные теги: ");
+                    builder.AppendLine($"`{string.Join(", ", myTags)}`");
+                    builder.AppendLine();
+                    builder.AppendLine("Теги для поиска: ");
+                    builder.AppendLine($"`{string.Join(", ", searchTags)}`");
 
-                    await client.SendTextMessageAsync(chatId, builder.ToString(), replyMarkup: keyboard.Markup);
+                    await client.SendTextMessageAsync(chatId, builder.ToString(), replyMarkup: keyboard.Markup, parseMode: ParseMode.Markdown);
                     await UserDB.ChangeUserAction(context, chatId, Actions.MyProfileMenu);
                     
                     break;
@@ -1554,11 +1559,6 @@ namespace Evect.Models.Commands
 
                     List<ContactsBook> contacts = user.Contacts.Take(4).ToList();
 
-                    Console.WriteLine("\n\n\n\n\n\n\n");
-                    Console.WriteLine(user.Contacts.Count);
-                    Console.WriteLine(contacts.Count);
-                    Console.WriteLine("\n\n\n\n\n\n\n");
-                    
                     foreach (var contactsBook in contacts)
                     {
                         builder.Clear();
@@ -1593,14 +1593,11 @@ namespace Evect.Models.Commands
                                 user.UserTags.FirstOrDefault(t => t.TagId == ut.TagId) == null) && e.CurrentEventId == user.CurrentEventId);
                     }
                     
-                    builder.AppendLine($"{us.FirstName} {us.LastName}");
-                    builder.AppendLine(us.CompanyAndPosition);
+                    builder.AppendLine($"*{us.FirstName}* {us.CompanyAndPosition}");
                     builder.AppendLine();
-                    builder.AppendLine("Чем полезен");
-                    builder.AppendLine(us.Utility);
+                    builder.AppendLine($"_Чем полезен_: {us.Utility}");
                     builder.AppendLine();
-                    builder.AppendLine("О чем можно пообщаться");
-                    builder.AppendLine(us.Communication);
+                    builder.AppendLine($"_О чем можно пообщаться_: {us.Communication}");
 
                     string ch;
 
@@ -1618,7 +1615,7 @@ namespace Evect.Models.Commands
                         .AddTextRow("Назад",ch,"Встреча", "Вперед")
                         .AddCallbackRow($"change-0",$"contact-{us.TelegramId}",$"meet-{us.TelegramId}",$"change-2");
 
-                    await client.SendTextMessageAsync(chatId, builder.ToString(), replyMarkup: inline.Markup);
+                    await client.SendTextMessageAsync(chatId, builder.ToString(), ParseMode.Markdown, replyMarkup: inline.Markup);
                     
                     break;
 
