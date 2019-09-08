@@ -29,7 +29,7 @@ namespace Evect.Models
 
 #if LOCAL  
           public static string DatabaseConnectionString { get; set; } =
-             "Server=localhost\\SQLEXPRESS;Database=evect10;Trusted_Connection=True;";
+             "Server=localhost\\SQLEXPRESS;Database=evect51;Trusted_Connection=True;";
 #else
           public static string DatabaseConnectionString { get; set; } = 
               "Server=localhost;Database=u0707180_evect3;User Id=u0707180_evect3;Password=pVmbs2at";//Лиза

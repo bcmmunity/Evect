@@ -1559,17 +1559,27 @@ namespace Evect.Models.Commands
 
                     List<ContactsBook> contacts = user.Contacts.Take(4).ToList();
 
-                    foreach (var contactsBook in contacts)
-                    {
-                        builder.Clear();
-                        User another = await UserDB.GetUserByChatId(context, contactsBook.AnotherUserId);
-                        builder.AppendLine($"{another.FirstName} {another.LastName} {another.CompanyAndPosition}");
-                        builder.AppendLine($"Чем полезен: {another.Utility}");
-                        builder.AppendLine($"Контакт: ");
-
-                        await client.SendTextMessageAsync(chatId, builder.ToString());
-
-                    }
+                    var tags = user.SearchingUserTags.Select(u => context.SearchingTags.FirstOrDefault(t => t.SearchingTagId == u.TagId)?.Name).ToList(); 
+                    
+                    builder.AppendLine("_Ваши теги_"); 
+                    builder.AppendLine($"`{string.Join(", ", tags)}`"); 
+                    builder.AppendLine(); 
+                    builder.AppendLine("*Ваши контакты*"); 
+                    builder.AppendLine(); 
+                    int i = 1; 
+                    foreach (var contactsBook in contacts) 
+                    { 
+                    User another = await UserDB.GetUserByChatId(context, contactsBook.AnotherUserId); 
+                    builder.AppendLine($"*{i}){another.FirstName} {another.LastName}* {another.CompanyAndPosition}"); 
+                    builder.AppendLine($"_Чем полезен_: {another.Utility}"); 
+                    builder.AppendLine($"_Контакт_: @{another.TelegramUserName}"); 
+                    builder.AppendLine(); 
+                    i++; 
+                    
+                    } 
+                    
+                    await client.SendTextMessageAsync(chatId, builder.ToString(), ParseMode.Markdown); 
+                    
                     break;
 
                 case "Общение":

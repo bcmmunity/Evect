@@ -233,7 +233,7 @@ namespace Evect.Models.Commands
 
             List<ContactsBook> contacts = user.Contacts;
 
-            if (contacts.Any(e => e.AnotherUserId == toAdd.TelegramId))
+            if (contacts.All(e => e.AnotherUserId == toAdd.TelegramId))
             {
                 ContactsBook book = new ContactsBook()
                 {

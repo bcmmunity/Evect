@@ -23,10 +23,11 @@ namespace Evect.Models
         public List<UserSearchingTag> SearchingUserTags { get; set; } = new List<UserSearchingTag>();
         public List<UserEvent> UserEvents { get; set; } = new List<UserEvent>();
         public int CurrentSurveyId { get; set; }
-        public int CurrentQuestionId { get; set; }//это когда человечек отправляет отзыв сообщением
+        public int CurrentQuestionId { get; set; }//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         public Actions PreviousAction { get; set; }
 
         public List<ContactsBook> Contacts { get; set; }
+        public string TelegramUserName{ get; set; }
         
     }
 }

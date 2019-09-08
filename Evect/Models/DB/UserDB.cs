@@ -7,10 +7,11 @@ namespace Evect.Models.DB
     public class UserDB : DB
     {
 
-        public static void AddUser(ApplicationContext context, long tgId)//добавление юзера
+        public static void AddUser(ApplicationContext context, long tgId, string userName)//добавление юзера
         {
             AddLog(context, "adduser0");
-            context.Users.Add(new User {TelegramId = tgId, IsAuthed = true});
+            context.Users.Add(new User {TelegramId = tgId, IsAuthed = true, TelegramUserName = userName});
+            
             AddLog(context, "adduser1");
             context.SaveChanges();
             AddLog(context, "adduser2");
