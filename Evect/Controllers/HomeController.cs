@@ -103,6 +103,15 @@ namespace Evect.Controllers
                         }
                         else
                         {
+                            foreach (var pair in _commands)
+                            {
+                                if ((text == "/start" || text == "/stop") &&
+                                    (pair.Value == text))
+                                {
+                                    await pair.Key(db, message, client);
+                                    return Ok();
+                                }
+                            }
                             foreach (var pair in _actions)
                             {
                                 if (pair.Value == user.CurrentAction)

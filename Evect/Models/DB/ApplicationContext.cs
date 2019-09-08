@@ -414,13 +414,15 @@ namespace Evect.Models.DB
             modelBuilder.Entity<UserTag>()
                 .HasOne(us => us.Tag)
                 .WithMany(e => e.UserTags)
-                .HasForeignKey(k => k.TagId);
+                .HasForeignKey(k => k.TagId)
+                .OnDelete(DeleteBehavior.Cascade);
                 
             
             modelBuilder.Entity<UserTag>()
                 .HasOne(us => us.User)
                 .WithMany(e => e.UserTags)
-                .HasForeignKey(k => k.UserId);
+                .HasForeignKey(k => k.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
             
             
             modelBuilder.Entity<UserSearchingTag>()
@@ -429,13 +431,15 @@ namespace Evect.Models.DB
             modelBuilder.Entity<UserSearchingTag>()
                 .HasOne(us => us.Tag)
                 .WithMany(e => e.Tags)
-                .HasForeignKey(k => k.TagId);
+                .HasForeignKey(k => k.TagId)
+                .OnDelete(DeleteBehavior.Cascade);
                 
             
             modelBuilder.Entity<UserSearchingTag>()
                 .HasOne(us => us.User)
                 .WithMany(e => e.SearchingUserTags)
-                .HasForeignKey(k => k.UserId);
+                .HasForeignKey(k => k.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
             
             
             modelBuilder.Entity<UserEvent>()
@@ -444,13 +448,15 @@ namespace Evect.Models.DB
             modelBuilder.Entity<UserEvent>()
                 .HasOne(us => us.Event)
                 .WithMany(e => e.UserEvents)
-                .HasForeignKey(k => k.EventId);
+                .HasForeignKey(k => k.EventId)
+                .OnDelete(DeleteBehavior.Cascade);
                 
             
             modelBuilder.Entity<UserEvent>()
                 .HasOne(us => us.User)
                 .WithMany(e => e.UserEvents)
-                .HasForeignKey(k => k.UserId);
+                .HasForeignKey(k => k.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         public DbSet<Log> Logs { get; set; }
