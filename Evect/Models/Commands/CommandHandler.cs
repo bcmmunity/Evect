@@ -18,7 +18,7 @@ namespace Evect.Models.Commands
             if (!await UserDB.IsUserExists(context, chatId))
             {
                  UserDB.AddUser(context, chatId, message.From.Username);
-                }
+            }
             else if (!await UserDB.IsUserExistsAndAuthed(context, chatId))
             {
                 await UserDB.UserLogin(context, chatId);

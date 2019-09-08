@@ -1523,6 +1523,7 @@ namespace Evect.Models.Commands
             User user = await UserDB.GetUserByChatId(context, chatId);
 
             TelegramKeyboard keyboard = new TelegramKeyboard(true);
+            TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
             StringBuilder builder = new StringBuilder();
 
             switch (text)
@@ -1558,7 +1559,10 @@ namespace Evect.Models.Commands
                     // Переходит Contactbook
 
                     List<ContactsBook> contacts = user.Contacts.Take(4).ToList();
-
+                    List<string> nums = new List<string>(4);
+                    List<string> ids = new List<string>(4);
+                    
+                    
                     var tags = user.SearchingUserTags.Select(u => context.SearchingTags.FirstOrDefault(t => t.SearchingTagId == u.TagId)?.Name).ToList(); 
                     
                     builder.AppendLine("_Ваши теги_"); 
@@ -1567,18 +1571,31 @@ namespace Evect.Models.Commands
                     builder.AppendLine("*Ваши контакты*"); 
                     builder.AppendLine(); 
                     int i = 1; 
+                    
                     foreach (var contactsBook in contacts) 
                     { 
-                    User another = await UserDB.GetUserByChatId(context, contactsBook.AnotherUserId); 
-                    builder.AppendLine($"*{i}){another.FirstName} {another.LastName}* {another.CompanyAndPosition}"); 
-                    builder.AppendLine($"_Чем полезен_: {another.Utility}"); 
-                    builder.AppendLine($"_Контакт_: @{another.TelegramUserName}"); 
-                    builder.AppendLine(); 
-                    i++; 
-                    
+                        nums.Add(i.ToString());
+                        ids.Add($"prof-{contactsBook.AnotherUserId}");
+                        User another = await UserDB.GetUserByChatId(context, contactsBook.AnotherUserId); 
+                        builder.AppendLine($"*{i}){another.FirstName} {another.LastName}* {another.CompanyAndPosition}"); 
+                        builder.AppendLine($"_Чем полезен_: {another.Utility}"); 
+                        builder.AppendLine($"_Контакт_: @{another.TelegramUserName}"); 
+                        builder.AppendLine(); 
+                        i++;
                     } 
                     
-                    await client.SendTextMessageAsync(chatId, builder.ToString(), ParseMode.Markdown); 
+                    inline = new TelegramInlineKeyboard();
+                    if (user.Contacts.Count > 4)
+                    {
+                        inline
+                            .AddTextRow("Вперед")
+                            .AddCallbackRow("profpage-2");
+                    }
+                    inline
+                        .AddTextRow(nums.ToArray())
+                        .AddCallbackRow(ids.ToArray());
+                    
+                    await client.SendTextMessageAsync(chatId, builder.ToString(), ParseMode.Markdown, replyMarkup:inline.Markup); 
                     
                     break;
 
@@ -1620,7 +1637,7 @@ namespace Evect.Models.Commands
                         ch = "В книжку";
                     }
                     
-                    TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
+                    inline = new TelegramInlineKeyboard();
                     inline
                         .AddTextRow("Назад",ch,"Встреча", "Вперед")
                         .AddCallbackRow($"change-0",$"contact-{us.TelegramId}",$"meet-{us.TelegramId}",$"change-2");

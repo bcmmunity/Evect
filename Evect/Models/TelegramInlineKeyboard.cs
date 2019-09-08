@@ -30,6 +30,8 @@ namespace Evect.Models
             _textRows.Add(data.ToList());
             return this;
         }
+        
+
 
         public TelegramInlineKeyboard AddCallbackRow(params string[] data)
         {
