@@ -112,7 +112,93 @@ namespace Evect.Models
 
 
         }
-        
-        
+
+        public static TelegramKeyboard CommonKeyboards(Actions actions)
+        {
+            TelegramKeyboard keyboard = new TelegramKeyboard();
+            switch (actions)
+            {
+                case Actions.AdminMode:
+                    {
+                        keyboard.AddRow("Об ивенте");
+                        keyboard.AddRow("Информация о пользователях");
+                        keyboard.AddRow("Создать опрос");
+                        keyboard.AddRow("Создать оповещение");
+                    }
+                    break;
+                case Actions.Profile:
+                    {
+                        keyboard.AddRow("О мероприятии", "Присоединиться к мероприятию");
+                        keyboard.AddRow("Режим нетворкинга");
+                        keyboard.AddRow("Записная книжка");
+                        keyboard.AddRow("Все мероприятия");
+                    }
+                    break;
+                case Actions.GetInformationAboutTheEvent:
+                    {
+                        keyboard.AddRow("Добавить новую статью");
+                        keyboard.AddRow("Редактировать");
+                        keyboard.AddRow("Назад");
+                    }
+                    break;
+                case Actions.InformationAboutUsers:
+                    {
+                        keyboard.AddRow("Количество пользователей");
+                        keyboard.AddRow("Количество активаций режима общения");
+                        keyboard.AddRow("Число запросов контактов");
+                        keyboard.AddRow("Число запросов встреч");
+                        keyboard.AddRow("Назад");
+                    }
+                    break;
+                case Actions.CreateNotification:
+                    {
+                        
+                        keyboard.AddRow("Назад");
+                    }
+                    break;
+                case Actions.CreateSurvey:
+                    {
+                        keyboard.AddRow("Назад");
+                        keyboard.AddRow("Опрос с развернутой обратной связью");
+                        keyboard.AddRow("Опрос с оценкой");
+                    }
+                    break;
+                case Actions.MyProfileEditing:
+                    {
+                        keyboard.AddRow("Имя и фамилия");
+                        keyboard.AddRow("Почта");
+                        keyboard.AddRow("Работа и должность");
+                        keyboard.AddRow("Полезность");
+                        keyboard.AddRow("О чем пообщаться");
+                        keyboard.AddRow("Вернуться в мой профиль");
+                    }
+                    break;
+                case Actions.NetworkingMenu:
+                    {
+                        keyboard.AddRow("Мой профиль");
+                        keyboard.AddRow("Записная книжка");
+                        keyboard.AddRow("Общение");
+                        keyboard.AddRow("Вернуться на главную");
+                    }
+                    break;
+                case Actions.SearchingParentTag:
+                    {
+
+                        keyboard.AddRow("Редактировать профиль");
+                        keyboard.AddRow("Изменить теги");
+                        keyboard.AddRow("Вернуться в режим общения");
+                    }
+                    break;
+                case Actions.TagsEditing:
+                    {
+
+                        keyboard.AddRow("Теги поиска");
+                        keyboard.AddRow("Личные теги");
+                        keyboard.AddRow("Вернуться в мой профиль");
+                    }
+                    break;
+            }
+            return keyboard;
+        }
     }
 }

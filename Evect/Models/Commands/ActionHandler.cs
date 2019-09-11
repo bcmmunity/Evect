@@ -87,7 +87,7 @@ namespace Evect.Models.Commands
                     {
                         TelegramKeyboard keyboard = new TelegramKeyboard();
                         keyboard.AddRow("Об ивенте");
-                        keyboard.AddRow("Инвормация о пользователях");
+                        keyboard.AddRow("Информация о пользователях");
                         keyboard.AddRow("Создать опрос");
                         keyboard.AddRow("Создать оповещение");
 
@@ -249,6 +249,7 @@ namespace Evect.Models.Commands
                 keyboard.AddRow("Количество активаций режима общения");
                 keyboard.AddRow("Число запросов контактов");
                 keyboard.AddRow("Число запросов встреч");
+                keyboard.AddRow("Результаты опросов");
                 keyboard.AddRow("Назад");
                 await UserDB.ChangeUserAction(context, chatId, Actions.InformationAboutUsers);
                 await client.SendTextMessageAsync(chatId, "Выберите интересующий Вас пункт",
@@ -293,7 +294,7 @@ namespace Evect.Models.Commands
             {
                 TelegramKeyboard keyboard = new TelegramKeyboard();
                 keyboard.AddRow("Об ивенте");
-                keyboard.AddRow("Инвормация о пользователях");
+                keyboard.AddRow("Информация о пользователях");
                 keyboard.AddRow("Создать опрос");
                 keyboard.AddRow("Создать оповещение");
 
@@ -357,7 +358,7 @@ namespace Evect.Models.Commands
             {
                 TelegramKeyboard keyboard = new TelegramKeyboard();
                 keyboard.AddRow("Об ивенте");
-                keyboard.AddRow("Инвормация о пользователях");
+                keyboard.AddRow("Информация о пользователях");
                 keyboard.AddRow("Создать опрос");
                 keyboard.AddRow("Создать оповещение");
 
@@ -392,7 +393,7 @@ namespace Evect.Models.Commands
                     {
                         TelegramKeyboard keyboard = new TelegramKeyboard();
                         keyboard.AddRow("Об ивенте");
-                        keyboard.AddRow("Инвормация о пользователях");
+                        keyboard.AddRow("Информация о пользователях");
                         keyboard.AddRow("Создать опрос");
                         keyboard.AddRow("Создать оповещение");
                         await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
@@ -424,6 +425,11 @@ namespace Evect.Models.Commands
                         await client.SendTextMessageAsync(chatId, amountOfRequestsOfMeetings);
                         break;
                     }
+                case "Результаты опросов":
+                    {
+
+                    }
+                    break;
             }
         }
         [UserAction(Actions.CreateSurvey)]
@@ -435,7 +441,7 @@ namespace Evect.Models.Commands
             {
                 TelegramKeyboard keyboard = new TelegramKeyboard();
                 keyboard.AddRow("Об ивенте");
-                keyboard.AddRow("Инвормация о пользователях");
+                keyboard.AddRow("Информация о пользователях");
                 keyboard.AddRow("Создать опрос");
                 keyboard.AddRow("Создать оповещение");
               await  UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
@@ -531,7 +537,7 @@ namespace Evect.Models.Commands
                 await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
                 TelegramKeyboard keyboard = new TelegramKeyboard();
                 keyboard.AddRow("Об ивенте");
-                keyboard.AddRow("Инвормация о пользователях");
+                keyboard.AddRow("Информация о пользователях");
                 keyboard.AddRow("Создать опрос");
                 keyboard.AddRow("Создать оповещение");
                 foreach (var participant in participants)
@@ -561,14 +567,10 @@ namespace Evect.Models.Commands
             {
                 await UserDB.ChangeUserAction(context, chatId, Actions.QuestionForSurveyWithMarks);
                 EventDB eventDb = new EventDB();
-                UserDB.AddLog(context, "eventDb 1");
-                List<long> participants = await eventDb.GetAllParticipantsOfEvent(chatId);
-                UserDB.AddLog(context, "eventDb 2");
+                 List<long> participants = await eventDb.GetAllParticipantsOfEvent(chatId);
                 string text = message.Text;
                 UserDB.AddSurvey(context, "Вопрос опроса",text, chatId);
-                UserDB.AddLog(context, "eventDb 3");
-                int QuestionId = UserDB.GetQuestionId(context, message.Text);
-                UserDB.AddLog(context, "eventDb 4");
+                 int QuestionId = UserDB.GetQuestionId(context, message.Text);
                 TelegramInlineKeyboard inlineKeyboard = new TelegramInlineKeyboard();
                 inlineKeyboard.AddTextRow("🔥".ToString(), "👍".ToString(), "👌".ToString(), "👎".ToString(), "🤢".ToString()).AddCallbackRow("990-" + "1-" + QuestionId.ToString(), "990-" + "2-" + QuestionId.ToString(), "990-" + "3-" + QuestionId.ToString(), "990-" + "4-" + QuestionId.ToString(), "990-" + "5-" + QuestionId.ToString());
                /*inlineKeyboard.AddTextRow("🔥".ToString()).AddCallbackRow("990-"+"1-"+QuestionId.ToString());
@@ -576,22 +578,18 @@ namespace Evect.Models.Commands
                 inlineKeyboard.AddTextRow("👌".ToString()).AddCallbackRow("990-" +"3-"+ QuestionId.ToString());
                 inlineKeyboard.AddTextRow("👎".ToString()).AddCallbackRow("990-" +"4-"+QuestionId.ToString());
                 inlineKeyboard.AddTextRow("🤢".ToString()).AddCallbackRow("990-" +"5-"+ QuestionId.ToString());*/
-                UserDB.AddLog(context, "eventDb 5");
                 await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
-                UserDB.AddLog(context, "eventDb 6");
                 TelegramKeyboard keyboard = new TelegramKeyboard();
                 keyboard.AddRow("Об ивенте");
-                keyboard.AddRow("Инвормация о пользователях");
+                keyboard.AddRow("Информация о пользователях");
                 keyboard.AddRow("Создать опрос");
                 keyboard.AddRow("Создать оповещение");
-                UserDB.AddLog(context, "eventDb 7");
                 //change user action!!!!
 
                 foreach (var participant in participants)
                 {
                    await client.SendTextMessageAsync(participant, text, replyMarkup: inlineKeyboard.Markup);
                 }
-                UserDB.AddLog(context, "eventDb 8");
                 await  client.SendTextMessageAsync(chatId, "Ваше вопрос успешно разослан", replyMarkup: keyboard.Markup);
             }
         }
@@ -603,9 +601,18 @@ namespace Evect.Models.Commands
             if (message.Text == "Продолжить предыдущие действия")
             {
                 Actions action = user.PreviousAction;
-                user.PreviousAction = new Actions();
-                await UserDB.ChangeUserAction(context, chatId, user.CurrentAction);
-                await client.SendTextMessageAsync(chatId, "Теперь вы можете продолжать работу");
+                TelegramKeyboard keyboard = new TelegramKeyboard();
+                if (Utils.CommonKeyboards(action) != null)
+                {
+                    keyboard = Utils.CommonKeyboards(action);
+                }
+                    user.PreviousAction = new Actions();
+                await UserDB.ChangeUserAction(context, chatId, action);
+                if (keyboard != null)
+                {
+                    await client.SendTextMessageAsync(chatId, "Теперь вы можете продолжать работу", replyMarkup: keyboard.Markup);
+                }
+                else await client.SendTextMessageAsync(chatId, "Теперь вы можете продолжать работу");
             }
             else if (message.Text == "Написать еще один ответ")
             {
@@ -737,9 +744,10 @@ namespace Evect.Models.Commands
                             await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
                             keyboard = new TelegramKeyboard();
                             keyboard.AddRow("Об ивенте");
-                            keyboard.AddRow("Инвормация о пользователях");
+                            keyboard.AddRow("Информация о пользователях");
                             keyboard.AddRow("Создать опрос");
                             keyboard.AddRow("Создать оповещение");
+                            
                             StringBuilder builder = new StringBuilder();
                             int evId = user.CurrentEventId;
                             Event eventt = context.Events.FirstOrDefault(n => n.EventId == evId);

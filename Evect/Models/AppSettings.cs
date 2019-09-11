@@ -3,8 +3,8 @@ namespace Evect.Models
 {
     public static class AppSettings
     {
-        #region Liza
-        public static string Url { get; set; } = "https://58715dab.ngrok.io:443/{0}";
+        #region Liza 
+        public static string Url { get; set; } = "https://ea092ce5.ngrok.io:443/{0}";
         public static string Name { get; set; } = "evect_bot";
         //  public static string Name { get; set; } = "evect_bot";
         public static string Key { get; set; } = "956625902:AAHF9mJj8SGo3_5g51kQZPUe3OX_cdAMM2o";
