@@ -6,12 +6,7 @@ namespace Evect.Models.DB
     {
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
-        {
-            // ВЫКЛЮЧИТЬ ПРИ ДЕПЛОЕ НА СЕРВАК
-//            Database.EnsureDeleted();
-            
-            
-            
+        {               
             Database.EnsureCreated();
         }
 

@@ -66,21 +66,32 @@ namespace Evect.Models.Commands
 
                 if (isAdminCode)
                 {
-                  /*  if (user.Email == null)
+                    if (!have)
+                    {
+                        UserEvent userEvent = new UserEvent() { UserId = user.UserId, EventId = ev.EventId };
+                        user.UserEvents.Add(userEvent);
+                        user.CurrentEventId = ev.EventId;
+                        //почему не работает,когда это раскоменчено?
+                        context.Users.Update(user);
+                        context.SaveChanges();
+                    }
+
+                    await UserDB.AdminAuthorized(context, chatId);
+                    if (user.Email == null)
                     {
                         await UserDB.ChangeUserAction(context, chatId, Actions.WainingForEmail);
                         await client.SendTextMessageAsync(chatId, "Введите, пожалуйста, свою почту");
                         await UserDB.AdminAuthorized(context, chatId);
                     }
                     else
-                    {*/
+                    {
                         TelegramKeyboard keyboard = new TelegramKeyboard();
                         keyboard.AddRow("Об ивенте");
                         keyboard.AddRow("Инвормация о пользователях");
                         keyboard.AddRow("Создать опрос");
                         keyboard.AddRow("Создать оповещение");
 
-
+                        
                         await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
                         if (!have)
                         {
@@ -107,10 +118,13 @@ namespace Evect.Models.Commands
                         await client.SendTextMessageAsync(chatId,
                             builder.ToString(),
                             ParseMode.Html, replyMarkup: keyboard.Markup);
+                    }
                     
                 }
                 else
                 {
+                    if (user.IsAdminAuthorized)
+                        user.IsAdminAuthorized = false;
                     if (have)
                     {
                         await client.SendTextMessageAsync(
@@ -535,6 +549,7 @@ namespace Evect.Models.Commands
             var chatId = message.Chat.Id;
             if(message.Text=="Назад")
             {
+
                 TelegramKeyboard keyboard = new TelegramKeyboard();
                 keyboard.AddRow("Назад");
                 keyboard.AddRow("Опрос с развернутой обратной связью");
@@ -546,27 +561,38 @@ namespace Evect.Models.Commands
             {
                 await UserDB.ChangeUserAction(context, chatId, Actions.QuestionForSurveyWithMarks);
                 EventDB eventDb = new EventDB();
+                UserDB.AddLog(context, "eventDb 1");
                 List<long> participants = await eventDb.GetAllParticipantsOfEvent(chatId);
+                UserDB.AddLog(context, "eventDb 2");
                 string text = message.Text;
+                UserDB.AddSurvey(context, "Вопрос опроса",text, chatId);
+                UserDB.AddLog(context, "eventDb 3");
                 int QuestionId = UserDB.GetQuestionId(context, message.Text);
+                UserDB.AddLog(context, "eventDb 4");
                 TelegramInlineKeyboard inlineKeyboard = new TelegramInlineKeyboard();
-                inlineKeyboard.AddTextRow("🔥".ToString()).AddCallbackRow("990-"+"1-"+QuestionId.ToString());
+                inlineKeyboard.AddTextRow("🔥".ToString(), "👍".ToString(), "👌".ToString(), "👎".ToString(), "🤢".ToString()).AddCallbackRow("990-" + "1-" + QuestionId.ToString(), "990-" + "2-" + QuestionId.ToString(), "990-" + "3-" + QuestionId.ToString(), "990-" + "4-" + QuestionId.ToString(), "990-" + "5-" + QuestionId.ToString());
+               /*inlineKeyboard.AddTextRow("🔥".ToString()).AddCallbackRow("990-"+"1-"+QuestionId.ToString());
                 inlineKeyboard.AddTextRow("👍".ToString()).AddCallbackRow("990-" +"2-"+ QuestionId.ToString());
                 inlineKeyboard.AddTextRow("👌".ToString()).AddCallbackRow("990-" +"3-"+ QuestionId.ToString());
                 inlineKeyboard.AddTextRow("👎".ToString()).AddCallbackRow("990-" +"4-"+QuestionId.ToString());
-                inlineKeyboard.AddTextRow("🤢".ToString()).AddCallbackRow("990-" +"5-"+ QuestionId.ToString());
+                inlineKeyboard.AddTextRow("🤢".ToString()).AddCallbackRow("990-" +"5-"+ QuestionId.ToString());*/
+                UserDB.AddLog(context, "eventDb 5");
                 await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
+                UserDB.AddLog(context, "eventDb 6");
                 TelegramKeyboard keyboard = new TelegramKeyboard();
                 keyboard.AddRow("Об ивенте");
                 keyboard.AddRow("Инвормация о пользователях");
                 keyboard.AddRow("Создать опрос");
                 keyboard.AddRow("Создать оповещение");
+                UserDB.AddLog(context, "eventDb 7");
                 //change user action!!!!
+
                 foreach (var participant in participants)
                 {
-                   await client.SendTextMessageAsync(participant, text, replyMarkup: keyboard.Markup);
+                   await client.SendTextMessageAsync(participant, text, replyMarkup: inlineKeyboard.Markup);
                 }
-              await  client.SendTextMessageAsync(chatId, "Ваше вопрос успешно разослан", replyMarkup: keyboard.Markup);
+                UserDB.AddLog(context, "eventDb 8");
+                await  client.SendTextMessageAsync(chatId, "Ваше вопрос успешно разослан", replyMarkup: keyboard.Markup);
             }
         }
         [UserAction(Actions.AnswerToSurvey)]
@@ -706,12 +732,23 @@ namespace Evect.Models.Commands
                         user.Email = text;
                         context.Update(user);
                         context.SaveChanges();
-                       /* if (user.IsAdminAuthorized)
+                        if (user.IsAdminAuthorized)
                         {
+                            await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
+                            keyboard = new TelegramKeyboard();
+                            keyboard.AddRow("Об ивенте");
+                            keyboard.AddRow("Инвормация о пользователях");
+                            keyboard.AddRow("Создать опрос");
+                            keyboard.AddRow("Создать оповещение");
+                            StringBuilder builder = new StringBuilder();
+                            int evId = user.CurrentEventId;
+                            Event eventt = context.Events.FirstOrDefault(n => n.EventId == evId);
+                            builder.AppendLine($"Включён режим организатора на мероприятии \"{eventt.Name}\"");
+                            await client.SendTextMessageAsync(chatId, builder.ToString(), replyMarkup: keyboard.Markup);
 
                         }
                         else
-                        {*/
+                        {
                             keyboard = new TelegramKeyboard();
                             keyboard.AddRow("О мероприятии", "Присоединиться к мероприятию");
                             keyboard.AddRow("Режим нетворкинга");
@@ -724,7 +761,8 @@ namespace Evect.Models.Commands
                                 ParseMode.Markdown,
                                 replyMarkup: keyboard.Markup);
                             await UserDB.ChangeUserAction(context, chatId, Actions.Profile);
-                        
+
+                        }
                     }
                     else
                     {
@@ -732,7 +770,7 @@ namespace Evect.Models.Commands
                         context.Update(user);
                         context.SaveChanges();
 
-                        
+
                         keyboard = new TelegramKeyboard();
 
                         await client.SendTextMessageAsync(chatId, "Данные сохранены");
@@ -742,7 +780,7 @@ namespace Evect.Models.Commands
                         keyboard.AddRow("Полезность");
                         keyboard.AddRow("О чем пообщаться");
                         keyboard.AddRow("Вернуться в мой профиль");
-                
+
                         await client.SendTextMessageAsync(chatId, "Выберите пункты для редактирования", replyMarkup: keyboard.Markup);
                         await UserDB.ChangeUserAction(context, chatId, Actions.MyProfileEditing);
                     }
