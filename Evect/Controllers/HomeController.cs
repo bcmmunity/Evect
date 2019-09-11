@@ -20,6 +20,8 @@ namespace Evect.Controllers
 {
     public class HomeController : Controller
     {
+        private TelegramBotClient _client;
+        
         private UserDB _userDb;
         private EventDB _eventDb;
 
@@ -40,6 +42,8 @@ namespace Evect.Controllers
             _commands = Bot.Commands;
             _actions = Bot.ActionList;
             _callbacks = Bot.CallbackList;
+            
+            _client = new TelegramBotClient(AppSettings.Key);
         }
 
         public IActionResult Index()
@@ -57,14 +61,14 @@ namespace Evect.Controllers
 
             using (ApplicationContext db = new ApplicationContext(new DbContextOptions<ApplicationContext>()))
             {
-                var client = new TelegramBotClient(AppSettings.Key);
+                
                 if (update.Type == UpdateType.CallbackQuery)
                 {
                     foreach (var pair in _callbacks)
                     {
                         if (update.CallbackQuery.Data.StartsWith(pair.Value))
                         {
-                            await pair.Key(db, update.CallbackQuery, client);
+                            await pair.Key(db, update.CallbackQuery, _client);
                             return Ok();
                         }
                     }
@@ -81,7 +85,7 @@ namespace Evect.Controllers
                         {
                             if (text == "/start" && pair.Value == "/start")
                             {
-                                await pair.Key(db, message, client);
+                                await pair.Key(db, message, _client);
                                 return Ok();
                             }
                         }
@@ -96,7 +100,7 @@ namespace Evect.Controllers
                                 if ((text == "/start" || text == "Личный кабинет") &&
                                     (pair.Value == text))
                                 {
-                                    await pair.Key(db, message, client);
+                                    await pair.Key(db, message, _client);
                                     return Ok();
                                 }
                             }
@@ -108,7 +112,7 @@ namespace Evect.Controllers
                                 if ((text == "/start" || text == "/stop") &&
                                     (pair.Value == text))
                                 {
-                                    await pair.Key(db, message, client);
+                                    await pair.Key(db, message, _client);
                                     return Ok();
                                 }
                             }
@@ -116,7 +120,7 @@ namespace Evect.Controllers
                             {
                                 if (pair.Value == user.CurrentAction)
                                 {
-                                    await pair.Key(db, message, client);
+                                    await pair.Key(db, message, _client);
                                     return Ok();
                                 }
                             }

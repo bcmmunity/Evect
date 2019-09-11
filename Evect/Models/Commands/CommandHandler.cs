@@ -53,7 +53,7 @@ namespace Evect.Models.Commands
                     TelegramKeyboard keyboard = new TelegramKeyboard();
                     keyboard.AddRow("Да");
                     keyboard.AddRow("Нет");
-                    await client.SendTextMessageAsync(chatId, "**Сохранить** ваши данные или <b>полностью удалить</b>",
+                    await client.SendTextMessageAsync(chatId, "*Сохранить* ваши данные или *полностью удалить*",
                         ParseMode.Markdown,
                         replyMarkup: keyboard.Markup);
 

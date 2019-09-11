@@ -875,7 +875,7 @@ namespace Evect.Models.Commands
                 await UserDB.ResetAction(context, chatId);
                 await client.SendTextMessageAsync(
                     chatId,
-                    "Вы успешно прекратили пользоваться evectbot, для того чтобы начать заново напишите <em>/start</em>",
+                    "Вы успешно прекратили пользоваться evectbot, для того чтобы начать заново напишите _/start_",
                     ParseMode.Markdown);
             }
             else if (text == "Нет")
@@ -884,7 +884,7 @@ namespace Evect.Models.Commands
                 context.SaveChanges();
                 await client.SendTextMessageAsync(
                     chatId,
-                    "Вся информация удалена, для того чтобы начать заново напишите <em>/start</em>",
+                    "Вся информация удалена, для того чтобы начать заново напишите _/start_",
                     ParseMode.Markdown);
             }
             else
