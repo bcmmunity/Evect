@@ -12,6 +12,6 @@ namespace Evect.Models
         public int AnswerMark { get; set; }
         public string AnswerMessage { get; set; }
         public int QuestionId { get; set; }
-
+        public DateTime Date { get; set; }
     }
 }

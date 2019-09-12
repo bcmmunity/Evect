@@ -46,6 +46,7 @@ namespace Evect.Models
         EditInformationAboutEvent,
         CreateNotification,
         InformationAboutUsers,
+        Surveys,
         CreateSurvey,
         SurveyWithMessage,
         SurveyWithMarks,

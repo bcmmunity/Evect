@@ -90,9 +90,8 @@ namespace Evect.Models.Commands
                         keyboard.AddRow("Информация о пользователях");
                         keyboard.AddRow("Создать опрос");
                         keyboard.AddRow("Создать оповещение");
-
-
-                        await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
+                        keyboard.AddRow("Войти как обычный участник");
+                         await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
                         if (!have)
                         {
                             UserEvent userEvent = new UserEvent() {UserId = user.UserId, EventId = ev.EventId};
@@ -266,17 +265,29 @@ namespace Evect.Models.Commands
                     "Отправьте сообщение,оно будет разослано всем участникам мероприятия",
                     replyMarkup: keyboard.Markup);
             }
-
-            if (message.Text == "Создать опрос")
+            else if (message.Text == "Создать опрос")
             {
                 long chatId = message.Chat.Id;
                 TelegramKeyboard keyboard = new TelegramKeyboard();
                 keyboard.AddRow("Назад");
                 keyboard.AddRow("Опрос с развернутой обратной связью");
                 keyboard.AddRow("Опрос с оценкой");
+                keyboard.AddRow("Результаты опросов");
                 await UserDB.ChangeUserAction(context, chatId, Actions.CreateSurvey);
                 await client.SendTextMessageAsync(chatId, "Выберите тип опроса", replyMarkup: keyboard.Markup);
             }
+            else if(message.Text=="Войти как обычный участник")
+            {
+                long chatId = message.Chat.Id;
+               await UserDB.ChangeUserAction(context, chatId, Actions.None);
+                TelegramKeyboard keyboard = new TelegramKeyboard();
+                keyboard.AddRow("Войти по ивент-коду");
+                keyboard.AddRow("Личный кабинет");
+                User user = context.Users.FirstOrDefault(N => N.TelegramId == chatId);
+                user.IsAdminAuthorized = false;
+                await client.SendTextMessageAsync(chatId, "У вас есть личный кабинет? Если нет, то войдите по *ивент-коду* \n P.S.*Ивент-код* отправлен в письме регистрации", ParseMode.Markdown, replyMarkup: keyboard.Markup);
+            }
+                
         }
 
         [UserAction(Actions.GetInformationAboutTheEvent)]
@@ -296,7 +307,7 @@ namespace Evect.Models.Commands
                 keyboard.AddRow("Информация о пользователях");
                 keyboard.AddRow("Создать опрос");
                 keyboard.AddRow("Создать оповещение");
-
+                keyboard.AddRow("Войти как обычный участник");
                 await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
                 await client.SendTextMessageAsync(chatId, "Я вернулся в главное меню", replyMarkup: keyboard.Markup);
             }
@@ -360,7 +371,7 @@ namespace Evect.Models.Commands
                 keyboard.AddRow("Информация о пользователях");
                 keyboard.AddRow("Создать опрос");
                 keyboard.AddRow("Создать оповещение");
-
+                keyboard.AddRow("Войти как обычный участник");
                 await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
 
                 await client.SendTextMessageAsync(chatId, "Я вернулся в главное меню", replyMarkup: keyboard.Markup);
@@ -395,6 +406,7 @@ namespace Evect.Models.Commands
                     keyboard.AddRow("Информация о пользователях");
                     keyboard.AddRow("Создать опрос");
                     keyboard.AddRow("Создать оповещение");
+                    keyboard.AddRow("Войти как обычный участник");
                     await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
                     await client.SendTextMessageAsync(chatId, "Я вернулся назад", replyMarkup: keyboard.Markup);
                 }
@@ -424,11 +436,12 @@ namespace Evect.Models.Commands
                     await client.SendTextMessageAsync(chatId, amountOfRequestsOfMeetings);
                     break;
                 }
-
+/*
                 case "Результаты опросов":
                 {
+
                 }
-                    break;
+                    break;*/
             }
         }
 
@@ -461,6 +474,11 @@ namespace Evect.Models.Commands
                 await UserDB.ChangeUserAction(context, chatId, Actions.SurveyWithMarks);
                 await client.SendTextMessageAsync(chatId, "Напишите название опроса", replyMarkup: keyboard.Markup);
             }
+            else if(text=="Результаты опросов")
+            {
+
+            }
+
         }
 
         [UserAction(Actions.SurveyWithMessage)]
@@ -525,6 +543,7 @@ namespace Evect.Models.Commands
                 keyboard.AddRow("Назад");
                 keyboard.AddRow("Опрос с развернутой обратной связью");
                 keyboard.AddRow("Опрос с оценкой");
+                keyboard.AddRow("Результаты опросов");
                 await UserDB.ChangeUserAction(context, chatId, Actions.CreateSurvey);
                 await client.SendTextMessageAsync(chatId, "Я вернулся к выбору типа опроса",
                     replyMarkup: keyboard.Markup);
@@ -544,6 +563,7 @@ namespace Evect.Models.Commands
                 keyboard.AddRow("Информация о пользователях");
                 keyboard.AddRow("Создать опрос");
                 keyboard.AddRow("Создать оповещение");
+                keyboard.AddRow("Войти как обычный участник");
                 foreach (var participant in participants)
                 {
                     await client.SendTextMessageAsync(participant, text, replyMarkup: inlineKeyboard.Markup);
@@ -594,6 +614,7 @@ namespace Evect.Models.Commands
                 keyboard.AddRow("Информация о пользователях");
                 keyboard.AddRow("Создать опрос");
                 keyboard.AddRow("Создать оповещение");
+                keyboard.AddRow("Войти как обычный участник");
                 //change user action!!!!
 
                 foreach (var participant in participants)
@@ -762,7 +783,7 @@ namespace Evect.Models.Commands
                             keyboard.AddRow("Информация о пользователях");
                             keyboard.AddRow("Создать опрос");
                             keyboard.AddRow("Создать оповещение");
-
+                            keyboard.AddRow("Войти как обычный участник");
                             StringBuilder builder = new StringBuilder();
                             int evId = user.CurrentEventId;
                             Event eventt = context.Events.FirstOrDefault(n => n.EventId == evId);

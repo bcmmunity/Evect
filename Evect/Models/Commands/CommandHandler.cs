@@ -29,7 +29,7 @@ namespace Evect.Models.Commands
                 await client.SendTextMessageAsync(chatId, "Мы вас уже знаем", ParseMode.Html);
             }
 
-            TelegramKeyboard keyboard = new TelegramKeyboard();
+            TelegramKeyboard keyboard = new TelegramKeyboard(true);
             keyboard.AddRow("Войти по ивент-коду");
             keyboard.AddRow("Личный кабинет");
 

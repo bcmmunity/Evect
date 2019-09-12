@@ -76,7 +76,7 @@ namespace Evect.Models.DB
                 if(item.EventId==EventId)
                 {
                     if(item.Info!=null)
-                    temp = temp + item.Info;
+                    temp = temp + item.Info+"\n";
                     if (item.TelegraphLink != null)
                         temp = temp + item.TelegraphLink;
                 }
