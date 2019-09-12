@@ -188,7 +188,7 @@ namespace Evect.Models.Commands
                     .AddCallbackRow($"change-{changeId - 1}", $"contact-{us.TelegramId}", $"meet-{us.TelegramId}",
                         $"change-{changeId + 1}");
 
-                await client.EditMessageTextAsync(query.From.Id, query.Message.MessageId, builder.ToString());
+                await client.EditMessageTextAsync(query.From.Id, query.Message.MessageId, builder.ToString(), ParseMode.Markdown);
                 await client.EditMessageReplyMarkupAsync(query.From.Id, query.Message.MessageId, inline.Markup);
             }
         }
@@ -358,8 +358,7 @@ namespace Evect.Models.Commands
                 .AddTextRow(nums.ToArray())
                 .AddCallbackRow(ids.ToArray());
 
-            await client.SendTextMessageAsync(query.From.Id, builder.ToString(), ParseMode.Markdown,
-                replyMarkup: inline.Markup);
+            await client.SendTextMessageAsync(query.From.Id, builder.ToString(), parseMode: ParseMode.Markdown, replyMarkup: inline.Markup);
         }
     }
 }

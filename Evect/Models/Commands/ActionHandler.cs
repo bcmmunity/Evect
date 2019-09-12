@@ -1657,12 +1657,12 @@ namespace Evect.Models.Commands
                     builder.AppendLine($"_Компания и позиция_: {user.CompanyAndPosition}");
                     builder.AppendLine();
                     builder.AppendLine($"_Чем полезен_: {user.Utility}");
-                    builder.AppendLine($"О чем можете пообщаться: {user.Communication}");
+                    builder.AppendLine($"_О чем можете пообщаться_: {user.Communication}");
                     builder.AppendLine();
                     builder.AppendLine("Личные теги: ");
                     builder.AppendLine($"`{string.Join(", ", myTags)}`");
                     builder.AppendLine();
-                    builder.AppendLine("Теги для поиска: ");
+                       builder.AppendLine("Теги для поиска: ");
                     builder.AppendLine($"`{string.Join(", ", searchTags)}`");
 
                     await client.SendTextMessageAsync(chatId, builder.ToString(), replyMarkup: keyboard.Markup,
