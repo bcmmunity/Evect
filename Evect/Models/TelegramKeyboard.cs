@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Evect.Models
@@ -46,6 +47,18 @@ namespace Evect.Models
             {
                 throw new ArgumentException("'buttons' array has zero length");
             }
+        }
+
+        public void AddRequestContact(string text)
+        {
+            KeyboardButton btn = KeyboardButton.WithRequestContact(text);
+            _buttons.Add(new List<KeyboardButton> {btn});
+        }
+
+        public void AddRequestLocation(string text)
+        {
+            KeyboardButton btn = KeyboardButton.WithRequestLocation(text);
+            _buttons.Add(new List<KeyboardButton> {btn});
         }
 
         public void AddRow(IEnumerable<string> buttons)
