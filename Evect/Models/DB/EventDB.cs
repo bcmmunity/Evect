@@ -108,6 +108,20 @@ namespace Evect.Models.DB
             }
             return UsersToSend;            
         }
+        public async Task<List<long>> GetAllParticipantsOfEvent(int IdOfEvent)
+        {
+            int EventId = IdOfEvent;
+            List<User> AllUsers = await Context.Users.ToListAsync();
+            List<long> UsersToSend = new List<long>();
+            foreach (var item in AllUsers)
+            {
+                if (item.CurrentEventId == EventId)
+                {
+                    UsersToSend.Add(item.TelegramId);
+                }
+            }
+            return UsersToSend;
+        }
         public async Task<string> GetInfrormationAboutUsers(long chatId,string message)
         {
             User user = await Context.Users.FirstOrDefaultAsync(n => n.TelegramId == chatId);
@@ -133,6 +147,33 @@ namespace Evect.Models.DB
                 case "Число запросов встреч":
                     {
                         return  info.AmountOfRequestsOfMettings.ToString();
+                    }
+            }
+            return "Бот не знает такой команды";
+        }
+        public async Task<string> GetInfrormationAboutUsers(int idOfEvent, string message)
+        {
+            Event eventt = await Context.Events.FirstOrDefaultAsync(n => n.EventId == idOfEvent);
+            InfoAboutUsers info = await Context.InfoAboutUsers.FirstOrDefaultAsync(m => m.EventId == idOfEvent);
+            switch (message)
+            {
+                case "Количество пользователей":
+                    {
+                        List<long> participants = await GetAllParticipantsOfEvent(idOfEvent);
+                        string t = participants.Count.ToString();
+                        return t;
+                    }
+                case "Количество активаций режима общения":
+                    {
+                        return info.AmountOfActivationsOfNetworking.ToString();
+                    }
+                case "Число запросов контактов":
+                    {
+                        return info.AmountOfRequestsOfContacts.ToString();
+                    }
+                case "Число запросов встреч":
+                    {
+                        return info.AmountOfRequestsOfMettings.ToString();
                     }
             }
             return "Бот не знает такой команды";

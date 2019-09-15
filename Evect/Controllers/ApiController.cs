@@ -34,17 +34,34 @@ namespace Evect.Controllers
         {
             return await _context.InfoAboutUsers.ToListAsync();
         }
+        [Route("getCommonInfoAboutUsers")]
+        [HttpGet("id")]
+        public async Task<JsonResult> CommonInformation(int idOfEvent)
+        {
+            EventDB eventDb = new EventDB();
+
+            string amountOfUsers =await eventDb.GetInfrormationAboutUsers(idOfEvent, "Количество пользователей");
+            string amountOfActivationsOfNetworking =await eventDb.GetInfrormationAboutUsers(idOfEvent, "Количество активаций режима общения");
+            var obj = new
+            {
+                amountOfActivationsOfNetworking,
+                amountOfUsers
+            };
+            return new JsonResult(obj);
+        }
         [Route("getExcelFiles")]
         [HttpGet("{id}")]
          public ActionResult<InfoAboutUsers> GetExcelFiles()
         {
             return _context.InfoAboutUsers.First();
         }
-       /* [Route("GetSurveyResults")]
+        [Route("GetSurveyResults")]
         public JsonResult Kek()
         {
-            return 
-        }*/
+            string link = "https://vk.com";
+            int count = 1488;
+            return new JsonResult(new { excelLink =new {lizonka=link }, survCount = count });
+        }
         // GET: api/Api/5
         [HttpGet("{id}")]
         public async Task<ActionResult<InfoAboutUsers>> GetInfoAboutUsers(int id)
