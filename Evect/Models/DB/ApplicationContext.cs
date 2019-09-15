@@ -1,3 +1,4 @@
+using EvectCorp.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Evect.Models.DB
@@ -466,5 +467,6 @@ namespace Evect.Models.DB
         public DbSet<Answer> Answers { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Survey> Surveys { get; set; }
+        public DbSet<AdminUser> Admins { get; set; }
     }
 }

@@ -33,6 +33,7 @@ namespace Evect.Models.Commands
             TelegramKeyboard keyboard = new TelegramKeyboard();
             keyboard.AddRow("Войти по ивент-коду");
             keyboard.AddRow("Личный кабинет");
+            keyboard.AddRequestContact("АДЯЙ ТЕЛЕФОН");
 
             await client.SendTextMessageAsync(chatId, "Чудненько " + "😇" + " Можем приступить", ParseMode.Markdown);
             await client.SendTextMessageAsync(chatId, "У вас есть личный кабинет? Если нет, то войдите по *ивент-коду* \n P.S.*Ивент-код* отправлен в письме регистрации", ParseMode.Markdown, replyMarkup: keyboard.Markup);

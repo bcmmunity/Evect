@@ -55,7 +55,6 @@ namespace Evect.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Update update)
         {
-
             if (update == null)
                 return Ok();
 
