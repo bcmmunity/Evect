@@ -119,9 +119,9 @@ namespace Evect.Models
         {
             if (str.Contains('*') || str.Contains('_') || str.Contains('`'))
             {
-                str = str.Replace("*", @"\\*");
-                str = str.Replace("_", @"\\_");
-                str = str.Replace("`", @"\\`");
+                str = str.Replace("*", @"\*");
+                str = str.Replace("_", @"\_");
+                str = str.Replace("`", @"\`");
             }
 
             return str;

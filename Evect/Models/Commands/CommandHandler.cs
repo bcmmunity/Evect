@@ -17,7 +17,7 @@ namespace Evect.Models.Commands
             long chatId = message.Chat.Id;
             if (!await UserDB.IsUserExists(context, chatId))
             {
-                 UserDB.AddUser(context, chatId, message.From.Username);
+                 UserDB.AddUser(context, chatId, message.From.Username.Correct());
             }
             else if (!await UserDB.IsUserExistsAndAuthed(context, chatId))
             {
