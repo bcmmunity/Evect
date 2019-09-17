@@ -152,12 +152,12 @@ namespace Evect.Models.Commands
             TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
             List<User> usersWithTags = context.Users.Where(e =>
                 e.UserTags.Any(ut =>
-                    user.UserTags.FirstOrDefault(t => t.TagId == ut.TagId) != null) &&
+                    user.SearchingUserTags.FirstOrDefault(t => t.TagId == ut.TagId) != null) &&
                 e.CurrentEventId == user.CurrentEventId).ToList();
 
             List<User> usersWithoutTags = context.Users.Where(e =>
                 e.UserTags.Any(ut =>
-                    user.UserTags.FirstOrDefault(t => t.TagId == ut.TagId) == null) &&
+                    user.SearchingUserTags.FirstOrDefault(t => t.TagId == ut.TagId) == null) &&
                 e.CurrentEventId == user.CurrentEventId).ToList();
 
             usersWithTags.AddRange(usersWithoutTags);
@@ -166,7 +166,7 @@ namespace Evect.Models.Commands
             if (changeId > 0 && changeId <= usersWithTags.Count)
             {
                 User us = usersWithTags[changeId - 1];
-                builder.AppendLine($"*{us.FirstName}* {us.CompanyAndPosition}");
+                builder.AppendLine($"{us.FirstName} {us.CompanyAndPosition}");
                 builder.AppendLine();
                 builder.AppendLine($"_Чем полезен_: {us.Utility}");
                 builder.AppendLine();
@@ -210,7 +210,7 @@ namespace Evect.Models.Commands
             builder.AppendLine("Вам назначена встреча от:");
             builder.AppendLine($"{user.FirstName} {user.LastName}");
 
-            await client.SendTextMessageAsync(userId, builder.ToString(), replyMarkup: inline.Markup);
+            await client.SendTextMessageAsync(userId, builder.ToString(), ParseMode.Markdown, replyMarkup: inline.Markup);
         }
 
         [InlineCallback("contact-")]
@@ -240,7 +240,7 @@ namespace Evect.Models.Commands
                 context.SaveChanges();
                 builder.AppendLine($"Пользователь {toAdd.FirstName} {toAdd.LastName} добавлен в записную книжку");
 
-                await client.SendTextMessageAsync(user.TelegramId, builder.ToString());
+                await client.SendTextMessageAsync(user.TelegramId, builder.ToString(), ParseMode.Markdown);
             }
         }
 
@@ -255,9 +255,9 @@ namespace Evect.Models.Commands
             User from = await UserDB.GetUserByChatId(context, userId);
 
             await client.SendTextMessageAsync(user.TelegramId,
-                $"Встреча с {from.FirstName} {from.LastName} согласована");
+                $"Встреча с {from.FirstName} {from.LastName} согласована", ParseMode.Markdown);
             await client.SendTextMessageAsync(from.TelegramId,
-                $"Встреча с {user.FirstName} {user.LastName} согласована");
+                $"Встреча с {user.FirstName} {user.LastName} согласована", ParseMode.Markdown);
         }
 
         [InlineCallback("decline-")]
@@ -281,7 +281,7 @@ namespace Evect.Models.Commands
             long userId = Convert.ToInt32(query.Data.Split('-')[1]); // roma
             StringBuilder builder = new StringBuilder();
             User us = await UserDB.GetUserByChatId(context, userId);
-            builder.AppendLine($"*{us.FirstName}* {us.CompanyAndPosition}");
+            builder.AppendLine($"{us.FirstName} {us.CompanyAndPosition}");
             builder.AppendLine();
             builder.AppendLine($"_Чем полезен_: {us.Utility}");
             builder.AppendLine();
@@ -324,7 +324,7 @@ namespace Evect.Models.Commands
                 nums.Add(i.ToString());
                 ids.Add($"prof-{contactsBook.AnotherUserId}");
                 User another = await UserDB.GetUserByChatId(context, contactsBook.AnotherUserId);
-                builder.AppendLine($"*{i}){another.FirstName} {another.LastName}* {another.CompanyAndPosition}");
+                builder.AppendLine($"*{i})*{another.FirstName} {another.LastName} {another.CompanyAndPosition}");
                 builder.AppendLine($"_Чем полезен_: {another.Utility}");
                 builder.AppendLine($"_Контакт_: @{another.TelegramUserName}");
                 builder.AppendLine();

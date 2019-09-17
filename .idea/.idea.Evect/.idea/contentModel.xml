@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="$PROJECT_DIR$" t="IncludeFlat">
+    <e p="C:\projects\C#\Evect" t="IncludeFlat">
       <e p="Evect" t="IncludeRecursive">
         <e p="appsettings.Development.json" t="Include" />
         <e p="appsettings.json" t="Include" />
         <e p="bin" t="ExcludeRecursive" />
         <e p="Controllers" t="Include">
+          <e p="ApiController.cs" t="Include" />
           <e p="HomeController.cs" t="Include" />
         </e>
         <e p="Evect.csproj" t="IncludeRecursive" />
+        <e p="Migrations" t="Include">
+          <e p="20190914193847_new_mig.cs" t="Include" />
+          <e p="20190914193847_new_mig.Designer.cs" t="Include" />
+          <e p="20190914193941_new_mig2.cs" t="Include" />
+          <e p="20190914193941_new_mig2.Designer.cs" t="Include" />
+          <e p="ApplicationContextModelSnapshot.cs" t="Include" />
+        </e>
         <e p="Models" t="Include">
+          <e p="AdminUser.cs" t="Include" />
+          <e p="Answer.cs" t="Include" />
           <e p="AppSettings.cs" t="Include" />
           <e p="Bot.cs" t="Include" />
           <e p="Commands" t="Include">
@@ -30,6 +40,8 @@
           <e p="Event.cs" t="Include" />
           <e p="InfoAboutUsers.cs" t="Include" />
           <e p="Log.cs" t="Include" />
+          <e p="Question.cs" t="Include" />
+          <e p="Survey.cs" t="Include" />
           <e p="Tag.cs" t="Include" />
           <e p="TelegramInlineKeyboard.cs" t="Include" />
           <e p="TelegramKeyboard.cs" t="Include" />
@@ -41,7 +53,7 @@
           <e p="Utils.cs" t="Include" />
         </e>
         <e p="obj" t="ExcludeRecursive">
-          <e p="Debug" t="Include">
+          <e p="Release" t="Include">
             <e p="netcoreapp2.2" t="Include">
               <e p="Evect.AssemblyInfo.cs" t="Include" />
             </e>
@@ -61,14 +73,14 @@
             <e p="Index.cshtml" t="Include" />
           </e>
         </e>
-        <e p="Web.config" t="Include" />
+        <e p="web.config" t="Include" />
       </e>
       <e p="Evect.sln" t="IncludeFlat" />
       <e p="packages" t="ExcludeRecursive" />
     </e>
-    <e p="$USER_HOME$/Library/Caches/Rider2019.2/extResources" t="IncludeRecursive" />
-    <e p="$USER_HOME$/Library/Caches/Rider2019.2/resharper-host/local/Transient/ReSharperHost/v192/SolutionCaches/_Evect.-2016196777.00" t="ExcludeRecursive" />
-    <e p="$APPLICATION_CONFIG_DIR$/consoles/db" t="IncludeRecursive" />
-    <e p="$APPLICATION_CONFIG_DIR$/extensions" t="IncludeRecursive" />
+    <e p="C:\Users\smari\.Rider2019.1\config\consoles\db" t="IncludeRecursive" />
+    <e p="C:\Users\smari\.Rider2019.1\config\extensions" t="IncludeRecursive" />
+    <e p="C:\Users\smari\.Rider2019.1\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\smari\.Rider2019.1\system\resharper-host\local\Transient\ReSharperHost\v191\SolutionCaches\_Evect.787436745.00" t="ExcludeRecursive" />
   </component>
 </project>
