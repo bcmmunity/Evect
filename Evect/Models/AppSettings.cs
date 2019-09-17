@@ -3,7 +3,7 @@ namespace Evect.Models
 {
     public static class AppSettings
     {
-         #region Liza 
+         /*#region Liza 
          public static string Url { get; set; } = "https://6ff03294.ngrok.io:443/{0}";
          public static string Name { get; set; } = "evect_bot";
          //  public static string Name { get; set; } = "evect_bot";
