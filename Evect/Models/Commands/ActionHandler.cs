@@ -244,9 +244,10 @@ namespace Evect.Models.Commands
                 TelegramKeyboard keyboard = new TelegramKeyboard();
                 var chatId = message.Chat.Id;
                 keyboard.AddRow("Количество пользователей");
-                keyboard.AddRow("Количество активаций режима общения");
-                keyboard.AddRow("Число запросов контактов");
-                keyboard.AddRow("Число запросов встреч");
+                keyboard.AddRow("Количество использования режим общения");
+                keyboard.AddRow("Сколько встреч согласовано");
+                keyboard.AddRow("Сколько запрошено контактов");
+                keyboard.AddRow("Среднее число контактов");
                 keyboard.AddRow("Результаты опросов");
                 keyboard.AddRow("Назад");
                 await UserDB.ChangeUserAction(context, chatId, Actions.InformationAboutUsers);
@@ -417,14 +418,32 @@ namespace Evect.Models.Commands
                     await client.SendTextMessageAsync(chatId, amountOfUsers);
                 }
                     break;
-                case "Количество активаций режима общения":
+                case "Количество использования режим общения":
                 {
                     string amountOfActivationOfNetworkingMode =
                         await eventDb.GetInfrormationAboutUsers(chatId, message.Text);
                     await client.SendTextMessageAsync(chatId, amountOfActivationOfNetworkingMode);
                 }
                     break;
-                case "Число запросов контактов":
+                case "Сколько встреч согласовано":
+                    {
+                        string amountOfCompletedMeetings = await eventDb.GetInfrormationAboutUsers(chatId, message.Text);
+                        await client.SendTextMessageAsync(chatId, amountOfCompletedMeetings);
+                    }
+                    break;
+                case "Сколько запрошено контактов":
+                    {
+                        string amountOfRequestsOfContacts = await eventDb.GetInfrormationAboutUsers(chatId, message.Text);
+                        await client.SendTextMessageAsync(chatId, amountOfRequestsOfContacts);
+                    }
+                    break;
+                case "Среднее число контактов":
+                    {
+                        string averageOfContacts = await eventDb.GetInfrormationAboutUsers(chatId, message.Text);
+                        await client.SendTextMessageAsync(chatId, averageOfContacts);
+                    }
+                    break;
+             /*   case "Число запросов контактов":
                 {
                     string amountOfRequestsOfContacts = await eventDb.GetInfrormationAboutUsers(chatId, message.Text);
                     await client.SendTextMessageAsync(chatId, amountOfRequestsOfContacts);

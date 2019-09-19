@@ -28,6 +28,8 @@ namespace Evect.Models
 
         public List<ContactsBook> Contacts { get; set; }
         public string TelegramUserName{ get; set; }
-        
+        public string 
+            Key { get; set; }
+
     }
 }

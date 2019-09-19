@@ -198,8 +198,7 @@ namespace Evect.Models.Commands
         {
             long userId = Convert.ToInt32(query.Data.Split('-')[1]);
             User user = await UserDB.GetUserByChatId(context, query.From.Id);
-            InfoAboutUsers info = context.InfoAboutUsers.FirstOrDefault(N => N.EventId == user.CurrentEventId); //Liza
-            info.AmountOfRequestsOfMettings++; //liza
+            
             StringBuilder builder = new StringBuilder();
             TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
 
@@ -249,10 +248,10 @@ namespace Evect.Models.Commands
         public async Task OnAccept(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
         {
             long userId = Convert.ToInt32(query.Data.Split('-')[1]); // roma
-
-            User user = await UserDB.GetUserByChatId(context, query.From.Id); // kim
-
-            User from = await UserDB.GetUserByChatId(context, userId);
+            User user = await UserDB.GetUserByChatId(context, query.From.Id); // ki
+            InfoAboutUsers info = context.InfoAboutUsers.FirstOrDefault(n => n.EventId ==user.CurrentEventId);
+            info.AmountCompletedMeetings++;
+                      User from = await UserDB.GetUserByChatId(context, userId);
 
             await client.SendTextMessageAsync(user.TelegramId,
                 $"Встреча с {from.FirstName} {from.LastName} согласована", ParseMode.Markdown);

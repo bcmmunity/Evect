@@ -94,6 +94,7 @@ namespace Evect.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!InfoAboutUsersExists(id))
+
                 {
                     return NotFound();
                 }
@@ -115,7 +116,42 @@ namespace Evect.Controllers
 
             return CreatedAtAction("GetInfoAboutUsers", new { id = infoAboutUsers.InfoAboutUsersId }, infoAboutUsers);
         }
+        [Route("getEventId")]
+        [HttpPost]
+        public async Task<JsonResult> getEventId(string orgCode,string orgEmail)
+        {
+            Event eventt = new Event();
+            User user = new User();
+            string Caution = "";
+            if (_context.Events.FirstOrDefault(n => n.AdminCode == orgCode) != null)
+                eventt = _context.Events.FirstOrDefault(n => n.AdminCode == orgCode);
+            else Caution = "Вы неправильно ввел код. Введите код, пожалуйста, еще раз.";
+            if (_context.Users.FirstOrDefault(n => n.Email == orgEmail) != null)
+                user = _context.Users.FirstOrDefault(n => n.Email == orgEmail);
+            else
+            {
+                if (Caution == "") Caution = "Вы ввели неправильно почту";
+                else Caution = Caution + "Вы неправильно ввели код и почту";
 
+            }
+            if (Caution == "")
+            {
+                string ApiKey = Utils.GenerateNewCode(15);
+                return new JsonResult(new { eventId = eventt.EventId, apiKey = ApiKey });
+                    }
+            else return new JsonResult(Caution);
+            }
+        [Route("getInfoAboutUsers")]
+        public async Task<JsonResult> getInfoAboutUsers(int eventId,string apiKey)
+        {
+            EventDB eventDb = new EventDB();
+            string TotalCount =await eventDb.GetInfrormationAboutUsers(eventId, "Количество пользователей");
+            string Networking=await eventDb.GetInfrormationAboutUsers(eventId,"Количество использования режим общения");//использовали режим общения
+            string Meet=await eventDb.GetInfrormationAboutUsers(eventId,"Сколько встреч согласовано");//сколько встреч согласовано
+            string Contacts=await eventDb.GetInfrormationAboutUsers(eventId,"Сколько запрошено контактов");//сколько запрошено контактов
+            string AverageContacts = await eventDb.GetInfrormationAboutUsers(eventId, "Среднее число контактов"); ;//среднее число контактов
+            return new JsonResult(new { totalCount = TotalCount, networking = Networking, meet = Meet, contacts = Contacts, averageContacts = AverageContacts });
+        }
         // DELETE: api/Api/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<InfoAboutUsers>> DeleteInfoAboutUsers(int id)

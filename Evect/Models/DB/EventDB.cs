@@ -141,12 +141,12 @@ namespace Evect.Models.DB
                        return info.AmountOfActivationsOfNetworking.ToString() ;
                     }
                 case "Число запросов контактов":
-                    {
+                    { 
                         return info.AmountOfRequestsOfContacts.ToString();
                     }
                 case "Число запросов встреч":
                     {
-                        return  info.AmountOfRequestsOfMettings.ToString();
+                        return info.AmountCompletedMeetings.ToString();
                     }
             }
             return "Бот не знает такой команды";
@@ -163,18 +163,23 @@ namespace Evect.Models.DB
                         string t = participants.Count.ToString();
                         return t;
                     }
-                case "Количество активаций режима общения":
+                case "Количество использования режим общения":
                     {
                         return info.AmountOfActivationsOfNetworking.ToString();
                     }
-                case "Число запросов контактов":
+                case "Сколько встреч согласовано":
+                    {
+                        return info.AmountCompletedMeetings.ToString();
+                    }
+                case "Сколько запрошено контактов":
                     {
                         return info.AmountOfRequestsOfContacts.ToString();
                     }
-                case "Число запросов встреч":
+                case "Среднее число контактов":
                     {
-                        return info.AmountOfRequestsOfMettings.ToString();
+                        return info.AverageAmountOfContact.ToString();
                     }
+               
             }
             return "Бот не знает такой команды";
         }
@@ -187,21 +192,27 @@ namespace Evect.Models.DB
             if (info != null)
             {
                 switch (type)
-                {   case "Количество активаций режима общения":
+                {   case "Количество использования режим общения":
                     {
                         info.AmountOfActivationsOfNetworking++;
                     }
                         break;
-                    case "Число запросов контактов":
-                    {
-                        info.AmountOfRequestsOfContacts++;
-                    }
+                    case "Сколько встреч согласовано":
+                        {
+                            info.AmountCompletedMeetings++;
+                        }
                         break;
-                    case "Число запросов встреч":
-                    {
-                        info.AmountOfRequestsOfMettings++;
-                    }
+                    case "Сколько запрошено контактов":
+                        {
+                            info.AmountOfRequestsOfContacts++;
+                        }
                         break;
+                    case "Среднее число контактов":
+                        {
+                        
+                        }
+                        break;
+                 
                 }
             }
             
