@@ -685,8 +685,8 @@ namespace Evect.Models.Commands
             {
                 if (user.FirstName == null && user.LastName == null)
                 {
-                    user.FirstName = names[0];
-                    user.LastName = names[1];
+                    user.FirstName = names[0].Correct();
+                    user.LastName = names[1].Correct();
                     context.Update(user);
                     context.SaveChanges();
                     StringBuilder builder = new StringBuilder();
@@ -707,8 +707,8 @@ namespace Evect.Models.Commands
                 }
                 else
                 {
-                    user.FirstName = names[0];
-                    user.LastName = names[1];
+                    user.FirstName = names[0].Correct();
+                    user.LastName = names[1].Correct();
                     context.Update(user);
                     context.SaveChanges();
 
@@ -772,7 +772,7 @@ namespace Evect.Models.Commands
                 {
                     if (user.Email == null)
                     {
-                        user.Email = text;
+                        user.Email = text.Correct();
                         context.Update(user);
                         context.SaveChanges();
                         if (user.IsAdminAuthorized)
@@ -808,7 +808,7 @@ namespace Evect.Models.Commands
                     }
                     else
                     {
-                        user.Email = text;
+                        user.Email = text.Correct();
                         context.Update(user);
                         context.SaveChanges();
 
@@ -1077,7 +1077,7 @@ namespace Evect.Models.Commands
                         ids.Add($"prof-{contactsBook.AnotherUserId}");
                         User another = await UserDB.GetUserByChatId(context, contactsBook.AnotherUserId);
                         builder.AppendLine(
-                            $"*{i}){another.FirstName} {another.LastName}* {another.CompanyAndPosition}");
+                            $"*{i})*{another.FirstName} {another.LastName} {another.CompanyAndPosition}");
                         builder.AppendLine($"_Чем полезен_: {another.Utility}");
                         builder.AppendLine($"_Контакт_: @{another.TelegramUserName}");
                         builder.AppendLine();
@@ -1227,7 +1227,7 @@ namespace Evect.Models.Commands
 
             if (user.CompanyAndPosition == null)
             {
-                user.CompanyAndPosition = text;
+                user.CompanyAndPosition = text.Correct();
 
                 await UserDB.ChangeUserAction(context, chatId, Actions.SecondQuestion);
                 await client.SendTextMessageAsync(
@@ -1235,7 +1235,7 @@ namespace Evect.Models.Commands
             }
             else
             {
-                user.CompanyAndPosition = text;
+                user.CompanyAndPosition = text.Correct();
 
                 context.Update(user);
                 context.SaveChanges();
@@ -1267,7 +1267,7 @@ namespace Evect.Models.Commands
 
             if (user.Utility == null)
             {
-                user.Utility = text;
+                user.Utility = text.Correct();
                 await UserDB.ChangeUserAction(context, chatId, Actions.ThirdQuestion);
                 await client.SendTextMessageAsync(
                     chatId,
@@ -1276,7 +1276,7 @@ namespace Evect.Models.Commands
             }
             else
             {
-                user.Utility = text;
+                user.Utility = text.Correct();
                 context.Update(user);
                 context.SaveChanges();
 
@@ -1306,7 +1306,7 @@ namespace Evect.Models.Commands
 
             if (user.Communication == null)
             {
-                user.Communication = text;
+                user.Communication = text.Correct();
                 List<Tag> parentTags = context.Tags.Where(x => x.Level == 1).ToList();
 
                 foreach (var parentTag in parentTags)
@@ -1325,7 +1325,7 @@ namespace Evect.Models.Commands
             }
             else
             {
-                user.Communication = text;
+                user.Communication = text.Correct();
 
                 context.Update(user);
                 context.SaveChanges();
@@ -1695,9 +1695,9 @@ namespace Evect.Models.Commands
                         ids.Add($"prof-{contactsBook.AnotherUserId}");
                         User another = await UserDB.GetUserByChatId(context, contactsBook.AnotherUserId);
                         builder.AppendLine(
-                            $"*{i}){another.FirstName} {another.LastName}* {another.CompanyAndPosition}");
+                            $"*{i})*{another.FirstName} {another.LastName} {another.CompanyAndPosition}");
                         builder.AppendLine($"_Чем полезен_: {another.Utility}");
-                        builder.AppendLine($"_Контакт_: @{another.TelegramUserName}");
+                        builder.AppendLine($"_Контакт_: " + (another.TelegramUserName != null ? "@" + another.TelegramUserName : "[inline mention of a user](tg://user?id={chatId})"));
                         builder.AppendLine();
                         i++;
                     }
@@ -1721,28 +1721,19 @@ namespace Evect.Models.Commands
 
                 case "Общение":
 
-//                    List<User> usersWithTags = context.Users.Where(e =>
-//                        e.UserTags.Any(ut => 
-//                            user.UserTags.FirstOrDefault(t => t.TagId == ut.TagId) != null) && e.CurrentEventId == user.CurrentEventId).ToList();
-
-//                    List<User> usersWithoutTags = context.Users.Where(e =>
-//                        e.UserTags.Any(ut => 
-//                            user.UserTags.FirstOrDefault(t => t.TagId == ut.TagId) == null) && e.CurrentEventId == user.CurrentEventId).ToList();
-
-                    User us = context.Users.FirstOrDefault(e =>
+                    // поиск по тегам, выбираем из всех пользователей только тех, у которых есть хотя бы один личный тег из тех, что у нас в поиске
+                    User us = context.Users
+                    .Include(u => u.UserTags)
+                    .ThenInclude(t => t.Tag)
+                    .FirstOrDefault(e =>
                         e.UserTags.Any(ut =>
-                            user.UserTags.FirstOrDefault(t => t.TagId == ut.TagId) != null) &&
+                            user.SearchingUserTags.FirstOrDefault(t => t.TagId == ut.TagId) != null) &&
                         e.CurrentEventId == user.CurrentEventId);
 
-                    if (us == null)
-                    {
-                        us = context.Users.FirstOrDefault(e =>
-                            e.UserTags.Any(ut =>
-                                user.UserTags.FirstOrDefault(t => t.TagId == ut.TagId) == null) &&
-                            e.CurrentEventId == user.CurrentEventId);
-                    }
-
-                    builder.AppendLine($"*{us.FirstName}* {us.CompanyAndPosition}");
+                    
+                    builder.AppendLine($@"{us.FirstName},  {us.CompanyAndPosition}");
+                    builder.AppendLine();
+                    builder.AppendLine($"_Теги_: `{string.Join(", ",us.UserTags.Select(e => e.Tag.Name))}`");
                     builder.AppendLine();
                     builder.AppendLine($"_Чем полезен_: {us.Utility}");
                     builder.AppendLine();

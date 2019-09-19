@@ -1,14 +1,16 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Reflection;
 using System.Threading.Tasks;
 using MimeKit;
+using Telegram.Bot.Types.Enums;
 
 namespace Evect.Models
 {
-    public class Utils
+    public static class Utils
     {
 
         public static bool IsEmailValid(string email)
@@ -112,6 +114,20 @@ namespace Evect.Models
 
 
         }
+
+        public static string Correct(this string str)
+        {
+            if (str.Contains('*') || str.Contains('_') || str.Contains('`'))
+            {
+                str = str.Replace("*", @"\*");
+                str = str.Replace("_", @"\_");
+                str = str.Replace("`", @"\`");
+            }
+
+            return str;
+        }
+        
+        
 
         public static TelegramKeyboard CommonKeyboards(Actions actions)
         {

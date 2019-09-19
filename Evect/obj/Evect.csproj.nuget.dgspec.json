@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj": {}
+    "C:\\projects\\C#\\Evect\\Evect\\Evect.csproj": {}
   },
   "projects": {
-    "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj": {
+    "C:\\projects\\C#\\Evect\\Evect\\Evect.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj",
+        "projectUniqueName": "C:\\projects\\C#\\Evect\\Evect\\Evect.csproj",
         "projectName": "Evect",
-        "projectPath": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/Evect.csproj",
-        "packagesPath": "/Users/Modernwolf/.nuget/packages/",
-        "outputPath": "/Users/Modernwolf/Desktop/Работа/Diffind/Evect/Evect/obj/",
+        "projectPath": "C:\\projects\\C#\\Evect\\Evect\\Evect.csproj",
+        "packagesPath": "C:\\Users\\smari\\.nuget\\packages\\",
+        "outputPath": "C:\\projects\\C#\\Evect\\Evect\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "/Users/Modernwolf/.config/NuGet/NuGet.Config"
+          "C:\\Users\\smari\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp2.2"
@@ -49,6 +49,10 @@
               "version": "[2.2.0, )",
               "autoReferenced": true
             },
+            "Microsoft.AspNetCore.Mvc.Formatters.Json": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
             "Microsoft.AspNetCore.Razor.Design": {
               "suppressParent": "All",
               "target": "Package",
@@ -60,9 +64,17 @@
               "version": "[2.2.0, )",
               "autoReferenced": true
             },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
             "MimeKit": {
               "target": "Package",
               "version": "[2.2.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[12.0.2, )"
             },
             "Telegram.Bot": {
               "target": "Package",

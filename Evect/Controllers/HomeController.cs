@@ -58,6 +58,7 @@ namespace Evect.Controllers
             if (update == null)
                 return Ok();
 
+            
             using (ApplicationContext db = new ApplicationContext(new DbContextOptions<ApplicationContext>()))
             {
                 
@@ -78,53 +79,62 @@ namespace Evect.Controllers
                     var text = message.Text;
 
                     User user = await UserDB.GetUserByChatId(db, chatId); //получаем айди юзера и его самого из бд
-                    if (user == null)
+                    try
                     {
-                        foreach (var pair in _commands)
-                        {
-                            if (text == "/start" && pair.Value == "/start")
-                            {
-                                await pair.Key(db, message, _client);
-                                return Ok();
-                            }
-                        }
-
-                    }
-                    else
-                    {
-                        if (!user.IsAuthed)
+                        if (user == null)
                         {
                             foreach (var pair in _commands)
                             {
-                                if ((text == "/start" || text == "Личный кабинет") &&
-                                    (pair.Value == text))
+                                if (text == "/start" && pair.Value == "/start")
                                 {
                                     await pair.Key(db, message, _client);
                                     return Ok();
                                 }
                             }
+
                         }
                         else
                         {
-                            foreach (var pair in _commands)
+                            if (!user.IsAuthed)
                             {
-                                if ((text == "/start" || text == "/stop") &&
-                                    (pair.Value == text))
+                                foreach (var pair in _commands)
                                 {
-                                    await pair.Key(db, message, _client);
-                                    return Ok();
+                                    if ((text == "/start" || text == "Личный кабинет") &&
+                                        (pair.Value == text))
+                                    {
+                                        await pair.Key(db, message, _client);
+                                        return Ok();
+                                    }
                                 }
                             }
-                            foreach (var pair in _actions)
+                            else
                             {
-                                if (pair.Value == user.CurrentAction)
+                                foreach (var pair in _commands)
                                 {
-                                    await pair.Key(db, message, _client);
-                                    return Ok();
+                                    if ((text == "/start" || text == "/stop") &&
+                                        (pair.Value == text))
+                                    {
+                                        await pair.Key(db, message, _client);
+                                        return Ok();
+                                    }
+                                }
+
+                                foreach (var pair in _actions)
+                                {
+                                    if (pair.Value == user.CurrentAction)
+                                    {
+                                        await pair.Key(db, message, _client);
+                                        return Ok();
+                                    }
                                 }
                             }
                         }
                     }
+                    catch (Exception e)
+                    {
+                        await _client.SendTextMessageAsync(user.TelegramId, $"{e.Source} {e.Message}");
+                    }
+                    
                 }
             }
             
