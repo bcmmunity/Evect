@@ -15,6 +15,11 @@ namespace Evect.Models
         public int UserId { get; set; }
         public SearchingTag Tag { get; set; }
         public int TagId { get; set; }
+
+        public override string ToString()
+        {
+            return Tag.Name;
+        }
     }
     
 }

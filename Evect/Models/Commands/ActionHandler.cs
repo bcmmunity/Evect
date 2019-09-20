@@ -1520,7 +1520,7 @@ namespace Evect.Models.Commands
                         keyboard.AddRow("Вернуться на главную");
 
                         await client.SendTextMessageAsync(
-                            chatId, "Теги нужных людей:\n" + string.Join(", ", chosenTags),
+                            chatId, "Теги нужных людей:\n" + string.Join(", ", userTags),
                             ParseMode.Markdown);
 
                         await client.SendTextMessageAsync(

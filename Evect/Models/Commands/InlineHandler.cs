@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Evect.Models.DB;
+using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -150,15 +151,20 @@ namespace Evect.Models.Commands
             User user = await UserDB.GetUserByChatId(context, query.From.Id);
             StringBuilder builder = new StringBuilder();
             TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
-            List<User> usersWithTags = context.Users.Where(e =>
-                e.UserTags.Any(ut =>
-                    user.SearchingUserTags.FirstOrDefault(t => t.TagId == ut.TagId) != null) &&
-                e.CurrentEventId == user.CurrentEventId).ToList();
+            List<User> usersWithTags = context.Users
+                .Include(u => u.UserTags)
+                .ThenInclude(ut => ut.Tag)
+                .Where(e => e.UserTags.Any(ut =>
+                                user.SearchingUserTags.FirstOrDefault(t => t.TagId == ut.TagId) != null) &&
+                            e.CurrentEventId == user.CurrentEventId).ToList();
 
-            List<User> usersWithoutTags = context.Users.Where(e =>
-                e.UserTags.Any(ut =>
-                    user.SearchingUserTags.FirstOrDefault(t => t.TagId == ut.TagId) == null) &&
-                e.CurrentEventId == user.CurrentEventId).ToList();
+            List<User> usersWithoutTags = context.Users
+                .Include(u => u.UserTags)
+                .ThenInclude(ut => ut.Tag)
+                .Where(e =>
+                    e.UserTags.All(ut =>
+                        user.SearchingUserTags.FirstOrDefault(t => t.TagId == ut.TagId) == null) &&
+                    e.CurrentEventId == user.CurrentEventId).ToList();
 
             usersWithTags.AddRange(usersWithoutTags);
 
@@ -168,12 +174,12 @@ namespace Evect.Models.Commands
                 User us = usersWithTags[changeId - 1];
                 builder.AppendLine($"{us.FirstName} {us.CompanyAndPosition}");
                 builder.AppendLine();
+                builder.AppendLine($"_Теги_: {string.Join(", ", us.UserTags.Select(e => e.Tag.Name))}");
+                builder.AppendLine();
                 builder.AppendLine($"_Чем полезен_: {us.Utility}");
                 builder.AppendLine();
                 builder.AppendLine($"_О чем можно пообщаться_: {us.Communication}");
-
                 string ch;
-
                 if (user.Contacts.Any(e => e.AnotherUserId == us.TelegramId))
                 {
                     ch = Utils.GetCheckmark();
@@ -188,7 +194,9 @@ namespace Evect.Models.Commands
                     .AddCallbackRow($"change-{changeId - 1}", $"contact-{us.TelegramId}", $"meet-{us.TelegramId}",
                         $"change-{changeId + 1}");
 
-                await client.EditMessageTextAsync(query.From.Id, query.Message.MessageId, builder.ToString(), ParseMode.Markdown);
+
+                await client.EditMessageTextAsync(query.From.Id, query.Message.MessageId, builder.ToString(),
+                    ParseMode.Markdown);
                 await client.EditMessageReplyMarkupAsync(query.From.Id, query.Message.MessageId, inline.Markup);
             }
         }
@@ -198,7 +206,7 @@ namespace Evect.Models.Commands
         {
             long userId = Convert.ToInt32(query.Data.Split('-')[1]);
             User user = await UserDB.GetUserByChatId(context, query.From.Id);
-            
+
             StringBuilder builder = new StringBuilder();
             TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
 
@@ -209,7 +217,8 @@ namespace Evect.Models.Commands
             builder.AppendLine("Вам назначена встреча от:");
             builder.AppendLine($"{user.FirstName} {user.LastName}");
 
-            await client.SendTextMessageAsync(userId, builder.ToString(), ParseMode.Markdown, replyMarkup: inline.Markup);
+            await client.SendTextMessageAsync(userId, builder.ToString(), ParseMode.Markdown,
+                replyMarkup: inline.Markup);
         }
 
         [InlineCallback("contact-")]
@@ -249,9 +258,11 @@ namespace Evect.Models.Commands
         {
             long userId = Convert.ToInt32(query.Data.Split('-')[1]); // roma
             User user = await UserDB.GetUserByChatId(context, query.From.Id); // ki
-            InfoAboutUsers info = context.InfoAboutUsers.FirstOrDefault(n => n.EventId ==user.CurrentEventId);
+            InfoAboutUsers info = context.InfoAboutUsers.FirstOrDefault(n => n.EventId == user.CurrentEventId);
             info.AmountCompletedMeetings++;
-                      User from = await UserDB.GetUserByChatId(context, userId);
+            User from = await UserDB.GetUserByChatId(context, userId);
+
+            await client.DeleteMessageAsync(query.From.Id, query.Message.MessageId);
 
             await client.SendTextMessageAsync(user.TelegramId,
                 $"Встреча с {from.FirstName} {from.LastName} согласована", ParseMode.Markdown);
@@ -267,6 +278,8 @@ namespace Evect.Models.Commands
             User user = await UserDB.GetUserByChatId(context, query.From.Id); // kim
 
             User from = await UserDB.GetUserByChatId(context, userId);
+
+            await client.DeleteMessageAsync(query.From.Id, query.Message.MessageId);
 
             await client.SendTextMessageAsync(user.TelegramId,
                 $"Вы отменили встречу с {from.FirstName} {from.LastName}");
@@ -335,8 +348,8 @@ namespace Evect.Models.Commands
                 if (page != 1)
                 {
                     inline
-                        .AddTextRow("Назад","Вперед")
-                        .AddCallbackRow($"profpage-{page - 1}",$"profpage-{page + 1}");
+                        .AddTextRow("Назад", "Вперед")
+                        .AddCallbackRow($"profpage-{page - 1}", $"profpage-{page + 1}");
                 }
                 else
                 {
@@ -344,9 +357,8 @@ namespace Evect.Models.Commands
                         .AddTextRow("Вперед")
                         .AddCallbackRow($"profpage-{page + 1}");
                 }
-                
             }
-            else 
+            else
             {
                 inline
                     .AddTextRow("Назад")
@@ -357,7 +369,8 @@ namespace Evect.Models.Commands
                 .AddTextRow(nums.ToArray())
                 .AddCallbackRow(ids.ToArray());
 
-            await client.SendTextMessageAsync(query.From.Id, builder.ToString(), parseMode: ParseMode.Markdown, replyMarkup: inline.Markup);
+            await client.SendTextMessageAsync(query.From.Id, builder.ToString(), parseMode: ParseMode.Markdown,
+                replyMarkup: inline.Markup);
         }
     }
 }
