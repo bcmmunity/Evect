@@ -398,6 +398,10 @@ cmake-build-*/
 
 # IntelliJ
 out/
+.idea/*
+.idea/
+obj/
+obj/*
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
