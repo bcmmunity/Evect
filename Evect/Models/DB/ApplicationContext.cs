@@ -468,5 +468,6 @@ namespace Evect.Models.DB
         public DbSet<Question> Questions { get; set; }
        // public DbSet<Survey> Surveys { get; set; }
         public DbSet<AdminUser> Admins { get; set; }
+        public DbSet<TimeToJoinToEvent> TimeToJoinToEvents { get; set; }
     }
 }
