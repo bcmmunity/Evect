@@ -155,6 +155,7 @@ namespace Evect.Models
                         keyboard.AddRow("Информация о пользователях");
                         keyboard.AddRow("Создать опрос");
                         keyboard.AddRow("Создать оповещение");
+                        keyboard.AddRow("Войти как обычный участник");
                     }
                     break;
                 case Actions.Profile:

@@ -30,6 +30,6 @@ namespace Evect.Models
         public string TelegramUserName{ get; set; }
         public string 
             Key { get; set; }
-
+        public System.DateTime dateOfStarting { get; set; }
     }
 }

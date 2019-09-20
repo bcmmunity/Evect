@@ -142,6 +142,7 @@ namespace Evect.Controllers
             else return new JsonResult(Caution);
             }
         [Route("getInfoAboutUsers")]
+        [HttpPost]
         public async Task<JsonResult> getInfoAboutUsers(int eventId,string apiKey)
         {
             EventDB eventDb = new EventDB();
@@ -152,6 +153,56 @@ namespace Evect.Controllers
             string AverageContacts = await eventDb.GetInfrormationAboutUsers(eventId, "Среднее число контактов"); ;//среднее число контактов
             return new JsonResult(new { totalCount = TotalCount, networking = Networking, meet = Meet, contacts = Contacts, averageContacts = AverageContacts });
         }
+        public class Surveys
+        {
+            public int countOfRespondents { get; set; }
+            public string type { get; set; }
+           /* public Surveys(int CountOfRespondents,string Type)
+            {
+                countOfRespondents = CountOfRespondents;
+                Type = type;
+            }*/
+
+        }
+        [Route("getSurvey")]
+        [HttpPost]
+        public async Task<JsonResult> getSurvey(int eventId,string apiKey)
+        {
+            //как обработать apiKey?Просто проверить на то,есть он у чела или нет и если нет,то вернуть предупреждение или что,как?
+            EventDB eventDb = new EventDB();
+            List<int> idOfQuestions = eventDb.GetIdOfQuestions(_context,eventId);
+            Dictionary<string,Surveys> necessaryInfo = new Dictionary<string,Surveys>();
+            foreach (var id in idOfQuestions)
+            {
+                Question question = _context.Questions.FirstOrDefault(n => n.QuestionId == id);
+                int countOfRespondents = eventDb.GetCountOfRespondents(_context,id);
+                string type = eventDb.GetTypeOfQuestion(_context,id);
+                Surveys survey = new Surveys();
+                survey.countOfRespondents = countOfRespondents;
+                survey.type = type;
+                necessaryInfo.Add(question.Questions, survey);
+            }
+            var obj = new { necessaryInfo };
+            return new JsonResult(obj);
+            ///+сделать с возврат экселевских файлов
+        }
+        [Route("getTags")]
+        [HttpPost]
+        public async Task<JsonResult> getTags(int eventId,string apiKey)
+        {
+            Event eventt = _context.Events.FirstOrDefault(p => p.EventId == eventId);
+            EventDB eventDb = new EventDB();
+            List<string> parentTags = eventDb.GetTags(_context, eventId,"Parent");
+            List<string> childTags = eventDb.GetTags(_context, eventId, "Child");
+            var obj = new { nameOdEvent = eventt.Name, parentTags, childTags };
+            return new JsonResult(obj);
+        }
+       /* [Route("getUserActivity")]
+        [HttpPost]
+        public async Task<JsonResult> getUserActivity(int eventId,string apiKey)
+        {
+            
+        }*/
         // DELETE: api/Api/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<InfoAboutUsers>> DeleteInfoAboutUsers(int id)

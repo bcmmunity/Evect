@@ -217,6 +217,61 @@ namespace Evect.Models.DB
             }
             
         }
-        
+        public List<int> GetIdOfQuestions(ApplicationContext context,int eventId)
+        {
+            List<int> Questions = new List<int>();
+            List<Question> allQuestions = context.Questions.ToList();
+            foreach(var question in allQuestions)
+            {
+                if(question.EventId==eventId)
+                {
+                   Questions.Add(question.QuestionId);
+                }
+            }
+            return Questions;
+        }
+        public int GetCountOfRespondents(ApplicationContext context,int idOfQuestion)
+        {
+            List<Answer> answers = context.Answers.ToList();
+            int count = 0;
+            foreach(var answer in answers)
+            {
+                if (answer.QuestionId == idOfQuestion)
+                    count++;
+            }
+            return count;
+        }
+        public string GetTypeOfQuestion(ApplicationContext context, int idOfQuestion)
+        {
+            Question question = context.Questions.FirstOrDefault(n => n.QuestionId == idOfQuestion);
+           int type=question.Type;
+            string str = "";
+            if (type == 0) str = "Опрос с развернутой частью";
+            else str = "Опрос с оценкой";
+            return str;
+        }
+        public List<string> GetTags(ApplicationContext context,int EventId,string typeOfTags)
+        {
+            List<Tag> tags = context.Tags.ToList();
+            List<string> tagsForReturning = new List<string>();
+
+            if(typeOfTags=="Parent")
+            {
+                foreach(var tag in tags)
+                {
+                    if (tag.Level == 1)
+                        tagsForReturning.Add(tag.Name);
+                }
+            }
+            else if(typeOfTags=="Child")
+            {
+                foreach(var tag in tags)
+                {
+                    if (tag.Level == 2)
+                        tagsForReturning.Add(tag.Name);
+                }
+            }
+            return tagsForReturning;
+        }
     }
 }

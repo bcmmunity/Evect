@@ -172,26 +172,15 @@ namespace Evect.Models.DB
             return user != null;
         }
         
-        public static void AddSurvey(ApplicationContext context,string type,string message,long chatId)
+        public static void AddSurvey(ApplicationContext context,int type,string message,long chatId)
         {
             User user = context.Users.FirstOrDefault(n => n.TelegramId == chatId);
-            if (type=="Название опроса")
-            {
-                Survey survey = new Survey();
-                survey.Name = message;
-                context.Surveys.Add(survey);
-                context.SaveChanges();
-                Survey survey1 = context.Surveys.FirstOrDefault(n => n.Name == message);
-                user.CurrentSurveyId = survey1.SurveyId;
-            }
-            else if(type=="Вопрос опроса")
-            {
-                Question question = new Question();
-                question.Questions = message;
-                question.SurveyId = user.CurrentSurveyId;
-                context.Questions.Add(question);
-                context.SaveChanges();
-            }
+            Question question = new Question();
+            question.EventId = user.CurrentEventId;
+            question.Questions = message;
+            question.Type = type;
+            context.Questions.Add(question);
+            context.SaveChanges();
         }
         public static int GetQuestionId(ApplicationContext context,string message)
         {

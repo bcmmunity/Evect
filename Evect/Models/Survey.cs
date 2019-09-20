@@ -8,6 +8,7 @@ namespace Evect.Models
     public class Survey
     {
         public int SurveyId { get; set; }
+        public int EventId { get; set; }
         public string Name { get; set; }
     }
 }

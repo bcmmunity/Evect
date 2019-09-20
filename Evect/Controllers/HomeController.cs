@@ -57,7 +57,7 @@ namespace Evect.Controllers
         {
             if (update == null)
                 return Ok();
-
+            
             
             using (ApplicationContext db = new ApplicationContext(new DbContextOptions<ApplicationContext>()))
             {
@@ -79,6 +79,8 @@ namespace Evect.Controllers
                     var text = message.Text;
 
                     User user = await UserDB.GetUserByChatId(db, chatId); //получаем айди юзера и его самого из бд
+                   
+
                     try
                     {
                         if (user == null)
