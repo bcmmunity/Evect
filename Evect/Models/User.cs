@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Evect.Models;
+using System;
 namespace Evect.Models
 {
     public class User
@@ -29,7 +30,8 @@ namespace Evect.Models
         public List<ContactsBook> Contacts { get; set; }
         public string TelegramUserName{ get; set; }
         public string 
-            Key { get; set; }
-        public System.DateTime dateOfStarting { get; set; }
+            apiKey { get; set; }
+        public DateTime dateOfStarting { get; set; }
+      
     }
 }

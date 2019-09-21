@@ -34,7 +34,7 @@ namespace Evect.Controllers
         {
             return await _context.InfoAboutUsers.ToListAsync();
         }
-        [Route("getCommonInfoAboutUsers")]
+        /*[Route("getCommonInfoAboutUsers")]
         [HttpGet("id")]
         public async Task<JsonResult> CommonInformation(int idOfEvent)
         {
@@ -61,7 +61,7 @@ namespace Evect.Controllers
             string link = "https://vk.com";
             int count = 1488;
             return new JsonResult(new { excelLink =new {lizonka=link }, survCount = count });
-        }
+        }*/
         // GET: api/Api/5
         [HttpGet("{id}")]
         public async Task<ActionResult<InfoAboutUsers>> GetInfoAboutUsers(int id)
@@ -117,41 +117,75 @@ namespace Evect.Controllers
             return CreatedAtAction("GetInfoAboutUsers", new { id = infoAboutUsers.InfoAboutUsersId }, infoAboutUsers);
         }
         [Route("getEventId")]
+        //[Consumes("application/json")]
         [HttpPost]
-        public async Task<JsonResult> getEventId(string orgCode,string orgEmail)
+        public async Task<JsonResult> getEventId(string orgCode, string orgEmail)
         {
-            Event eventt = new Event();
-            User user = new User();
-            string Caution = "";
-            if (_context.Events.FirstOrDefault(n => n.AdminCode == orgCode) != null)
+            Event eventt = _context.Events.FirstOrDefault(n => n.AdminCode == orgCode);
+            string email = "";
+            email = orgEmail.Replace(@"\","");
+            User user = _context.Users.FirstOrDefault(n => n.Email == email);
+            string caution = "";
+            if (eventt != null)
+            {
                 eventt = _context.Events.FirstOrDefault(n => n.AdminCode == orgCode);
-            else Caution = "Вы неправильно ввел код. Введите код, пожалуйста, еще раз.";
-            if (_context.Users.FirstOrDefault(n => n.Email == orgEmail) != null)
-                user = _context.Users.FirstOrDefault(n => n.Email == orgEmail);
+            }
             else
             {
-                if (Caution == "") Caution = "Вы ввели неправильно почту";
-                else Caution = Caution + "Вы неправильно ввели код и почту";
-
+                caution = "Вы неправильно ввел код. Введите код, пожалуйста, еще раз.";
             }
-            if (Caution == "")
+            if (user != null)
             {
-                string ApiKey = Utils.GenerateNewCode(15);
+                user = _context.Users.FirstOrDefault(n => n.Email == email);
+            }
+            else
+            {
+                if (caution == "")
+                {
+                    caution = "Вы ввели неправильно почту";
+                }
+                else
+                {
+                    caution = caution + "Вы неправильно ввели код и почту";
+                }
+            }
+            if (caution == "")
+            {
+                string ApiKey = "";
+                if (user.apiKey == null)
+                {
+                   ApiKey = Utils.GenerateNewCode(15);
+                    user.apiKey = ApiKey;
+                    _context.Users.Update(user);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    ApiKey = user.apiKey;
+                }
                 return new JsonResult(new { eventId = eventt.EventId, apiKey = ApiKey });
-                    }
-            else return new JsonResult(Caution);
+             }
+            else return new JsonResult(caution);
             }
         [Route("getInfoAboutUsers")]
         [HttpPost]
         public async Task<JsonResult> getInfoAboutUsers(int eventId,string apiKey)
         {
-            EventDB eventDb = new EventDB();
-            string TotalCount =await eventDb.GetInfrormationAboutUsers(eventId, "Количество пользователей");
-            string Networking=await eventDb.GetInfrormationAboutUsers(eventId,"Количество использования режим общения");//использовали режим общения
-            string Meet=await eventDb.GetInfrormationAboutUsers(eventId,"Сколько встреч согласовано");//сколько встреч согласовано
-            string Contacts=await eventDb.GetInfrormationAboutUsers(eventId,"Сколько запрошено контактов");//сколько запрошено контактов
-            string AverageContacts = await eventDb.GetInfrormationAboutUsers(eventId, "Среднее число контактов"); ;//среднее число контактов
-            return new JsonResult(new { totalCount = TotalCount, networking = Networking, meet = Meet, contacts = Contacts, averageContacts = AverageContacts });
+            if (_context.Users.FirstOrDefault(n => n.apiKey == apiKey) == null)
+            {
+                var obj = "Вы не авторизовались";
+                return new JsonResult(new { error = obj });
+            }
+            else
+            {
+                EventDB eventDb = new EventDB();
+                string TotalCount = await eventDb.GetInfrormationAboutUsers(eventId, "Количество пользователей");
+                string Networking = await eventDb.GetInfrormationAboutUsers(eventId, "Количество использования режим общения");//использовали режим общения
+                string Meet = await eventDb.GetInfrormationAboutUsers(eventId, "Сколько встреч согласовано");//сколько встреч согласовано
+                string Contacts = await eventDb.GetInfrormationAboutUsers(eventId, "Сколько запрошено контактов");//сколько запрошено контактов
+                string AverageContacts = await eventDb.GetInfrormationAboutUsers(eventId, "Среднее число контактов"); ;//среднее число контактов
+                return new JsonResult(new { totalCount = TotalCount, networking = Networking, meet = Meet, contacts = Contacts, averageContacts = AverageContacts });
+            }
         }
         public class Surveys
         {
@@ -168,34 +202,49 @@ namespace Evect.Controllers
         [HttpPost]
         public async Task<JsonResult> getSurvey(int eventId,string apiKey)
         {
-            //как обработать apiKey?Просто проверить на то,есть он у чела или нет и если нет,то вернуть предупреждение или что,как?
-            EventDB eventDb = new EventDB();
-            List<int> idOfQuestions = eventDb.GetIdOfQuestions(_context,eventId);
-            Dictionary<string,Surveys> necessaryInfo = new Dictionary<string,Surveys>();
-            foreach (var id in idOfQuestions)
+            if (_context.Users.FirstOrDefault(n => n.apiKey == apiKey) == null)
             {
-                Question question = _context.Questions.FirstOrDefault(n => n.QuestionId == id);
-                int countOfRespondents = eventDb.GetCountOfRespondents(_context,id);
-                string type = eventDb.GetTypeOfQuestion(_context,id);
-                Surveys survey = new Surveys();
-                survey.countOfRespondents = countOfRespondents;
-                survey.type = type;
-                necessaryInfo.Add(question.Questions, survey);
+                var obj = "Вы не авторизовались";
+                return new JsonResult(new { error = obj });
             }
-            var obj = new { necessaryInfo };
-            return new JsonResult(obj);
+            else
+            {
+                EventDB eventDb = new EventDB();
+                List<int> idOfQuestions = eventDb.GetIdOfQuestions(_context, eventId);
+                Dictionary<string, Surveys> necessaryInfo = new Dictionary<string, Surveys>();
+                foreach (var id in idOfQuestions)
+                {
+                    Question question = _context.Questions.FirstOrDefault(n => n.QuestionId == id);
+                    int countOfRespondents = eventDb.GetCountOfRespondents(_context, id);
+                    string type = eventDb.GetTypeOfQuestion(_context, id);
+                    Surveys survey = new Surveys();
+                    survey.countOfRespondents = countOfRespondents;
+                    survey.type = type;
+                    necessaryInfo.Add(question.Questions, survey);
+                }
+                var obj = new { necessaryInfo };
+                return new JsonResult(obj);
+            }
             ///+сделать с возврат экселевских файлов
         }
         [Route("getTags")]
         [HttpPost]
         public async Task<JsonResult> getTags(int eventId,string apiKey)
         {
-            Event eventt = _context.Events.FirstOrDefault(p => p.EventId == eventId);
-            EventDB eventDb = new EventDB();
-            List<string> parentTags = eventDb.GetTags(_context, eventId,"Parent");
-            List<string> childTags = eventDb.GetTags(_context, eventId, "Child");
-            var obj = new { nameOdEvent = eventt.Name, parentTags, childTags };
-            return new JsonResult(obj);
+            if (_context.Users.FirstOrDefault(n => n.apiKey == apiKey) == null)
+            {
+                var obj = "Вы не авторизовались";
+                return new JsonResult(new { error = obj });
+            }
+            else
+            {
+                Event eventt = _context.Events.FirstOrDefault(p => p.EventId == eventId);
+                EventDB eventDb = new EventDB();
+                List<string> parentTags = eventDb.GetTags(_context, eventId, "Parent");
+                List<string> childTags = eventDb.GetTags(_context, eventId, "Child");
+                var obj = new { nameOdEvent = eventt.Name, parentTags, childTags };
+                return new JsonResult(obj);
+            }
         }
        /* [Route("getUserActivity")]
         [HttpPost]

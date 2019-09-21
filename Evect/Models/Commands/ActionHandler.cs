@@ -94,6 +94,12 @@ namespace Evect.Models.Commands
                          await UserDB.ChangeUserAction(context, chatId, Actions.AdminMode);
                         if (!have)
                         {
+                            TimeToJoinToEvent time = new TimeToJoinToEvent();
+                            time.TelegramId = chatId;
+                            time.EventId = ev.EventId;
+                            time.time = DateTime.Now;
+                            context.TimeToJoinToEvents.Add(time);
+                           
                             UserEvent userEvent = new UserEvent() {UserId = user.UserId, EventId = ev.EventId};
                             user.UserEvents.Add(userEvent);
                             user.CurrentEventId = ev.EventId;
