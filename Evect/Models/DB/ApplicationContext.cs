@@ -459,6 +459,7 @@ namespace Evect.Models.DB
         public DbSet<User> Users { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<SearchingTag> SearchingTags { get; set; }
+        public DbSet<ContactsBook> ContactsBooks { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<UserValidation> Validations { get; set; }
         public DbSet<InfoAboutUsers> InfoAboutUsers { get; set; }

@@ -1,4 +1,4 @@
-#define LOCAL
+//#define LOCAL
 namespace Evect.Models
 {
     public static class AppSettings
@@ -32,7 +32,7 @@ namespace Evect.Models
 
 #if LOCAL 
           public static string DatabaseConnectionString { get; set; } =
-             "Server=localhost\\SQLEXPRESS;Database=evect3;Trusted_Connection=True;";
+             "Server=localhost\\SQLEXPRESS;Database=evect5;Trusted_Connection=True;";
                   public static string Key { get; set; } = "956625902:AAHF9mJj8SGo3_5g51kQZPUe3OX_cdAMM2o";
 //                  public static string Key { get; set; } = "822563453:AAG6JbtEMw9fo38ZIUceHjd480SghEBKC3c";
 

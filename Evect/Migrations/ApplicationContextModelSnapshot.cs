@@ -58,7 +58,7 @@ namespace Evect.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ContactsBook");
+                    b.ToTable("ContactsBooks");
                 });
 
             modelBuilder.Entity("Evect.Models.Event", b =>
@@ -160,11 +160,13 @@ namespace Evect.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("AmountCompletedMeetings");
+
                     b.Property<int>("AmountOfActivationsOfNetworking");
 
                     b.Property<int>("AmountOfRequestsOfContacts");
 
-                    b.Property<int>("AmountOfRequestsOfMettings");
+                    b.Property<int>("AverageAmountOfContact");
 
                     b.Property<int>("EventId");
 
@@ -176,49 +178,55 @@ namespace Evect.Migrations
                         new
                         {
                             InfoAboutUsersId = 1,
+                            AmountCompletedMeetings = 0,
                             AmountOfActivationsOfNetworking = 0,
                             AmountOfRequestsOfContacts = 0,
-                            AmountOfRequestsOfMettings = 0,
+                            AverageAmountOfContact = 0,
                             EventId = 1
                         },
                         new
                         {
                             InfoAboutUsersId = 2,
+                            AmountCompletedMeetings = 0,
                             AmountOfActivationsOfNetworking = 0,
                             AmountOfRequestsOfContacts = 0,
-                            AmountOfRequestsOfMettings = 0,
+                            AverageAmountOfContact = 0,
                             EventId = 2
                         },
                         new
                         {
                             InfoAboutUsersId = 3,
+                            AmountCompletedMeetings = 0,
                             AmountOfActivationsOfNetworking = 0,
                             AmountOfRequestsOfContacts = 0,
-                            AmountOfRequestsOfMettings = 0,
+                            AverageAmountOfContact = 0,
                             EventId = 3
                         },
                         new
                         {
                             InfoAboutUsersId = 4,
+                            AmountCompletedMeetings = 0,
                             AmountOfActivationsOfNetworking = 0,
                             AmountOfRequestsOfContacts = 0,
-                            AmountOfRequestsOfMettings = 0,
+                            AverageAmountOfContact = 0,
                             EventId = 4
                         },
                         new
                         {
                             InfoAboutUsersId = 5,
+                            AmountCompletedMeetings = 0,
                             AmountOfActivationsOfNetworking = 0,
                             AmountOfRequestsOfContacts = 0,
-                            AmountOfRequestsOfMettings = 0,
+                            AverageAmountOfContact = 0,
                             EventId = 5
                         },
                         new
                         {
                             InfoAboutUsersId = 6,
+                            AmountCompletedMeetings = 0,
                             AmountOfActivationsOfNetworking = 0,
                             AmountOfRequestsOfContacts = 0,
-                            AmountOfRequestsOfMettings = 0,
+                            AverageAmountOfContact = 0,
                             EventId = 6
                         });
                 });
@@ -242,9 +250,11 @@ namespace Evect.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("EventId");
+
                     b.Property<string>("Questions");
 
-                    b.Property<int>("SurveyId");
+                    b.Property<int>("Type");
 
                     b.HasKey("QuestionId");
 
@@ -424,19 +434,6 @@ namespace Evect.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Evect.Models.Survey", b =>
-                {
-                    b.Property<int>("SurveyId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("SurveyId");
-
-                    b.ToTable("Surveys");
-                });
-
             modelBuilder.Entity("Evect.Models.Tag", b =>
                 {
                     b.Property<int>("TagId")
@@ -610,6 +607,23 @@ namespace Evect.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Evect.Models.TimeToJoinToEvent", b =>
+                {
+                    b.Property<int>("TimeToJoinToEventId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("EventId");
+
+                    b.Property<long>("TelegramId");
+
+                    b.Property<DateTime>("time");
+
+                    b.HasKey("TimeToJoinToEventId");
+
+                    b.ToTable("TimeToJoinToEvents");
+                });
+
             modelBuilder.Entity("Evect.Models.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -648,6 +662,10 @@ namespace Evect.Migrations
 
                     b.Property<string>("Utility");
 
+                    b.Property<string>("apiKey");
+
+                    b.Property<DateTime>("dateOfStarting");
+
                     b.HasKey("UserId");
 
                     b.HasIndex("TelegramId");
@@ -668,7 +686,8 @@ namespace Evect.Migrations
                             IsAuthed = false,
                             LastName = "kim",
                             PreviousAction = 0,
-                            TelegramId = 12312312L
+                            TelegramId = 12312312L,
+                            dateOfStarting = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
