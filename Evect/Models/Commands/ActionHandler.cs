@@ -1405,6 +1405,9 @@ namespace Evect.Models.Commands
                             keyboard.AddRow("Редактировать профиль");
                             keyboard.AddRow("Изменить теги");
                             keyboard.AddRow("Вернуться в режим общения");
+
+                            await UserDB.ChangeUserAction(context, chatId, Actions.MyProfileMenu);
+                            
                             await client.SendTextMessageAsync(chatId, "Вы вернулись в мой профиль",
                                 replyMarkup: keyboard.Markup);
                         }
@@ -1659,8 +1662,11 @@ namespace Evect.Models.Commands
                         builder.AppendLine(
                             $"*{i})*{another.FirstName} {another.LastName} {another.CompanyAndPosition}");
                         builder.AppendLine($"_Чем полезен_: {another.Utility}");
-                        builder.AppendLine($"_Контакт_: " + (another.TelegramUserName != null ? "@" + another.TelegramUserName : "[inline mention of a user](tg://user?id={chatId})"));
-                        builder.AppendLine();
+                        if (contactsBook.IsAccepted)
+                        {
+                            builder.AppendLine($"_Контакт_: " + (another.TelegramUserName != null ? "@" + another.TelegramUserName : "[inline mention of a user](tg://user?id={chatId})"));
+                            builder.AppendLine(); 
+                        }
                         i++;
                     }
 

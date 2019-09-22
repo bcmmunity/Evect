@@ -204,7 +204,7 @@ namespace Evect.Models.Commands
         [InlineCallback("meet-")]
         public async Task OnMeet(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
         {
-            long userId = Convert.ToInt32(query.Data.Split('-')[1]);
+            long userId = Convert.ToInt64(query.Data.Split('-')[1]);
             User user = await UserDB.GetUserByChatId(context, query.From.Id);
 
             StringBuilder builder = new StringBuilder();
@@ -224,7 +224,7 @@ namespace Evect.Models.Commands
         [InlineCallback("contact-")]
         public async Task OnBook(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
         {
-            long userId = Convert.ToInt32(query.Data.Split('-')[1]);
+            long userId = Convert.ToInt64(query.Data.Split('-')[1]);
 
             User user = await UserDB.GetUserByChatId(context, query.From.Id); // kim
             InfoAboutUsers info = context.InfoAboutUsers.FirstOrDefault(N => N.EventId == user.CurrentEventId); //Liza
@@ -233,6 +233,7 @@ namespace Evect.Models.Commands
 
             StringBuilder builder = new StringBuilder();
 
+            TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
 
             List<ContactsBook> contacts = user.Contacts;
 
@@ -241,7 +242,8 @@ namespace Evect.Models.Commands
                 ContactsBook book = new ContactsBook()
                 {
                     OwnerId = user.TelegramId,
-                    AnotherUserId = toAdd.TelegramId
+                    AnotherUserId = toAdd.TelegramId,
+                    IsAccepted = false
                 };
                 user.Contacts.Add(book);
                 context.Update(user);
@@ -249,8 +251,61 @@ namespace Evect.Models.Commands
                 builder.AppendLine($"Пользователь {toAdd.FirstName} {toAdd.LastName} добавлен в записную книжку");
 
                 await client.SendTextMessageAsync(user.TelegramId, builder.ToString(), ParseMode.Markdown);
+
+                inline
+                    .AddTextRow("Да", "Нет")
+                    .AddCallbackRow($"contacts_accept-{user.TelegramId}",$"contacts_decline-{user.TelegramId}");
+
+                await client.SendTextMessageAsync(toAdd.TelegramId,
+                    $"{user.FirstName} сделал запрос на добавление контактов, потвердить?", ParseMode.Markdown, replyMarkup: inline.Markup);
+
             }
         }
+
+        [InlineCallback("contacts_accept-")]
+        public async Task OnContactsAccept(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
+        {
+            long userId = Convert.ToInt64(query.Data.Split('-')[1]);
+
+            User user = await UserDB.GetUserByChatId(context, query.From.Id);
+            User anotherUser = await UserDB.GetUserByChatId(context, userId);
+
+            ContactsBook contact = user.Contacts.FirstOrDefault(c => c.OwnerId == query.From.Id && c.AnotherUserId == userId);
+
+            if (contact != null)
+            {
+                contact.IsAccepted = true;
+
+                context.ContactsBooks.Update(contact);
+                context.SaveChanges();
+                await client.EditMessageReplyMarkupAsync(query.From.Id, query.Message.MessageId, InlineKeyboardMarkup.Empty());
+            
+                await client.SendTextMessageAsync(query.From.Id, $"Вы дали доступ к своим данным пользователю {anotherUser.FirstName}",
+                    ParseMode.Markdown);
+            
+                await client.SendTextMessageAsync(userId, $"{user.FirstName} потвердил запрос на данные",
+                    ParseMode.Markdown);
+            }
+        }
+        
+        [InlineCallback("contacts_decline-")]
+        public async Task OnContactsDecline(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
+        {
+            long userId = Convert.ToInt64(query.Data.Split('-')[1]);
+
+            User user = await UserDB.GetUserByChatId(context, query.From.Id);
+            User anotherUser = await UserDB.GetUserByChatId(context, userId);
+            
+            await client.EditMessageReplyMarkupAsync(query.From.Id, query.Message.MessageId, InlineKeyboardMarkup.Empty());
+            
+            await client.SendTextMessageAsync(query.From.Id, $"Вы отказали в доступе к контакту",
+                ParseMode.Markdown);
+            
+            await client.SendTextMessageAsync(userId, $"{user.FirstName} отменил запрос на данные",
+                ParseMode.Markdown);
+            
+        }
+
 
 
         [InlineCallback("accept-")]
@@ -372,5 +427,7 @@ namespace Evect.Models.Commands
             await client.SendTextMessageAsync(query.From.Id, builder.ToString(), parseMode: ParseMode.Markdown,
                 replyMarkup: inline.Markup);
         }
+        
+        
     }
 }
