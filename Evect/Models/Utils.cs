@@ -79,7 +79,7 @@ namespace Evect.Models
             for (int i = 0; i < size; i++)
             {
                 //Генерируем число являющееся латинским символом в юникоде
-                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                ch = Convert.ToChar(random.Next(0, 26) + 65);
                 //Конструируем строку со случайно сгенерированными символами
                 builder.Append(ch);
             }
