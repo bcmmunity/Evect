@@ -24,14 +24,18 @@ namespace Evect.Models.Commands
             var commands = Bot.Commands;
             var chatId = message.Chat.Id;
             var text = message.Text;
-
-            foreach (var pair in commands)
+            
+            try
             {
-                if (pair.Value == text)
-                {
-                    await pair.Key(context, message, client);
-                    return;
-                }
+                await commands[text](context, message, client);
+                return;
+            }
+            catch (KeyNotFoundException e)
+            {
+                Console.WriteLine("\n\n\n\n\n");
+                Console.WriteLine("no method for this text");
+                Console.WriteLine("\n\n\n\n\n");
+
             }
 
 
@@ -702,7 +706,7 @@ namespace Evect.Models.Commands
             TelegramKeyboard keyboard;
             if (Utils.IsEmailValid(text))
             {
-                if (await UserDB.CheckEmailInDB(context, text))
+                if (await UserDB.CheckEmailInDB(context, text) && text != user.Email)
                 {
                     await UserDB.ChangeUserAction(context, chatId, Actions.WaitingForValidationCode);
 

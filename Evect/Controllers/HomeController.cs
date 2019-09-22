@@ -28,9 +28,9 @@ namespace Evect.Controllers
         private CommandHandler _commandHadler;
         private ActionHandler _actionHandler;
 
-        private Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, string> _commands;
-        private Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, Actions> _actions;
-        private Dictionary<Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>, string> _callbacks;
+        private Dictionary<string, Func<ApplicationContext, Message, TelegramBotClient, Task>> _commands;
+        private Dictionary<Actions, Func<ApplicationContext, Message, TelegramBotClient, Task>> _actions;
+        private Dictionary<string, Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>> _callbacks;
 
         public HomeController(ApplicationContext db)
         {
@@ -66,12 +66,14 @@ namespace Evect.Controllers
                 {
                     foreach (var pair in _callbacks)
                     {
-                        if (update.CallbackQuery.Data.StartsWith(pair.Value))
+                        if (update.CallbackQuery.Data.StartsWith(pair.Key))
                         {
-                            await pair.Key(db, update.CallbackQuery, _client);
+                            await pair.Value(db, update.CallbackQuery, _client);
                             return Ok();
                         }
                     }
+                    
+                    
                 } else if (update.Type == UpdateType.Message)
                 {
                     var message = update.Message;
@@ -85,13 +87,17 @@ namespace Evect.Controllers
                     {
                         if (user == null)
                         {
-                            foreach (var pair in _commands)
+                            try
                             {
-                                if (text == "/start" && pair.Value == "/start")
+                                if (text == "/start")
                                 {
-                                    await pair.Key(db, message, _client);
-                                    return Ok();
+                                    await _commands[text](db, message, _client);
                                 }
+                                return Ok();
+                            }
+                            catch (KeyNotFoundException e)
+                            {
+                                Console.WriteLine("no method for this text");
                             }
 
                         }
@@ -99,35 +105,44 @@ namespace Evect.Controllers
                         {
                             if (!user.IsAuthed)
                             {
-                                foreach (var pair in _commands)
+
+                                try
                                 {
-                                    if ((text == "/start" || text == "Личный кабинет") &&
-                                        (pair.Value == text))
+                                    if (text == "/start" || text == "Личный кабинет")
                                     {
-                                        await pair.Key(db, message, _client);
-                                        return Ok();
+                                        await _commands[text](db, message, _client);
                                     }
+                                    return Ok();
                                 }
+                                catch (KeyNotFoundException e)
+                                {
+                                    Console.WriteLine("no method for this text");
+                                }
+                                
                             }
                             else
                             {
-                                foreach (var pair in _commands)
+                                try
                                 {
-                                    if ((text == "/start" || text == "/stop") &&
-                                        (pair.Value == text))
+                                    if (text == "/start" || text == "/stop")
                                     {
-                                        await pair.Key(db, message, _client);
+                                        await _commands[text](db, message, _client);
                                         return Ok();
                                     }
                                 }
-
-                                foreach (var pair in _actions)
+                                catch (KeyNotFoundException e)
                                 {
-                                    if (pair.Value == user.CurrentAction)
-                                    {
-                                        await pair.Key(db, message, _client);
-                                        return Ok();
-                                    }
+                                    Console.WriteLine("no method for this text");
+                                }
+                                
+                                try
+                                {
+                                    await _actions[user.CurrentAction](db, message, _client);
+                                    return Ok();
+                                }
+                                catch (KeyNotFoundException e)
+                                {
+                                    Console.WriteLine("no method for this action");
                                 }
                             }
                         }

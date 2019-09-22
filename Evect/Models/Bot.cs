@@ -15,13 +15,13 @@ namespace Evect.Models
         private static TelegramBotClient _client;
 
 
-        private static Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, string > _commandsList = new Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, string>();
-        private static Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, Actions> _actionList =  new Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, Actions>();
-        private static Dictionary<Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>, string> _callbackList =  new Dictionary<Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>, string>();
+        private static Dictionary<string, Func<ApplicationContext, Message, TelegramBotClient, Task>> _commandsList = new Dictionary<string, Func<ApplicationContext, Message, TelegramBotClient, Task>>();
+        private static Dictionary<Actions, Func<ApplicationContext, Message, TelegramBotClient, Task>> _actionList =  new Dictionary<Actions, Func<ApplicationContext, Message, TelegramBotClient, Task>>();
+        private static Dictionary<string, Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>> _callbackList =  new Dictionary<string, Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>>();
         
-        public static Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, string> Commands => _commandsList;
-        public static Dictionary<Func<ApplicationContext, Message, TelegramBotClient, Task>, Actions > ActionList => _actionList;
-        public static Dictionary<Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>, string > CallbackList => _callbackList;
+        public static Dictionary<string, Func<ApplicationContext, Message, TelegramBotClient, Task>> Commands => _commandsList;
+        public static Dictionary<Actions, Func<ApplicationContext, Message, TelegramBotClient, Task>> ActionList => _actionList;
+        public static Dictionary<string, Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>> CallbackList => _callbackList;
         
 
         
@@ -53,7 +53,7 @@ namespace Evect.Models
                     (Func<ApplicationContext, Message, TelegramBotClient, Task>) Delegate.CreateDelegate(typeof(Func<ApplicationContext, Message, TelegramBotClient, Task>), commandHandler, methodInfo);
 
                 string c = methodInfo.GetCustomAttribute<TelegramCommand>().StringCommand;
-                _commandsList.Add(a, c);
+                _commandsList.Add(c, a);
             }
             
             var actionMethodInfo = assembly.GetTypes()
@@ -68,7 +68,7 @@ namespace Evect.Models
                                     (Func<ApplicationContext, Message, TelegramBotClient, Task>) Delegate.CreateDelegate(typeof(Func<ApplicationContext, Message, TelegramBotClient, Task>),actionHandler ,methodInfo);
                 
                 Actions act = methodInfo.GetCustomAttribute<UserAction>().Action;
-                _actionList.Add(a, act);
+                _actionList.Add(act, a);
             }
             
             var callbackMethodInfo = assembly.GetTypes()
@@ -82,7 +82,7 @@ namespace Evect.Models
                     (Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>) Delegate.CreateDelegate(typeof(Func<ApplicationContext, CallbackQuery, TelegramBotClient, Task>),inlineHandler ,methodInfo);
                 
                 string s = methodInfo.GetCustomAttribute<InlineCallback>().Callbacks;
-                _callbackList.Add(a, s);
+                _callbackList.Add(s, a);
             }
             
             
