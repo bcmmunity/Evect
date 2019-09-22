@@ -75,6 +75,11 @@ namespace Evect.Models.Commands
                         UserEvent userEvent = new UserEvent() {UserId = user.UserId, EventId = ev.EventId};
                         user.UserEvents.Add(userEvent);
                         user.CurrentEventId = ev.EventId;
+                        TimeToJoinToEvent time = new TimeToJoinToEvent();
+                        time.TelegramId = user.TelegramId;
+                        time.EventId = ev.EventId;
+                        time.Time = DateTime.Now;
+                        context.TimeToJoinToEvents.Add(time);
                         //почему не работает,когда это раскоменчено?
                         context.Users.Update(user);
                         context.SaveChanges();

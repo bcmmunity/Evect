@@ -10,6 +10,6 @@ namespace Evect.Models
         public int TimeToJoinToEventId { get; set; }
         public long TelegramId { get; set; }
         public int EventId { get; set; }
-        public DateTime time { get; set; }
+        public DateTime Time { get; set; }
     }
 }

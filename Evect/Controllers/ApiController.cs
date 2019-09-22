@@ -14,6 +14,8 @@ using System.Net.Mail;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using Microsoft.AspNetCore.Mvc.Formatters;
+
+using Excel = Microsoft.Office.Interop.Excel;
 using Microsoft.CodeAnalysis;
 namespace Evect.Controllers
 {
@@ -119,7 +121,7 @@ namespace Evect.Controllers
         [Route("getEventId")]
         //[Consumes("application/json")]
         [HttpPost]
-        public async Task<JsonResult> getEventId(string orgCode, string orgEmail)
+        public async Task<JsonResult> GetEventId(string orgCode, string orgEmail)
         {
             Event eventt = _context.Events.FirstOrDefault(n => n.AdminCode == orgCode);
             string email = "";
@@ -209,6 +211,9 @@ namespace Evect.Controllers
             }
             else
             {
+                
+
+
                 EventDB eventDb = new EventDB();
                 List<int> idOfQuestions = eventDb.GetIdOfQuestions(_context, eventId);
                 Dictionary<string, Surveys> necessaryInfo = new Dictionary<string, Surveys>();
@@ -221,10 +226,20 @@ namespace Evect.Controllers
                     survey.countOfRespondents = countOfRespondents;
                     survey.type = type;
                     necessaryInfo.Add(question.Questions, survey);
+                    Excel.Application ex = new Excel.Application();
+                    ex.Visible = true;//отобразить excel
+                    ex.SheetsInNewWorkbook = 1;//количество листов в рабочей книге
+                    /*Excel.Workbook workbook = ex.Workbooks.Add(Type.Missing);//добавляем рабочую книгу
+                    ex.DisplayAlerts = false;
+                    Excel.Worksheet sheet = (Excel.Worksheet)ex.Worksheets.get_Item(1);//получаем первый лист документа
+                    sheet.Name = "Результаты опроса " + question.Questions;
+                    */
                 }
                 var obj = new { necessaryInfo };
                 return new JsonResult(obj);
             }
+            
+            
             ///+сделать с возврат экселевских файлов
         }
         [Route("getTags")]
@@ -246,12 +261,22 @@ namespace Evect.Controllers
                 return new JsonResult(obj);
             }
         }
-       /* [Route("getUserActivity")]
+        [Route("getUserActivity")]
         [HttpPost]
         public async Task<JsonResult> getUserActivity(int eventId,string apiKey)
         {
-            
-        }*/
+            if (_context.Users.FirstOrDefault(n => n.apiKey == apiKey) == null)
+            {
+                var obj = "Вы не авторизовались";
+                return new JsonResult(new { error = obj });
+            }
+            else
+            {
+                EventDB eventDb = new EventDB();
+                List<DateTime> DataTimeOfRegistrations = eventDb.TimeOfRegistrations(_context,eventId);
+                return new JsonResult(DataTimeOfRegistrations);
+            }
+        }
         // DELETE: api/Api/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<InfoAboutUsers>> DeleteInfoAboutUsers(int id)

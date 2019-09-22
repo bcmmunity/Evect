@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Evect.Models.DB
 {
@@ -272,6 +273,19 @@ namespace Evect.Models.DB
                 }
             }
             return tagsForReturning;
+        }
+        public List<DateTime> TimeOfRegistrations(ApplicationContext context,int eventId)
+        {
+            List<DateTime> timeOfRegistration = new List<DateTime>();
+            List<TimeToJoinToEvent> allTime = context.TimeToJoinToEvents.ToList();
+            foreach(var time in allTime)
+            {
+                if(time.EventId==eventId)
+                {
+                    timeOfRegistration.Add(time.Time);
+                }
+            }
+            return timeOfRegistration;
         }
     }
 }
