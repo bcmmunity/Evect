@@ -908,7 +908,7 @@ namespace Evect.Models.Commands
                         string linkType = ev.TelegraphLink.Contains("telegra.ph") ? "Telegraph" : "Teletype";
                         builder.Clear();
 
-                        builder.AppendLine($"<b>Название: </b>{ev.Name}");
+                        builder.AppendLine($"*Название: *{ev.Name}");
                         builder.AppendLine(
                             $"Для вашего удобства мы подготовили статью в {linkType}: {ev.TelegraphLink}");
 
