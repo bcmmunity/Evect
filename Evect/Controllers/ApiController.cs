@@ -124,9 +124,7 @@ namespace Evect.Controllers
         public async Task<JsonResult> GetEventId(string orgCode, string orgEmail)
         {
             Event eventt = _context.Events.FirstOrDefault(n => n.AdminCode == orgCode);
-            string email = "";
-            email = orgEmail.Replace(@"\","");
-            User user = _context.Users.FirstOrDefault(n => n.Email == email);
+            User user = _context.Users.FirstOrDefault(n => n.Email.Replace(@"\","") == orgEmail);
             string caution = "";
             if (eventt != null)
             {
@@ -136,11 +134,7 @@ namespace Evect.Controllers
             {
                 caution = "Вы неправильно ввел код. Введите код, пожалуйста, еще раз.";
             }
-            if (user != null)
-            {
-                user = _context.Users.FirstOrDefault(n => n.Email == email);
-            }
-            else
+            if (user == null)
             {
                 if (caution == "")
                 {
@@ -193,6 +187,8 @@ namespace Evect.Controllers
         {
             public int countOfRespondents { get; set; }
             public string type { get; set; }
+            
+            public string Question { get; set; }
            /* public Surveys(int CountOfRespondents,string Type)
             {
                 countOfRespondents = CountOfRespondents;
@@ -211,12 +207,10 @@ namespace Evect.Controllers
             }
             else
             {
-                
-
 
                 EventDB eventDb = new EventDB();
                 List<int> idOfQuestions = eventDb.GetIdOfQuestions(_context, eventId);
-                Dictionary<string, Surveys> necessaryInfo = new Dictionary<string, Surveys>();
+                List<Surveys> sv = new List<Surveys>();
                 foreach (var id in idOfQuestions)
                 {
                     Question question = _context.Questions.FirstOrDefault(n => n.QuestionId == id);
@@ -225,17 +219,18 @@ namespace Evect.Controllers
                     Surveys survey = new Surveys();
                     survey.countOfRespondents = countOfRespondents;
                     survey.type = type;
-                    necessaryInfo.Add(question.Questions, survey);
-                    Excel.Application ex = new Excel.Application();
-                    ex.Visible = true;//отобразить excel
-                    ex.SheetsInNewWorkbook = 1;//количество листов в рабочей книге
+                    survey.Question = question.Questions;
+                    sv.Add(survey);
+//                    Excel.Application ex = new Excel.Application();
+//                    ex.Visible = true;//отобразить excel
+//                    ex.SheetsInNewWorkbook = 1;//количество листов в рабочей книге
                     /*Excel.Workbook workbook = ex.Workbooks.Add(Type.Missing);//добавляем рабочую книгу
                     ex.DisplayAlerts = false;
                     Excel.Worksheet sheet = (Excel.Worksheet)ex.Worksheets.get_Item(1);//получаем первый лист документа
                     sheet.Name = "Результаты опроса " + question.Questions;
                     */
                 }
-                var obj = new { necessaryInfo };
+                var obj = new { sv };
                 return new JsonResult(obj);
             }
             

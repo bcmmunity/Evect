@@ -178,7 +178,9 @@ namespace Evect.Models.DB
                     }
                 case "Среднее число контактов":
                     {
-                        return (info.AmountOfRequestsOfContacts / (await GetAllParticipantsOfEvent(info.EventId)).Count).ToString();
+                        var cnt = (await GetAllParticipantsOfEvent(info.EventId)).Count;
+                        cnt = cnt == 0 ? 1 : cnt;
+                        return (info.AmountOfRequestsOfContacts / cnt).ToString();
                     }
                
             }

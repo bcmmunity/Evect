@@ -1,4 +1,4 @@
-//#define LOCAL
+#define LOCAL
 namespace Evect.Models
 {
     public static class AppSettings

@@ -54,8 +54,7 @@ namespace Evect.Models.Commands
             await client.EditMessageTextAsync(chatID, query.Message.MessageId,
                 "Спасибо за ваш ответ!\nВы можете продолжить ваши действия");
             User user = context.Users.FirstOrDefault(n => n.TelegramId == chatID);
-            Actions action = user.PreviousAction;
-            await UserDB.ChangeUserAction(context, chatID, action);
+            await UserDB.ChangeUserAction(context, chatID, Actions.AdminMode);
         }
 
         [InlineCallback("tag-")]
