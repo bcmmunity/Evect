@@ -250,7 +250,6 @@ namespace Evect.Models.Commands
                 user.Contacts.Add(book);
                 context.Update(user);
                 context.SaveChanges();
-                builder.AppendLine($"Пользователь {toAdd.FirstName} {toAdd.LastName} добавлен в записную книжку");
 
                 await client.SendTextMessageAsync(user.TelegramId, builder.ToString(), ParseMode.Markdown);
 
