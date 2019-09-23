@@ -229,6 +229,8 @@ namespace Evect.Models.Commands
             User user = await UserDB.GetUserByChatId(context, query.From.Id); // kim
             InfoAboutUsers info = context.InfoAboutUsers.FirstOrDefault(N => N.EventId == user.CurrentEventId); //Liza
             info.AmountOfRequestsOfContacts++;
+            context.Update(info);
+            context.SaveChanges();
             User toAdd = await UserDB.GetUserByChatId(context, userId); // roma
 
             StringBuilder builder = new StringBuilder();
@@ -315,6 +317,8 @@ namespace Evect.Models.Commands
             User user = await UserDB.GetUserByChatId(context, query.From.Id); // ki
             InfoAboutUsers info = context.InfoAboutUsers.FirstOrDefault(n => n.EventId == user.CurrentEventId);
             info.AmountCompletedMeetings++;
+            context.Update(info);
+            context.SaveChanges();
             User from = await UserDB.GetUserByChatId(context, userId);
 
             await client.DeleteMessageAsync(query.From.Id, query.Message.MessageId);

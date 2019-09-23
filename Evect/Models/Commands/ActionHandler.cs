@@ -80,7 +80,6 @@ namespace Evect.Models.Commands
                         time.EventId = ev.EventId;
                         time.Time = DateTime.Now;
                         context.TimeToJoinToEvents.Add(time);
-                        //почему не работает,когда это раскоменчено?
                         context.Users.Update(user);
                         context.SaveChanges();
                     }
@@ -106,7 +105,7 @@ namespace Evect.Models.Commands
                             TimeToJoinToEvent time = new TimeToJoinToEvent();
                             time.TelegramId = chatId;
                             time.EventId = ev.EventId;
-                            time.time = DateTime.Now;
+                            time.Time = DateTime.Now;
                             context.TimeToJoinToEvents.Add(time);
                            
                             UserEvent userEvent = new UserEvent() {UserId = user.UserId, EventId = ev.EventId};
@@ -168,6 +167,11 @@ namespace Evect.Models.Commands
 
                         user.UserEvents.Add(userEvent);
                         user.CurrentEventId = ev.EventId;
+                        TimeToJoinToEvent time = new TimeToJoinToEvent();
+                        time.TelegramId = chatId;
+                        time.EventId = ev.EventId;
+                        time.Time = DateTime.Now;
+                        context.TimeToJoinToEvents.Add(time);
                         context.Users.Update(user);
                         context.SaveChanges();
 

@@ -35,6 +35,8 @@ namespace Evect
             });
              services.AddDbContext<ApplicationContext>(options => 
                 options.UseSqlServer(AppSettings.DatabaseConnectionString));
+
+             services.AddCors();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -55,7 +57,12 @@ namespace Evect
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyOrigin();
+                builder.AllowAnyHeader();
+                builder.AllowAnyMethod();
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
