@@ -986,11 +986,12 @@ namespace Evect.Models.Commands
                     break;
 
                 case "Режим нетворкинга":
-
+                        
+                    eventDb.AddInfoAboutUsers(chatId, "Количество активаций режима общения");
+                    
                     if (user.CompanyAndPosition == null) // TODO: Проверка на то, зарегистрирован ли пользователь
                     {
                         //ОТ ЛИЗЫ
-                        eventDb.AddInfoAboutUsers(chatId, "Количество активаций режима общения");
                         await UserDB.ChangeUserAction(context, chatId, Actions.FirstQuestion);
                         //КОНЕЦ ОТ ЛИЗЫ
 
@@ -1018,6 +1019,7 @@ namespace Evect.Models.Commands
                         await client.SendTextMessageAsync(chatId, "Вы вошли в режим нетворкинга",
                             replyMarkup: keyboard.Markup);
                     }
+                    
 
                     break;
 
