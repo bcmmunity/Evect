@@ -1,4 +1,4 @@
-#define LOCAL
+//#define LOCAL
 namespace Evect.Models
 {
     public static class AppSettings
@@ -19,7 +19,7 @@ namespace Evect.Models
         #region Kim
 
 #if LOCAL
-        public static string Url { get; set; } = "https://a465fa98.ngrok.io:443/{0}"; // Перед ":" указать URL бота
+        public static string Url { get; set; } = "https://24546d4e.ngrok.io:443/{0}"; // Перед ":" указать URL бота
 
 #else
 
@@ -33,8 +33,9 @@ namespace Evect.Models
 #if LOCAL 
           public static string DatabaseConnectionString { get; set; } =
              "Server=localhost\\SQLEXPRESS;Database=evect9;Trusted_Connection=True;";
-                  public static string Key { get; set; } = "956625902:AAHF9mJj8SGo3_5g51kQZPUe3OX_cdAMM2o";
-//                  public static string Key { get; set; } = "822563453:AAG6JbtEMw9fo38ZIUceHjd480SghEBKC3c";
+        
+//                  public static string Key { get; set; } = "956625902:AAHF9mJj8SGo3_5g51kQZPUe3OX_cdAMM2o";
+                  public static string Key { get; set; } = "822563453:AAG6JbtEMw9fo38ZIUceHjd480SghEBKC3c";
 
 #else
           public static string DatabaseConnectionString { get; set; } = 

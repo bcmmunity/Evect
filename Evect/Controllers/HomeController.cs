@@ -82,9 +82,7 @@ namespace Evect.Controllers
 
                     User user = await UserDB.GetUserByChatId(db, chatId); //получаем айди юзера и его самого из бд
                    
-
-                    try
-                    {
+                    
                         if (user == null)
                         {
                             try
@@ -146,11 +144,7 @@ namespace Evect.Controllers
                                 }
                             }
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        await _client.SendTextMessageAsync(user.TelegramId, $"{e.Source} {e.Message}");
-                    }
+
                     
                 }
             }

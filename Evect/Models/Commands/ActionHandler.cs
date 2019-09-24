@@ -228,7 +228,7 @@ namespace Evect.Models.Commands
             {
                 await client.SendTextMessageAsync(
                     chatId,
-                    $"Неправильный код(",
+                    $"Неправильный код, введите еще раз",
                     ParseMode.Markdown);
             }
         }
@@ -914,12 +914,17 @@ namespace Evect.Models.Commands
                     if (isReg)
                     {
                         Event ev = context.Events.Find(user.CurrentEventId);
-                        string linkType = ev.TelegraphLink.Contains("telegra.ph") ? "Telegraph" : "Teletype";
-                        builder.Clear();
-
                         builder.AppendLine($"*Название: *{ev.Name}");
-                        builder.AppendLine(
-                            $"Для вашего удобства мы подготовили статью в {linkType}: {ev.TelegraphLink}");
+
+                        if (ev.TelegraphLink != null)
+                        {
+                            string linkType = ev.TelegraphLink.Contains("telegra.ph") ? "Telegraph" : "Teletype";
+                            builder.Clear();
+
+                            builder.AppendLine(
+                                $"Для вашего удобства мы подготовили статью в {linkType}: {ev.TelegraphLink}");
+                        }
+                        
 
                         await client.SendTextMessageAsync(
                             chatId,
@@ -963,9 +968,9 @@ namespace Evect.Models.Commands
 
                     var forKeyboard = Utils.SplitList(1, temp);
 
-                    string cont = events.Count > 1 ? "2" : "|";
+                    string cont = events.Count > 1 ? "2" : "⏸";
 
-                    forKeyboard.Add(new List<string> {"|", "X", $"{cont}"});
+                    forKeyboard.Add(new List<string> {"⏸", "X", $"{cont}"});
 
                     keyboard = new TelegramKeyboard();
 
@@ -1032,6 +1037,15 @@ namespace Evect.Models.Commands
                     var tags = user.SearchingUserTags.Select(u =>
                         context.SearchingTags.FirstOrDefault(t => t.SearchingTagId == u.TagId)?.Name).ToList();
 
+                    builder.AppendLine("🔒 Здесь хранятся ваши контакты");
+                    builder.AppendLine();
+                    builder.AppendLine("Показаны *мини-анкеты* по 4 человека, по кнопкам ⬅️➡️ вы можете перемещаться между страницами");
+                    builder.AppendLine();
+                    builder.AppendLine("При нажатии на кнопки *(1, 2, 3, 4)* вам откроется полная анкета участника");
+
+                    await client.SendTextMessageAsync(chatId, builder.ToString(), ParseMode.Markdown);
+                    
+                    builder.Clear();
                     builder.AppendLine("_Ваши теги_");
                     builder.AppendLine($"`{string.Join(", ", tags)}`");
                     builder.AppendLine();
@@ -1100,6 +1114,7 @@ namespace Evect.Models.Commands
                 await client.SendTextMessageAsync(chatId, "Что нужно?", ParseMode.Markdown,
                     replyMarkup: keyboard.Markup);
                 await UserDB.ChangeUserAction(context, chatId, Actions.Profile);
+                return;
             }
 
             if (int.TryParse(text, out int n))
@@ -1119,8 +1134,8 @@ namespace Evect.Models.Commands
                     }
 
 
-                    string left = page - 1 > 0 ? $"{page - 1}" : "|";
-                    string right = page + 1 < events.Count ? $"{page + 1}" : "|";
+                    string left = page - 1 > 0 ? $"{page - 1}" : "⏸";
+                    string right = page + 1 <= events.Count ? $"{page + 1}" : "⏸";
 
 
                     var forKeyboard = Utils.SplitList(1, events[page - 1]);
@@ -1653,6 +1668,16 @@ namespace Evect.Models.Commands
                     var tags = user.SearchingUserTags.Select(u =>
                         context.SearchingTags.FirstOrDefault(t => t.SearchingTagId == u.TagId)?.Name).ToList();
 
+                    builder.AppendLine("🔒 Здесь хранятся ваши контакты");
+                    builder.AppendLine();
+                    builder.AppendLine("Показаны *мини-анкеты* по 4 человека, по кнопкам ⬅️➡️ вы можете перемещаться между страницами");
+                    builder.AppendLine();
+                    builder.AppendLine("При нажатии на кнопки *(1, 2, 3, 4)* вам откроется полная анкета участника");
+
+                    await client.SendTextMessageAsync(chatId, builder.ToString(), ParseMode.Markdown);
+                    
+                    builder.Clear();
+                    
                     builder.AppendLine("_Ваши теги_");
                     builder.AppendLine($"`{string.Join(", ", tags)}`");
                     builder.AppendLine();
@@ -1680,7 +1705,7 @@ namespace Evect.Models.Commands
                     if (user.Contacts.Count > 4)
                     {
                         inline
-                            .AddTextRow("Вперед")
+                            .AddTextRow("➡️")
                             .AddCallbackRow("profpage-2");
                     }
 
@@ -1704,6 +1729,16 @@ namespace Evect.Models.Commands
                             user.SearchingUserTags.FirstOrDefault(t => t.TagId == ut.TagId) != null) &&
                         e.CurrentEventId == user.CurrentEventId);
 
+                    if (us == null)
+                    {
+                        us = context.Users
+                            .Include(u => u.UserTags)
+                            .ThenInclude(ut => ut.Tag)
+                            .FirstOrDefault(e =>
+                                e.UserTags.All(ut =>
+                                    user.SearchingUserTags.FirstOrDefault(t => t.TagId == ut.TagId) == null) &&
+                                e.CurrentEventId == user.CurrentEventId);
+                    }
                     
                     builder.AppendLine($@"{us.FirstName},  {us.CompanyAndPosition}");
                     builder.AppendLine();
@@ -1726,7 +1761,7 @@ namespace Evect.Models.Commands
 
                     inline = new TelegramInlineKeyboard();
                     inline
-                        .AddTextRow("Назад", ch, "Встреча", "Вперед")
+                        .AddTextRow("⬅️", ch, "Встреча", "➡️")
                         .AddCallbackRow($"change-0", $"contact-{us.TelegramId}", $"meet-{us.TelegramId}", $"change-2");
 
                     await client.SendTextMessageAsync(chatId, builder.ToString(), ParseMode.Markdown,
@@ -1823,6 +1858,7 @@ namespace Evect.Models.Commands
                     break;
 
                 case "Вернуться в мой профиль":
+                    keyboard.Clear();
                     keyboard.AddRow("Мой профиль");
                     keyboard.AddRow("Записная книжка");
                     keyboard.AddRow("Общение");

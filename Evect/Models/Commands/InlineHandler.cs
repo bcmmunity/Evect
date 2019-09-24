@@ -147,6 +147,9 @@ namespace Evect.Models.Commands
         public async Task OnChange(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
         {
             int changeId = Convert.ToInt32(query.Data.Split('-')[1]);
+            int left = changeId;
+            
+            
             User user = await UserDB.GetUserByChatId(context, query.From.Id);
             StringBuilder builder = new StringBuilder();
             TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
@@ -167,7 +170,14 @@ namespace Evect.Models.Commands
 
             usersWithTags.AddRange(usersWithoutTags);
 
-
+    
+            
+            if (changeId == 0)
+            {
+                changeId = usersWithTags.Count;
+                left = changeId;
+            }        
+            
             if (changeId > 0 && changeId <= usersWithTags.Count)
             {
                 User us = usersWithTags[changeId - 1];
@@ -187,10 +197,29 @@ namespace Evect.Models.Commands
                 {
                     ch = "В книжку";
                 }
+                
+                if (changeId + 1 > usersWithTags.Count)
+                {
+                    changeId = 0;
+                    left = 2;
+                }
+                
+                if (changeId - 1 < 0)
+                {
+                    left = 2;
+                }
 
+                
+                
+
+                
+                
+                
+                
+    
                 inline
-                    .AddTextRow("Назад", ch, "Встреча", "Вперед")
-                    .AddCallbackRow($"change-{changeId - 1}", $"contact-{us.TelegramId}", $"meet-{us.TelegramId}",
+                    .AddTextRow("⬅️", ch, "Встреча", "➡️")
+                    .AddCallbackRow($"change-{left - 1}", $"contact-{us.TelegramId}", $"meet-{us.TelegramId}",
                         $"change-{changeId + 1}");
 
 
@@ -405,20 +434,20 @@ namespace Evect.Models.Commands
                 if (page != 1)
                 {
                     inline
-                        .AddTextRow("Назад", "Вперед")
+                        .AddTextRow("⬅️", "➡️")
                         .AddCallbackRow($"profpage-{page - 1}", $"profpage-{page + 1}");
                 }
                 else
                 {
                     inline
-                        .AddTextRow("Вперед")
+                        .AddTextRow("➡️")
                         .AddCallbackRow($"profpage-{page + 1}");
                 }
             }
             else
             {
                 inline
-                    .AddTextRow("Назад")
+                    .AddTextRow("⬅️")
                     .AddCallbackRow($"profpage-{page - 1}");
             }
 
