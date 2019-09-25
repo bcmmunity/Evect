@@ -54,8 +54,7 @@ namespace Evect.Models.Commands
             await client.EditMessageTextAsync(chatID, query.Message.MessageId,
                 "Спасибо за ваш ответ!\nВы можете продолжить ваши действия");
             User user = context.Users.FirstOrDefault(n => n.TelegramId == chatID);
-            Actions action = user.PreviousAction;
-            await UserDB.ChangeUserAction(context, chatID, action);
+            await UserDB.ChangeUserAction(context, chatID, Actions.AdminMode);
         }
 
         [InlineCallback("tag-")]
@@ -148,6 +147,9 @@ namespace Evect.Models.Commands
         public async Task OnChange(ApplicationContext context, CallbackQuery query, TelegramBotClient client)
         {
             int changeId = Convert.ToInt32(query.Data.Split('-')[1]);
+            int left = changeId;
+            
+            
             User user = await UserDB.GetUserByChatId(context, query.From.Id);
             StringBuilder builder = new StringBuilder();
             TelegramInlineKeyboard inline = new TelegramInlineKeyboard();
@@ -168,7 +170,14 @@ namespace Evect.Models.Commands
 
             usersWithTags.AddRange(usersWithoutTags);
 
-
+    
+            
+            if (changeId == 0)
+            {
+                changeId = usersWithTags.Count;
+                left = changeId;
+            }        
+            
             if (changeId > 0 && changeId <= usersWithTags.Count)
             {
                 User us = usersWithTags[changeId - 1];
@@ -188,10 +197,29 @@ namespace Evect.Models.Commands
                 {
                     ch = "В книжку";
                 }
+                
+                if (changeId + 1 > usersWithTags.Count)
+                {
+                    changeId = 0;
+                    left = 2;
+                }
+                
+                if (changeId - 1 < 0)
+                {
+                    left = 2;
+                }
 
+                
+                
+
+                
+                
+                
+                
+    
                 inline
-                    .AddTextRow("Назад", ch, "Встреча", "Вперед")
-                    .AddCallbackRow($"change-{changeId - 1}", $"contact-{us.TelegramId}", $"meet-{us.TelegramId}",
+                    .AddTextRow("⬅️", ch, "Встреча", "➡️")
+                    .AddCallbackRow($"change-{left - 1}", $"contact-{us.TelegramId}", $"meet-{us.TelegramId}",
                         $"change-{changeId + 1}");
 
 
@@ -229,6 +257,8 @@ namespace Evect.Models.Commands
             User user = await UserDB.GetUserByChatId(context, query.From.Id); // kim
             InfoAboutUsers info = context.InfoAboutUsers.FirstOrDefault(N => N.EventId == user.CurrentEventId); //Liza
             info.AmountOfRequestsOfContacts++;
+            context.Update(info);
+            context.SaveChanges();
             User toAdd = await UserDB.GetUserByChatId(context, userId); // roma
 
             StringBuilder builder = new StringBuilder();
@@ -248,7 +278,6 @@ namespace Evect.Models.Commands
                 user.Contacts.Add(book);
                 context.Update(user);
                 context.SaveChanges();
-                builder.AppendLine($"Пользователь {toAdd.FirstName} {toAdd.LastName} добавлен в записную книжку");
 
                 await client.SendTextMessageAsync(user.TelegramId, builder.ToString(), ParseMode.Markdown);
 
@@ -315,14 +344,16 @@ namespace Evect.Models.Commands
             User user = await UserDB.GetUserByChatId(context, query.From.Id); // ki
             InfoAboutUsers info = context.InfoAboutUsers.FirstOrDefault(n => n.EventId == user.CurrentEventId);
             info.AmountCompletedMeetings++;
+            context.Update(info);
+            context.SaveChanges();
             User from = await UserDB.GetUserByChatId(context, userId);
 
             await client.DeleteMessageAsync(query.From.Id, query.Message.MessageId);
 
             await client.SendTextMessageAsync(user.TelegramId,
-                $"Встреча с {from.FirstName} {from.LastName} согласована", ParseMode.Markdown);
+                $"Встреча с [{from.FirstName} {from.LastName}](tg://user?id={from.TelegramId}) согласована 👐, напишите ему для уточнения времени и места", ParseMode.Markdown);
             await client.SendTextMessageAsync(from.TelegramId,
-                $"Встреча с {user.FirstName} {user.LastName} согласована", ParseMode.Markdown);
+                $"Встреча с [{user.FirstName} {user.LastName}](tg://user?id={user.TelegramId}) согласована 👐, напишите ему для уточнения времени и места", ParseMode.Markdown);
         }
 
         [InlineCallback("decline-")]
@@ -403,20 +434,20 @@ namespace Evect.Models.Commands
                 if (page != 1)
                 {
                     inline
-                        .AddTextRow("Назад", "Вперед")
+                        .AddTextRow("⬅️", "➡️")
                         .AddCallbackRow($"profpage-{page - 1}", $"profpage-{page + 1}");
                 }
                 else
                 {
                     inline
-                        .AddTextRow("Вперед")
+                        .AddTextRow("➡️")
                         .AddCallbackRow($"profpage-{page + 1}");
                 }
             }
             else
             {
                 inline
-                    .AddTextRow("Назад")
+                    .AddTextRow("⬅️")
                     .AddCallbackRow($"profpage-{page - 1}");
             }
 

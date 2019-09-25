@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Evect.Models;
 using Evect.Models.DB;
@@ -20,6 +22,7 @@ namespace Evect
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+//            _keepAliveThread.Start();
         }
 
         public IConfiguration Configuration { get; }
@@ -33,13 +36,18 @@ namespace Evect
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            services.AddHostedService<KeepAlivedHostedService>();
              services.AddDbContext<ApplicationContext>(options => 
                 options.UseSqlServer(AppSettings.DatabaseConnectionString));
+
+             services.AddCors();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
-
+        
+        
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime)
         {
             if (env.IsDevelopment())
             {
@@ -55,7 +63,12 @@ namespace Evect
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyOrigin();
+                builder.AllowAnyHeader();
+                builder.AllowAnyMethod();
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

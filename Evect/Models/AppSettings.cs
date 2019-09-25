@@ -6,20 +6,20 @@ namespace Evect.Models
          
         
         #region Liza 
-         public static string Url { get; set; } = "https://eb92e4a7.ngrok.io/{0}";
+         public static string Url { get; set; } = "https://66926d21.ngrok.io/{0}";
          public static string Name { get; set; } = "evect_bot";
          //  public static string Name { get; set; } = "evect_bot";
          public static string Key { get; set; } = "913092744:AAGfI54AotPc_7P4l7abF-ZAuwji0b1Nfu0";
          public static string DatabaseConnectionString { get; set; } = "Server=(localdb)\\MSSQLLocalDB;Database=eventbot4;Trusted_Connection=True;"
          ;
          //public static string DatabaseConnectionString { get; set; } = "Server=localhost;Database=u0641156_bot;User Id=u0641156_bot;Password=ReportBot123!";//Лиза
-         #endregion 
+         #endregion */
     
         
-       /* #region Kim
+        #region Kim
 
 #if LOCAL
-        public static string Url { get; set; } = "https://353615b5.ngrok.io:443/{0}"; // Перед ":" указать URL бота
+        public static string Url { get; set; } = "https://f28b54d9.ngrok.io:443/{0}"; // Перед ":" указать URL бота
 
 #else
 
@@ -32,9 +32,10 @@ namespace Evect.Models
 
 #if LOCAL 
           public static string DatabaseConnectionString { get; set; } =
-             "Server=localhost\\SQLEXPRESS;Database=evect5;Trusted_Connection=True;";
-                  public static string Key { get; set; } = "956625902:AAHF9mJj8SGo3_5g51kQZPUe3OX_cdAMM2o";
-//                  public static string Key { get; set; } = "822563453:AAG6JbtEMw9fo38ZIUceHjd480SghEBKC3c";
+             "Server=localhost\\SQLEXPRESS;Database=evect9;Trusted_Connection=True;";
+        
+//                  public static string Key { get; set; } = "956625902:AAHF9mJj8SGo3_5g51kQZPUe3OX_cdAMM2o";
+                  public static string Key { get; set; } = "822563453:AAG6JbtEMw9fo38ZIUceHjd480SghEBKC3c";
 
 #else
           public static string DatabaseConnectionString { get; set; } = 
@@ -43,7 +44,7 @@ namespace Evect.Models
 
 
 #endif
-        #endregion */
+        #endregion 
 
     }
 }

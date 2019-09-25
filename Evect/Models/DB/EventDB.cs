@@ -179,7 +179,9 @@ namespace Evect.Models.DB
                     }
                 case "Среднее число контактов":
                     {
-                        return info.AverageAmountOfContact.ToString();
+                        var cnt = (await GetAllParticipantsOfEvent(info.EventId)).Count;
+                        cnt = cnt == 0 ? 1 : cnt;
+                        return (info.AmountOfRequestsOfContacts / cnt).ToString();
                     }
                
             }
@@ -194,7 +196,7 @@ namespace Evect.Models.DB
             if (info != null)
             {
                 switch (type)
-                {   case "Количество использования режим общения":
+                {   case "Количество активаций режима общения":
                     {
                         info.AmountOfActivationsOfNetworking++;
                     }
@@ -210,13 +212,16 @@ namespace Evect.Models.DB
                         }
                         break;
                     case "Среднее число контактов":
-                        {
-                        
-                        }
+                    {
+                        info.AverageAmountOfContact = info.AmountOfRequestsOfContacts /
+                                                      (await GetAllParticipantsOfEvent(info.EventId)).Count;
+                    }
                         break;
                  
                 }
             }
+            Context.Update(info);
+            Context.SaveChanges();
             
         }
         public List<int> GetIdOfQuestions(ApplicationContext context,int eventId)

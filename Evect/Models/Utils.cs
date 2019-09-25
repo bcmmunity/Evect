@@ -160,10 +160,10 @@ namespace Evect.Models
                     break;
                 case Actions.Profile:
                     {
-                        keyboard.AddRow("О мероприятии", "Присоединиться к мероприятию");
+                        keyboard.AddRow("О мероприятии");
                         keyboard.AddRow("Режим нетворкинга");
                         keyboard.AddRow("Записная книжка");
-                        keyboard.AddRow("Все мероприятия");
+                        keyboard.AddRow("Мероприятия");
                     }
                     break;
                 case Actions.GetInformationAboutTheEvent:

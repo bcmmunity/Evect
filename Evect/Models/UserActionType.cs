@@ -52,9 +52,11 @@ namespace Evect.Models
         SurveyWithMarks,
         QuestionForSurveyWithMessage,
         QuestionForSurveyWithMarks,
-        AnswerToSurvey
+        AnswerToSurvey,
 
         #endregion
+        
+        EventsAction
 
     }
 
