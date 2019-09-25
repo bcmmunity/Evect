@@ -106,7 +106,7 @@ namespace Evect.Models.Commands
                             TimeToJoinToEvent time = new TimeToJoinToEvent();
                             time.TelegramId = chatId;
                             time.EventId = ev.EventId;
-                            time.time = DateTime.Now;
+                            time.Time = DateTime.Now;
                             context.TimeToJoinToEvents.Add(time);
                            
                             UserEvent userEvent = new UserEvent() {UserId = user.UserId, EventId = ev.EventId};

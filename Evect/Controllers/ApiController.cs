@@ -169,6 +169,12 @@ namespace Evect.Controllers
              }
             else return new JsonResult(caution);
             }
+        public class ResultsOfSurvey
+        {
+            public string Answer { get; set; }
+            public List<string> Tags { get; set; }
+            public DateTime Time { get; set; }
+        }
         [Route("getInfoAboutUsers")]
         [HttpPost]
         public async Task<JsonResult> getInfoAboutUsers(int eventId,string apiKey)
@@ -193,6 +199,7 @@ namespace Evect.Controllers
         {
             public int countOfRespondents { get; set; }
             public string type { get; set; }
+            public string excelDirectory { get; set; }
            /* public Surveys(int CountOfRespondents,string Type)
             {
                 countOfRespondents = CountOfRespondents;
@@ -211,9 +218,6 @@ namespace Evect.Controllers
             }
             else
             {
-                
-
-
                 EventDB eventDb = new EventDB();
                 List<int> idOfQuestions = eventDb.GetIdOfQuestions(_context, eventId);
                 Dictionary<string, Surveys> necessaryInfo = new Dictionary<string, Surveys>();
@@ -225,15 +229,24 @@ namespace Evect.Controllers
                     Surveys survey = new Surveys();
                     survey.countOfRespondents = countOfRespondents;
                     survey.type = type;
-                    necessaryInfo.Add(question.Questions, survey);
+                    List<ResultsOfSurvey> answers = eventDb.GetResultsOfSurvey(_context,id);
+                    
                     Excel.Application ex = new Excel.Application();
                     ex.Visible = true;//отобразить excel
                     ex.SheetsInNewWorkbook = 1;//количество листов в рабочей книге
-                    /*Excel.Workbook workbook = ex.Workbooks.Add(Type.Missing);//добавляем рабочую книгу
+                    Excel.Workbook workbook = ex.Workbooks.Add(Type.Missing);//добавляем рабочую книгу
                     ex.DisplayAlerts = false;
                     Excel.Worksheet sheet = (Excel.Worksheet)ex.Worksheets.get_Item(1);//получаем первый лист документа
                     sheet.Name = "Результаты опроса " + question.Questions;
-                    */
+                    string directory = @"C:\Users\Елизавета\source\repos\Evect\Evect\bin\ExcelFilesresults" + "2" + ".xls";
+                    ex.Application.ActiveWorkbook.SaveAs(directory, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Excel.XlSaveAsAccessMode.xlNoChange,
+                        Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing);
+                    survey.excelDirectory = directory;
+                    necessaryInfo.Add(question.Questions, survey);
+                    
+                        
+
+                    
                 }
                 var obj = new { necessaryInfo };
                 return new JsonResult(obj);
