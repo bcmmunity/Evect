@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System;
+using static Evect.Controllers.ApiController;
 
 namespace Evect.Models.DB
 {
@@ -286,6 +287,28 @@ namespace Evect.Models.DB
                 }
             }
             return timeOfRegistration;
+        }
+        public List<ResultsOfSurvey> GetResultsOfSurvey(ApplicationContext context,int idOfQuestion)
+        {
+            List<Answer> answers = context.Answers.Where(n => n.QuestionId == idOfQuestion).ToList();
+            List<ResultsOfSurvey> results = new List<ResultsOfSurvey>();           
+            foreach(var answer in answers)
+            {
+                ResultsOfSurvey result = new ResultsOfSurvey();
+                result.Answer = answer.AnswerMessage;
+                result.Time = answer.Date;
+                User user = context.Users.FirstOrDefault(n => n.TelegramId == answer.TelegramId);
+                List<UserTag> userTags = context.UserTags.Where(n => n.UserId == user.UserId).ToList();
+                List<string> namesOfTags = new List<string>();
+                foreach(var userTag in userTags)
+                {
+                    namesOfTags.Add(userTag.Tag.Name);
+                }
+                result.Tags = namesOfTags;
+                results.Add(result);                
+            }
+            return results;
+
         }
     }
 }
