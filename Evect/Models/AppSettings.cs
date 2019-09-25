@@ -19,7 +19,7 @@ namespace Evect.Models
         #region Kim
 
 #if LOCAL
-        public static string Url { get; set; } = "https://24546d4e.ngrok.io:443/{0}"; // Перед ":" указать URL бота
+        public static string Url { get; set; } = "https://f28b54d9.ngrok.io:443/{0}"; // Перед ":" указать URL бота
 
 #else
 

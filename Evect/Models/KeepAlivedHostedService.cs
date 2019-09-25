@@ -28,7 +28,7 @@ namespace Evect.Models
         {
             try
             {
-                WebRequest req = WebRequest.Create("https://24546d4e.ngrok.io");
+                WebRequest req = WebRequest.Create("https://bot.diffind.com");
                 req.GetResponse();
                 _logger.LogInformation("Created request");
             }

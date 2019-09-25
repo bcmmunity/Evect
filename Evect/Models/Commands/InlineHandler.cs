@@ -351,9 +351,9 @@ namespace Evect.Models.Commands
             await client.DeleteMessageAsync(query.From.Id, query.Message.MessageId);
 
             await client.SendTextMessageAsync(user.TelegramId,
-                $"Встреча с {from.FirstName} {from.LastName} согласована", ParseMode.Markdown);
+                $"Встреча с [{from.FirstName} {from.LastName}](tg://user?id={from.TelegramId}) согласована 👐, напишите ему для уточнения времени и места", ParseMode.Markdown);
             await client.SendTextMessageAsync(from.TelegramId,
-                $"Встреча с {user.FirstName} {user.LastName} согласована", ParseMode.Markdown);
+                $"Встреча с [{user.FirstName} {user.LastName}](tg://user?id={user.TelegramId}) согласована 👐, напишите ему для уточнения времени и места", ParseMode.Markdown);
         }
 
         [InlineCallback("decline-")]
