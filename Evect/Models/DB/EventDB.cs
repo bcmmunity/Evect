@@ -110,20 +110,30 @@ namespace Evect.Models.DB
             }
             return UsersToSend;            
         }
-        public async Task<List<long>> GetAllParticipantsOfEvent(int IdOfEvent)
+        public async Task<List<long>> GetAllParticipantsOfEvent(int idOfEvent)
         {
-            int EventId = IdOfEvent;
-            List<User> AllUsers = await Context.Users.ToListAsync();
-            List<long> UsersToSend = new List<long>();
-            foreach (var item in AllUsers)
+            int eventId = idOfEvent;
+            List<User> allUsers = await Context.Users.ToListAsync();
+            List<long> usersToSend = new List<long>();
+            foreach (var item in allUsers)
             {
-                if (item.CurrentEventId == EventId)
+                if (item.CurrentEventId == eventId)
                 {
-                    UsersToSend.Add(item.TelegramId);
+                    usersToSend.Add(item.TelegramId);
                 }
             }
-            return UsersToSend;
+            return usersToSend;
         }
+
+        public async Task<int> GetCountOfParticipants(int eventId)
+        {
+            List<User> users = await Context.Users.Include(u => u.UserEvents).ToListAsync();
+
+            var k = users.Select(u => u.UserEvents.Select(e => e.EventId).ToList()).Where(u => u.Contains(eventId)).ToList().Count;
+
+            return k;
+        }
+        
         public async Task<string> GetInfrormationAboutUsers(long chatId,string message)
         {
             User user = await Context.Users.FirstOrDefaultAsync(n => n.TelegramId == chatId);
@@ -161,9 +171,7 @@ namespace Evect.Models.DB
             {
                 case "Количество пользователей":
                     {
-                        List<long> participants = await GetAllParticipantsOfEvent(idOfEvent);
-                        string t = participants.Count.ToString();
-                        return t;
+                        return (await GetCountOfParticipants(idOfEvent)).ToString();
                     }
                 case "Количество использования режим общения":
                     {

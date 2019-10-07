@@ -419,8 +419,7 @@ namespace Evect.Models.DB
                 .WithMany(e => e.UserTags)
                 .HasForeignKey(k => k.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-            
-            
+
             modelBuilder.Entity<UserSearchingTag>()
                 .HasKey(ut => new {ut.UserId, ut.TagId});
             
@@ -430,6 +429,8 @@ namespace Evect.Models.DB
                 .HasForeignKey(k => k.TagId)
                 .OnDelete(DeleteBehavior.Cascade);
                 
+            
+            
             
             modelBuilder.Entity<UserSearchingTag>()
                 .HasOne(us => us.User)
@@ -470,5 +471,6 @@ namespace Evect.Models.DB
        // public DbSet<Survey> Surveys { get; set; }
         public DbSet<AdminUser> Admins { get; set; }
         public DbSet<TimeToJoinToEvent> TimeToJoinToEvents { get; set; }
+        public DbSet<MobileUser> MobileUsers { get; set; }
     }
 }

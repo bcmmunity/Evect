@@ -4,7 +4,7 @@ namespace Evect.Models
     public static class AppSettings
     {
          
-        
+      /*  
         #region Liza 
          public static string Url { get; set; } = "https://66926d21.ngrok.io/{0}";
          public static string Name { get; set; } = "evect_bot";
@@ -19,7 +19,7 @@ namespace Evect.Models
         #region Kim
 
 #if LOCAL
-        public static string Url { get; set; } = "https://f28b54d9.ngrok.io:443/{0}"; // Перед ":" указать URL бота
+        public static string Url { get; set; } = "https://161a02fa.ngrok.io:443/{0}"; // Перед ":" указать URL бота
 
 #else
 
@@ -33,13 +33,13 @@ namespace Evect.Models
 #if LOCAL 
           public static string DatabaseConnectionString { get; set; } =
              "Server=localhost\\SQLEXPRESS;Database=evect9;Trusted_Connection=True;";
-        
-//                  public static string Key { get; set; } = "956625902:AAHF9mJj8SGo3_5g51kQZPUe3OX_cdAMM2o";
-                  public static string Key { get; set; } = "822563453:AAG6JbtEMw9fo38ZIUceHjd480SghEBKC3c";
+
+                  public static string Key { get; set; } = "956625902:AAHF9mJj8SGo3_5g51kQZPUe3OX_cdAMM2o";
+//                  public static string Key { get; set; } = "822563453:AAG6JbtEMw9fo38ZIUceHjd480SghEBKC3c";
 
 #else
           public static string DatabaseConnectionString { get; set; } = 
-              "Server=localhost;Database=u0641156_evect;User Id=u0641156_evect;Password=Evect123!@#";//Лиза
+              "Server=mssql.u0641156.plsk.regruhosting.ru;Database=u0641156_evect;User Id=u0641156_evect;Password=Evect123!@#";//Лиза
           public static string Key { get; set; } = "822563453:AAG6JbtEMw9fo38ZIUceHjd480SghEBKC3c";
 
 

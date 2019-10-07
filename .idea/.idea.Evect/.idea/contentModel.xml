@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ContentModelStore">
     <e p="C:\projects\C#\Evect" t="IncludeFlat">
+      <e p=".git\info\exclude" t="IncludeRecursive" />
       <e p="Evect" t="IncludeRecursive">
         <e p="appsettings.Development.json" t="Include" />
         <e p="appsettings.json" t="Include" />
@@ -9,6 +10,7 @@
         <e p="Controllers" t="Include">
           <e p="ApiController.cs" t="Include" />
           <e p="HomeController.cs" t="Include" />
+          <e p="MobileAppApiController.cs" t="Include" />
         </e>
         <e p="Evect.csproj" t="IncludeRecursive" />
         <e p="Migrations" t="Include">
@@ -16,6 +18,12 @@
           <e p="20190914193847_new_mig.Designer.cs" t="Include" />
           <e p="20190914193941_new_mig2.cs" t="Include" />
           <e p="20190914193941_new_mig2.Designer.cs" t="Include" />
+          <e p="20190922185405_new1.cs" t="Include" />
+          <e p="20190922185405_new1.Designer.cs" t="Include" />
+          <e p="20191006134927_mobiles.cs" t="Include" />
+          <e p="20191006134927_mobiles.Designer.cs" t="Include" />
+          <e p="20191007182232_apikey.cs" t="Include" />
+          <e p="20191007182232_apikey.Designer.cs" t="Include" />
           <e p="ApplicationContextModelSnapshot.cs" t="Include" />
         </e>
         <e p="Models" t="Include">
@@ -36,15 +44,19 @@
             <e p="EventDB.cs" t="Include" />
             <e p="UserDB.cs" t="Include" />
           </e>
+          <e p="EmailCode.cs" t="Include" />
           <e p="ErrorViewModel.cs" t="Include" />
           <e p="Event.cs" t="Include" />
           <e p="InfoAboutUsers.cs" t="Include" />
+          <e p="KeepAlivedHostedService.cs" t="Include" />
           <e p="Log.cs" t="Include" />
+          <e p="MobileUser.cs" t="Include" />
           <e p="Question.cs" t="Include" />
           <e p="Survey.cs" t="Include" />
           <e p="Tag.cs" t="Include" />
           <e p="TelegramInlineKeyboard.cs" t="Include" />
           <e p="TelegramKeyboard.cs" t="Include" />
+          <e p="TimeToJoinToEvent.cs" t="Include" />
           <e p="User.cs" t="Include" />
           <e p="UserActionType.cs" t="Include" />
           <e p="UserEvent.cs" t="Include" />
@@ -80,6 +92,7 @@
     </e>
     <e p="C:\Users\smari\.Rider2019.1\config\consoles\db" t="IncludeRecursive" />
     <e p="C:\Users\smari\.Rider2019.1\config\extensions" t="IncludeRecursive" />
+    <e p="C:\Users\smari\.Rider2019.1\config\scratches" t="IncludeRecursive" />
     <e p="C:\Users\smari\.Rider2019.1\system\extResources" t="IncludeRecursive" />
     <e p="C:\Users\smari\.Rider2019.1\system\resharper-host\local\Transient\ReSharperHost\v191\SolutionCaches\_Evect.787436745.00" t="ExcludeRecursive" />
   </component>

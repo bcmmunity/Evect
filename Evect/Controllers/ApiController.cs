@@ -193,6 +193,9 @@ namespace Evect.Controllers
         {
             public int countOfRespondents { get; set; }
             public string type { get; set; }
+            
+            public string Question { get; set; }
+
            /* public Surveys(int CountOfRespondents,string Type)
             {
                 countOfRespondents = CountOfRespondents;
@@ -224,11 +227,11 @@ namespace Evect.Controllers
                     string type = eventDb.GetTypeOfQuestion(_context, id);
                     Surveys survey = new Surveys();
                     survey.countOfRespondents = countOfRespondents;
-                    survey.type = type;
-                    necessaryInfo.Add(question.Questions, survey);
-                    Excel.Application ex = new Excel.Application();
-                    ex.Visible = true;//отобразить excel
-                    ex.SheetsInNewWorkbook = 1;//количество листов в рабочей книге
+//                    survey.type = type;
+//                    necessaryInfo.Add(question.Questions, survey);
+//                    Excel.Application ex = new Excel.Application();
+//                    ex.Visible = true;//отобразить excel
+//                    ex.SheetsInNewWorkbook = 1;//количество листов в рабочей книге
                     /*Excel.Workbook workbook = ex.Workbooks.Add(Type.Missing);//добавляем рабочую книгу
                     ex.DisplayAlerts = false;
                     Excel.Worksheet sheet = (Excel.Worksheet)ex.Worksheets.get_Item(1);//получаем первый лист документа
@@ -239,7 +242,7 @@ namespace Evect.Controllers
                     survey.excelDirectory = directory;
                     necessaryInfo.Add(question.Questions, survey);
                     
-                        
+                        */
 
                     
                 }

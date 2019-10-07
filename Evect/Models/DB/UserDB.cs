@@ -16,6 +16,19 @@ namespace Evect.Models.DB
             context.SaveChanges();
             AddLog(context, "adduser2");
         }
+
+        public static void AddMobileUser(ApplicationContext context, string email)
+        {
+            context.MobileUsers.Add(new MobileUser {Email = email});
+            context.SaveChanges();
+        }
+        
+        public static void AddMobileUser(ApplicationContext context, string email, string code)
+        {
+            User user = GetUserByEmail(context, email).GetAwaiter().GetResult();
+            context.MobileUsers.Add(new MobileUser {Email = email, EmailCode = code, TelegramId = user?.TelegramId ?? default, ApiKey = Utils.GenerateNewCode(16)});
+            context.SaveChanges();
+        }
         
 
         public static async Task AddUserAsync(ApplicationContext context, long tgId)
@@ -119,6 +132,12 @@ namespace Evect.Models.DB
         {
             return await context.Users.FirstOrDefaultAsync(u => u.TelegramId == tgId) != null;
         }
+
+        public static async Task<bool> IsMobileUserExists(ApplicationContext context, string email)
+        {
+            return await context.MobileUsers.FirstOrDefaultAsync(u => u.Email == email) != null;
+        }
+        
         
         
         public static async Task<bool> IsUserExistsAndAuthed(ApplicationContext context, long tgId)
@@ -139,6 +158,18 @@ namespace Evect.Models.DB
                 .Include(u => u.SearchingUserTags)
                 .ThenInclude(u => u.Tag)
                 .FirstOrDefaultAsync(u => u.TelegramId == tgId);
+        }
+        
+        public static async Task<User> GetUserByEmail(ApplicationContext context, string email)
+        {
+            return await context.Users
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
+        
+
+        public static async Task<MobileUser> GetMobileUserByEmail(ApplicationContext context, string email)
+        {
+            return await context.MobileUsers.FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public static async Task ResetUserAction(ApplicationContext context, long tgId)
